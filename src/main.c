@@ -3,9 +3,7 @@
 
 int main()
 {
-    // check sa if si data.txt kung exist ba sya
 
-    char data[] = {"reports.txt", "events.txt"};
 }
 
 
@@ -20,23 +18,30 @@ int main()
 const int list_choices[] = {1, 2, 3, 4, 5, 6};
 
 
-// initiates the main menu of the program
-void init_menu()
+// Displays the main menu of the program.
+void DisplayMenu()
 {
-    int choice;
-    char choices_in_string[] = {"Dasboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
+    int user_choice;
+    char menu_options[][20] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
     do {
-        if(is_valid_choice(choice) != 1)
+        if(is_valid_choice(user_choice) != 1)
         {
             continue;
         }
 
-        scanf("%d", &choice);
+        printf("Select an Option\n");
 
-        switch(choice)
+        for(int i = 0; i < sizeof(menu_options) / sizeof(menu_options[0]); i++)
         {
-            // TODO: i sud mga initializer diri for each event in accord sa ilahang assigned value.
+            printf("%d. %s\n", i + 1, menu_options[i]);
+        }
+
+        scanf("%d", &user_choice);
+
+        switch(user_choice)
+        {
+            // TODO: Initialize events according to their assigned value.
         }
     } while(1);
 }
@@ -44,7 +49,7 @@ void init_menu()
 
 int is_valid_choice(int n)
 {
-    if (n < 1 && n > 6)
+    if (n >= 1 && n <= 6)
     {
         return 1;
     }
