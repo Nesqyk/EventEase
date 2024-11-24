@@ -1,9 +1,10 @@
 #include <stdio.h>
 
+#include <data_handler.h>
 
 int main()
 {
-
+    
 }
 
 
@@ -18,6 +19,8 @@ int main()
 const int list_choices[] = {1, 2, 3, 4, 5, 6};
 
 
+int isValidChoice(int n);
+
 // Displays the main menu of the program.
 void DisplayMenu()
 {
@@ -25,7 +28,7 @@ void DisplayMenu()
     char menu_options[][20] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
     do {
-        if(is_valid_choice(user_choice) != 1)
+        if(isValidChoice(user_choice) != 1)
         {
             continue;
         }
@@ -41,13 +44,14 @@ void DisplayMenu()
 
         switch(user_choice)
         {
+            // TODO: Ari initialize sa tanan :>
             // TODO: Initialize events according to their assigned value.
         }
     } while(1);
 }
 
 
-int is_valid_choice(int n)
+int isValidChoice(int n)
 {
     if (n >= 1 && n <= 6)
     {

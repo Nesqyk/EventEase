@@ -9,25 +9,29 @@
 #include <string.h>
 #include <stdio.h>
 
-#define DATA_DIR "data\""
+const char files[][20] = {"reports.txt", "events.txt","config.txt"};
 
-void HandleData()
+#define DATA_DIR "data/"
+
+FILE *CheckFileExistence(const char *file_name, const char *access_mode)
 {
-    FILE *file;
+    char file_path[50];
 
-    // Check if the f.f txt files exist.
-    char files[][20] = {"reports.txt", "events.txt"};
+    snprintf(file_path, sizeof(file_path), "%s%s", DATA_DIR, file_name);
 
-    for(int i = 0; i < sizeof(files) / sizeof(files[0]); i++)
+    FILE *file = fopen(file_path, access_mode);
+
+    if(file == NULL)
     {
-        file = fopen(strcat(DATA_DIR, files[i]), "r");
-        
-        if(file == NULL)
-        {
-            printf("Error: %s does not exisit.", files[i]);
-            return 1;
-        } else {
-            fclose(file);  
-        }
+        printf("Error: %s does not exist.\n", file_path);
+        return NULL;
+    } else {
+        return file;
     }
+}
+
+// which file? 
+void write()
+{
+
 }
