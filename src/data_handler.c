@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 
-const char files[][20] = {"reports.txt", "events.txt","config.txt"};
+const char *files[][20] = {"reports.txt", "events.txt","config.txt"};
 
 #define DATA_DIR "data/"
 

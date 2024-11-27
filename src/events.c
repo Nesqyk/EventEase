@@ -15,14 +15,22 @@
 #define MAX_LINE 256
 #define MAX_TYPE_EVENTS 10
 
+
+#define MAX_ID_RANGE 1000
+
+int generate_unique_id();
+
 // might also return this to event as a whole;
 // later na ang scanf sa main nalang kay para wala na hasol.
 // how should the events.txt look too?
-void createEvent(int type, char client_name, long cost, int no_attendee, char venue)
+void create_event(int type, char client_name, long cost, int no_attendee, char venue)
 {
     FILE *data = CheckFileExistence("events.txt","a");
     // how can I randomize this id?
-    int id;
+    int id = generate_unique_id();
+
+    // id is done; but stil not sure.
+    fprintf(data, "id: %d\n", id);
 
     // event.txt should look like this:
     // id:
@@ -35,20 +43,50 @@ void createEvent(int type, char client_name, long cost, int no_attendee, char ve
 
     // 1 = done, 0 = wala pa
     int classfication = 0;
-    char *review = "";
+    char *review;
 
-    char date[100];
+    // time_t = time(NULL);
+    
 
     // how to randomize id; mt_rand maybe?
     //  also don't forget to store the date using a string
 }
 
+// i'm trying to find out hgow to generae unique id efficiently
+int generate_unique_id()
+{
+    int event_id;
+
+    FILE *event = CheckFileExistence("events.txt","r");
+
+    char lines[MAX_LINE];
+    char id_prefix[10];
+    int is_duplicate = 0;
+
+    do {
+        event_id =  rand() % MAX_ID_RANGE;
+        sprintf(id_prefix, "id: %d", event_id);
+        is_duplicate = 0;
+
+        rewind(event);
+        while(fgets(lines, sizeof(lines), event))
+        {
+            if(strstr(lines, id_prefix) != NULL)
+            {
+                is_duplicate = 1;
+            }
+        }
+    } while(is_duplicate);
+
+    fclose(event);
+    return event_id;
+}
 
 // it must return to event[];
 // TODO: find a better approch to this; a better way to 
-// allocated memory without losing the data from event[]; 
-// since  there are restraints, we can only use things that was taught to us.
-char *getEventType()
+// allocate memory without losing the data from event[]; 
+// since  there are restraints; we can only use things that was taught to us.
+char *get_event_type()
 {
     // Don't forget to close after.
     FILE *config = CheckFileExistence("config.txt", "r");
@@ -104,5 +142,39 @@ void getEventTypeList()
     for(int i = 0; sizeof(type_event) / sizeof(type_event[0]); i++)
     {
         printf("%d. %s", i + 1, type_event[i]);
+    }
+}
+
+// standard deviation is grade[index] - average
+// variance (deviation * deviation) + (deviation)
+// variance += deviation * deviation;
+// deviation[i] = grade[i] - average;
+
+
+int ascend(int size, int arr[])
+{
+    int sum = 0, max_sum = 0;
+    int prev = 0;
+
+    for(int i = 0; i < size; i++)
+    {
+        if(arr[i] > prev)
+        {
+            sum += arr[i];
+            prev = arr[i];
+
+            if(sum > max_sum)
+            {
+                max_sum = sum;
+            }
+
+            sum = arr[i];
+            prev = arr[i];
+        }
+
+        if(sum > max_sum)
+        {
+            max_sum = sum;
+        }
     }
 }
