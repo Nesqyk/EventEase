@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "include/data_handler.h"
+#include "include/dashboard.h"
 
 int main()
 {
@@ -73,5 +74,5 @@ int auth(char username[], int password)
 
 char get_format()
 {
-    
+
 }

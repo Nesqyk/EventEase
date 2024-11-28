@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "data_handler.h"
+#include "include/data_handler.h"
 
 // check if an event exist
 // I could probably add a config here and let the event organizer 
@@ -31,6 +31,7 @@ void create_event(int type, char client_name, long cost, int no_attendee, char v
 
     // id is done; but stil not sure.
     fprintf(data, "id: %d\n", id);
+    fprintf(data, "\t ")
 
     // event.txt should look like this:
     // id:
@@ -135,7 +136,7 @@ char *get_event_type()
 
 
 // Prints the event list 
-void getEventTypeList()
+void get_event_type_list()
 {
     char *type_event = getEventType();
 
@@ -150,31 +151,3 @@ void getEventTypeList()
 // variance += deviation * deviation;
 // deviation[i] = grade[i] - average;
 
-
-int ascend(int size, int arr[])
-{
-    int sum = 0, max_sum = 0;
-    int prev = 0;
-
-    for(int i = 0; i < size; i++)
-    {
-        if(arr[i] > prev)
-        {
-            sum += arr[i];
-            prev = arr[i];
-
-            if(sum > max_sum)
-            {
-                max_sum = sum;
-            }
-
-            sum = arr[i];
-            prev = arr[i];
-        }
-
-        if(sum > max_sum)
-        {
-            max_sum = sum;
-        }
-    }
-}

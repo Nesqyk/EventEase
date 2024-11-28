@@ -5,3 +5,9 @@
 // quick stat for each events
 //      Total Cost:
 //      Profit:
+//
+
+void hello()
+{
+    printf("Hello");
+}
