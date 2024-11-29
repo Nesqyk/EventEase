@@ -59,5 +59,6 @@
   "files.associations": {
     "data_handler.h": "c",
     "stdlib.h": "c"
-  }
+  },
+  "makefile.configureOnOpen": true
 }

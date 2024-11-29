@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+// save data when opening and closing the program so that it will store in the global variable
+
+
 #include "include/data_handler.h"
 
 // check if an event exist
@@ -14,33 +18,47 @@
 
 #define MAX_LINE 256
 #define MAX_TYPE_EVENTS 10
-#define MAX_EVENT 10
-
 #define MAX_ID_RANGE 1000
+
+const int max_attendee = 50;
 
 int generate_unique_id();
 
 // might also return this to event as a whole;
 // later na ang scanf sa main nalang kay para wala na hasol.
 // how should the events.txt look too?
-void create_event(int type, char client_name, long cost, int no_attendee, char venue)
+// if client name has special chars
+// if client name is valid?
+// if no_attendee > max_attendee
+
+void create_event(int type, char client_name[], long cost, int no_attendee, char venue[])
 {
-    FILE *data = CheckFileExistence("events.txt","a");
+    char filename[20];
     // how can I randomize this id?
     int id = generate_unique_id();
+    
+    sprintf(filename, "%s%d.txt", EVENT_DIR, id);
 
-    // id is done; but stil not sure.
-    fprintf(data, "id: %d\n", id);
-    fprintf(data, "\t ");
+    FILE *event = fopen(filename, "a");
 
-    // event.txt should look like this:
-    // id:
-    //  client_name:
-    //  cost:
-    //  no_attendee
+    if(event == NULL)
+    {
+        printf("Error opening %s", filename);
+    }
 
-    // must also check if id1 = id2; kay pariho 
-    //  if parihos then generate another random id;
+    FILE *file_id = fopen("data/events_ids.txt", "a");
+
+    if(file_id != NULL) 
+    {
+        fprintf(file_id, "%d\n", id);
+    } else 
+    {
+        printf("Error opening events_ids.txt");
+    }
+
+    fclose(file_id);
+
+
 
     // 1 = done, 0 = wala pa
     int classfication = 0;
@@ -58,81 +76,49 @@ int generate_unique_id()
 {
     int event_id;
 
-    FILE *event = CheckFileExistence("events.txt","r");
-
-    char lines[MAX_LINE];
-    char id_prefix[10];
-    int is_duplicate = 0;
-
     do {
         event_id =  rand() % MAX_ID_RANGE;
-        sprintf(id_prefix, "id: %d", event_id);
-        is_duplicate = 0;
+    } while (is_duplicated(event_id) == 1);
 
-        rewind(event);
-        while(fgets(lines, sizeof(lines), event))
-        {
-            if(strstr(lines, id_prefix) != NULL)
-            {
-                is_duplicate = 1;
-            }
-        }
-    } while(is_duplicate);
-
-    fclose(event);
     return event_id;
 }
 
+int event_ids[];
+
+void save_event_id()
+{
+    FILE *event_id_file = fopen("data/event_ids.txt" ,"r");
+
+    int max_event = atoi(read_config("max_event:"));
+    event_ids[max_event];
+
+    int index = 0;
+
+    if(!event_id_file)
+    {
+        printf("Error opening event_ids.txt");
+        return 0;
+    }
+
+    char buffer[MAX_LINE];
+
+    while(fgets(buffer, sizeof(buffer), event_id_file))
+    {
+        buffer[strcspn(buffer,"\n")] = 0;
+
+        if(max_event >= index)
+        {
+            event_ids[index]  = atoi(buffer);
+            index++;
+        } else {
+            break;
+        }
+    }
+}
 // it must return to event[];
 // TODO: find a better approch to this; a better way to 
 // allocate memory without losing the data from event[]; 
 // since  there are restraints; we can only use things that was taught to us.
-char *get_event_type()
-{
-    // Don't forget to close after.
-    FILE *config = CheckFileExistence("config.txt", "r");
-
-    
-    char line[MAX_LINE];
-
-    char *events[MAX_TYPE_EVENTS];
-
-    int event_count = 0;
-    int reading_event = 0;
-
-    while(fgets(line, sizeof(line), config))
-    {
-        // we're reading event here so we should;
-        // check every new line
-        // if new line is empty; break else continue;
-        line[strcspn(line , "\n")] = 0;
-
-        if(strncmp(line, "type_of_events:", 15) == 0)
-        {
-            reading_event = 1;
-            continue;
-        }
-
-        if(reading_event && strlen(line) > 0)
-        {
-            events[event_count] = line;
-            event_count++;
-
-            if(event_count >= MAX_TYPE_EVENTS)
-            {
-                break;
-            }
-        }
-
-        if(strlen(line) == 0)
-        {
-            reading_event = 0;
-        }
-    }
-    fclose(config);
-
-    return events;
-}
 
 
 // Prints the event list 

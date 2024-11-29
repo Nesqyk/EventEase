@@ -4,8 +4,10 @@
 
 #define MAX_PASS 12
 #define MAX_USER 12
+
 // 1 for success 0 for failed
 
+// TODO: 
 int register_user(char username[12], char password[12])
 {
     char filename[30];
@@ -29,13 +31,8 @@ int register_user(char username[12], char password[12])
     {
         for(int i = 0; i < username;i++)
         {
-            username = username[i];
-            password = password[i];
+            if(username[i] == '\0' && password[i] == '\0') break;
 
-            
-            // : >
-            // 65 97
-            // if both are null then break.
         }
     }
 

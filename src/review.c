@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void add_review(int )
+void add_review(int asd)
 {
 
 }

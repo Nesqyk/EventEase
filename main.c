@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <string.h>
 
-#include "data_handler.h"
-#include "dashboard.h"
+// #include "include/data_handler.h"
+
+void display_menu();
 
 int main()
 {
-    
+    display_menu();
 }
+
 
 
 /*
@@ -19,6 +22,7 @@ int main()
 */
 const int list_choices[] = {1, 2, 3, 4, 5, 6};
 
+int event_ids[10];
 
 int is_valid_choice(int n);
 
@@ -26,12 +30,12 @@ int is_valid_choice(int n);
 void display_menu()
 {
     int user_choice;
-    char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
+    const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
     do {
         printf("Select an Option\n");
 
-        for(int i = 0; i < sizeof(menu_options) / sizeof(*menu_options); i++)
+        for(int i = 0; i < 6; i++)
         {
             printf("%d. %s\n", i + 1, menu_options[i]);
         }
@@ -66,7 +70,7 @@ void display_menu()
                 continue;
             // exit
             case 6: 
-                return 0;
+                break;
         }
     } while(1);
 }
@@ -79,18 +83,4 @@ int is_valid_choice(int n)
         return 1;
     }
     return 0;
-}
-
-int auth(char username[], int password)
-{
-    // check file
-    // close file
-    // return 1 for auth
-    // return 0 for failed
-
-}
-
-char get_format()
-{
-
 }
