@@ -7,7 +7,7 @@
 // save data when opening and closing the program so that it will store in the global variable
 
 
-#include "include/data_handler.h"
+#include "data_handler.h"
 
 // check if an event exist
 // I could probably add a config here and let the event organizer 

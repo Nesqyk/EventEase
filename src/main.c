@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 // #include "include/data_handler.h"
 
 void display_menu();
@@ -20,8 +21,6 @@ int main()
 5. Reviews
 6. Exit
 */
-const int list_choices[] = {1, 2, 3, 4, 5, 6};
-
 int event_ids[10];
 
 int is_valid_choice(int n);
@@ -29,6 +28,12 @@ int is_valid_choice(int n);
 // Displays the main menu of the program.
 void display_menu()
 {
+    char auth_file_name[30];
+    sprintf(auth_file_name, "%sauth.txt", DATA_DIR)
+    FILE *auth_file = fopen("")
+    // auth first 
+    // check if username: and password is empty;
+    
     int user_choice;
     const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     

@@ -4,52 +4,76 @@
 
 #define MAX_PASS 12
 #define MAX_USER 12
+#define DATA_DIR "data/"  // Directory path for files
 
-// 1 for success 0 for failed
-
-// TODO: 
-int register_user(char username[12], char password[12])
+// Registers a user; 1 suceess, 0 failed.
+int register_user(char username[MAX_USER], char password[MAX_PASS])
 {
     char filename[30];
-    FILE *file = check_file_existence("auth.txt", "r");
+    sprintf(filename, "%sauth.txt", DATA_DIR);
+    FILE *file = check_file_existence(filename, "r");
 
+    // If file doesn't exist, create it
     if (file == NULL)
     {
-        sprintf(filename, "%sauth.txt", DATA_DIR);
+        file = fopen(filename, "w");
+        if (!file) {
+            perror("Error opening auth file");
+            return 0;  // File opening failed
+        }
+        fclose(file);
     }
 
+    // Check if username and password are within allowed length
     int username_size = strlen(username);
     int password_size = strlen(password);
 
-    if ((username_size > MAX_USER) && (password_size > MAX_PASS))
+    if (username_size < 3 || username_size > MAX_USER || password_size < 6 || password_size > MAX_PASS)
     {
-        return 0; 
+        return 0;  // Invalid length
     }
 
-    int has_special_char = 0;
-    while(has_special_char)
+    for (int i = 0; i < username_size; i++)
     {
-        for(int i = 0; i < username;i++)
-        {
-            if(username[i] == '\0' && password[i] == '\0') break;
-
+        if (username[i] == ' ') {
+            return 0;  // Invalid username contains spaces
         }
     }
 
-    if(has_special_char == 1)
+    // If all checks passed, save username and password to file
+    file = fopen(filename, "a");
+    if (!file)
     {
+        perror("Error opening auth file for writing");
         return 0;
     }
-    // check if the userame doesnt have any number or spaces
-    // check if the password does not have any special characters
-    // check if the password is too short or long
-    // check if the username is too short or long
 
+    fprintf(file, "Username:%s\nPassword:%s", username, password);  // Store username and password
+    fclose(file);
+    return 1;  // Success
 }
 
-int login_user(char username, int password)
+// Login function
+int login_user(const char username[MAX_USER], const char password[MAX_PASS])
 {
-    // check if the username exist
-    // check if the username matches the exact username
-    // check if the password matches the exact password
+    FILE *file = check_file_existence("data/auth.txt", "r");
+    if (file == NULL)
+    {
+        return 0;  // File doesn't exist
+    }
+
+    char stored_username[MAX_USER], stored_password[MAX_PASS];
+    while (fscanf(file, "Username:%s\nPassword:%s", stored_username, stored_password) != EOF)
+    {
+        // Check if username matches
+        if (strcmp(username, stored_username) == 0 && strcmp(password, stored_password) == 0)
+        {
+            fclose(file);
+            return 1;  // Successful login
+        }
+    }
+
+    fclose(file);
+    return 0;  // Failed login
 }
+
