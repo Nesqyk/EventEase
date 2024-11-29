@@ -13,7 +13,7 @@ const char *files[][20] = {"reports.txt", "events.txt","config.txt"};
 
 #define DATA_DIR "data/"
 
-FILE *CheckFileExistence(const char *file_name, const char *access_mode)
+FILE *check_file_existence(const char *file_name, const char *access_mode)
 {
     char file_path[50];
 

@@ -14,7 +14,7 @@
 
 #define MAX_LINE 256
 #define MAX_TYPE_EVENTS 10
-
+#define MAX_EVENT 10
 
 #define MAX_ID_RANGE 1000
 
@@ -31,7 +31,7 @@ void create_event(int type, char client_name, long cost, int no_attendee, char v
 
     // id is done; but stil not sure.
     fprintf(data, "id: %d\n", id);
-    fprintf(data, "\t ")
+    fprintf(data, "\t ");
 
     // event.txt should look like this:
     // id:

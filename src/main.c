@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "include/data_handler.h"
-#include "include/dashboard.h"
+#include "data_handler.h"
+#include "dashboard.h"
 
 int main()
 {
@@ -29,12 +29,6 @@ void display_menu()
     char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
     do {
-        if(is_valid_choice(user_choice) != 1)
-        {
-            printf("Invalid Option");
-            continue;
-        }
-
         printf("Select an Option\n");
 
         for(int i = 0; i < sizeof(menu_options) / sizeof(*menu_options); i++)
@@ -45,16 +39,40 @@ void display_menu()
         printf("Enter your option");
         scanf("%d", &user_choice);
 
+        if(is_valid_choice(user_choice) != 1)
+        {
+            printf("Invalid Option");
+            continue;
+        }
+
         switch(user_choice)
         {
             // TODO: Ari initialize sa tanan :>
             // TODO: Initialize events according to their assigned value.
+            // dashboard - rusell
+            case 1:
+                continue;
+            // create event - tyrone
+            case 2:
+                continue;
+            // my events - junsay
+            case 3:
+                continue;
+            // reviews - chelesea
+            case 4:
+                continue;
+            // reports - lo
+            case 5:
+                continue;
+            // exit
+            case 6: 
+                return 0;
         }
     } while(1);
 }
 
 
-int isValidChoice(int n)
+int is_valid_choice(int n)
 {
     if (n >= 1 && n <= 6)
     {

@@ -3,6 +3,6 @@
 
 #define DATA_DIR "data/"
 
-FILE *CheckFileExistence(const char *file_name, const char *access_mode);
+FILE *check_file_existence(const char *file_name, const char *access_mode);
 
 #endif // DATA_HANDLER_H
