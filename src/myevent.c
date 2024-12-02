@@ -1,6 +1,23 @@
 //Di pa sure kung mogana ni especially kay dili pa complete ang details
 
-
+/*
+3. ####  My Events
+    - Features:
+        - Search Event:
+            - By Event ID or Client Name.
+    - View Event:
+        - Display overview including: ID, Name, Date, Venue, Status.
+    - Add status legend: Upcoming, Tomorrow, Canceled.
+    - Edit Event:
+        - Enter Event ID.
+    - Editable Fields:
+        - Client Name
+        - Cost
+        - Venue
+        - Number of Attendees
+        - Classification.
+    - Navigation: Back to Main Menu.
+*/
 #include <stdio.h>
 #include <string.h>
 

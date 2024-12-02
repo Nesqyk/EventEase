@@ -7,6 +7,8 @@
 // save data when opening and closing the program so that it will store in the global variable
 
 
+// TODO: Will continue on create_event and stuffs.
+
 #include "data_handler.h"
 
 // check if an event exist
@@ -31,7 +33,14 @@ int generate_unique_id();
 // if client name is valid?
 // if no_attendee > max_attendee
 
-void create_event(int type, char client_name[], long cost, int no_attendee, char venue[])
+
+// pangan ni gibayad ni client - variable
+// ang date ayaw kalimti!
+
+// events
+//  111.txt
+//  123.txt 
+void create_event(int type, char client_name[], float cost, float balance, int no_attendee, char venue[])
 {
     char filename[20];
     // how can I randomize this id?
@@ -57,8 +66,6 @@ void create_event(int type, char client_name[], long cost, int no_attendee, char
     }
 
     fclose(file_id);
-
-
 
     // 1 = done, 0 = wala pa
     int classfication = 0;
@@ -97,7 +104,6 @@ void save_event_id()
     if(!event_id_file)
     {
         printf("Error opening event_ids.txt");
-        return 0;
     }
 
     char buffer[MAX_LINE];
