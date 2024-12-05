@@ -58,7 +58,9 @@
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
     "data_handler.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "cstdlib": "c",
+    "typeinfo": "c"
   },
   "makefile.configureOnOpen": true
 }

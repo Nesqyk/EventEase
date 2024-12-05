@@ -5,6 +5,7 @@
 #define MAX_EVENTS 100
 #define MAX_LENGTH 100
 
+<<<<<<< HEAD
 // Global variable para ni sa na search na ID sa option 1
 int lastSearchedId = -1;
 
@@ -12,6 +13,13 @@ void search_event(int ids[], char names[][MAX_LENGTH], double costs[], double ba
 void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count);
 void calculate_profit(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
 void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
+=======
+//  -> search id first 
+// choices
+// cost, profit, receipt (if possible)
+// cost args -
+// cost - gibayad sa client.
+>>>>>>> b9d09c6c6229cb021acba1cc92b69418532fe817
 
 int main()
 {

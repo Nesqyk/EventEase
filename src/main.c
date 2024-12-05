@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "auth.h"
 
 // #include "include/data_handler.h"
 
-void display_menu();
+int display_menu();
 
 int main()
 {
@@ -26,13 +27,74 @@ int event_ids[10];
 int is_valid_choice(int n);
 
 // Displays the main menu of the program.
-void display_menu()
+
+int display_auth_menu()
 {
-    char auth_file_name[30];
-    sprintf(auth_file_name, "%sauth.txt", DATA_DIR)
-    FILE *auth_file = fopen("")
+    char username[MAX_USER];
+    char password[MAX_PASS];
+    int choice;
+
+    char filename[30];
+    sprintf(filename, "%sauth.txt", DATA_DIR);
+
+    FILE *auth_file = fopen(filename, "r");
+
+    do {
+        // login
+        // register
+        // exit
+
+        char *choices[] = {"Login","Register", "Exit"};
+
+        for(int i = 0; i < sizeof(choices) / sizeof(*choices); i++)
+        {
+            pritnf("%d. %s", i + 1, choices[i]);
+        }
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice)
+        {
+            case 1:
+                if(!is_auth_file_empty(auth_file))
+                {
+                    // We can also include; and ask the user if he/she is having 
+                    // a problem regarding to their account's credentials?
+                    system("cls");
+                    printf("Please proceed to login\n");
+
+                    fclose(auth_file);
+                    continue;
+                }
+                printf("\n-- %s --\n", choices[1]);
+                printf("Enter username : ");
+                scanf("%s", username);
+
+                printf("Enter pasword: ");
+                scanf("%s", password);
+
+                int register_status = register_user(username, password);
+                if(register_status == 0)
+                {
+                    printf("Failed ");
+                }
+
+            case 2:
+
+            case 3:
+
+                break;
+        }
+
+    } while(1);
+}
+
+int display_menu()
+{
+
     // auth first 
-    // check if username: and password is empty;
+    // check if username: and password is empty; then display main menu
     
     int user_choice;
     const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
