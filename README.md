@@ -13,7 +13,6 @@ type 'cancel' to read name again
 ### Start
 1. User launches the EventEase system in the terminal.
 
-
 2. Authentication System (Optional):
 If handling confidential data, implement a login system.
 Benefits: Enhances security and tracks user activity.
@@ -87,5 +86,3 @@ Option to generate summary reports for a range of dates or types of events.
 Allow custom tags or notes for events for better categorization.
 - **Back Option:**
 Ensure every submenu has a “Back to Main Menu” option.
-
-

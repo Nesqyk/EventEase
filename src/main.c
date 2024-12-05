@@ -1,34 +1,25 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "auth.h"
+#include "data_handler.h"
 
 // #include "include/data_handler.h"
 
-int display_menu();
+void display_menu();
+void display_auth_menu();
+int is_valid_choice(int n);
+
+int event_ids[10];
 
 int main()
 {
-    display_menu();
+    display_auth_menu();
 }
 
-
-
-/*
-1. Dashboard
-2. Create Event
-3. My Events
-4. Reports
-5. Reviews
-6. Exit
-*/
-int event_ids[10];
-
-int is_valid_choice(int n);
-
 // Displays the main menu of the program.
-
-int display_auth_menu()
+void display_auth_menu()
 {
     char username[MAX_USER];
     char password[MAX_PASS];
@@ -40,15 +31,14 @@ int display_auth_menu()
     FILE *auth_file = fopen(filename, "r");
 
     do {
-        // login
-        // register
-        // exit
-
+        // 1.login
+        // 2. register
+        // 3. exit
         char *choices[] = {"Login","Register", "Exit"};
 
-        for(int i = 0; i < sizeof(choices) / sizeof(*choices); i++)
+        for(int i = 0; i < 3; i++)
         {
-            pritnf("%d. %s", i + 1, choices[i]);
+            printf("%d. %s", i + 1, choices[i]);
         }
 
         printf("Enter your choice: ");
@@ -57,6 +47,29 @@ int display_auth_menu()
         switch(choice)
         {
             case 1:
+                if(is_auth_file_empty(auth_file))
+                {
+                    fclose(auth_file);
+                    printf("Please register first.");
+                    continue;
+                }
+                printf("\n-- %s --\n", choices[1]);
+                printf("Enter username : ");
+                scanf("%s", username);
+
+                printf("Enter pasword: ");
+                scanf("%s", password);
+
+                int login = login_user(username, password);
+                if(login == 1)
+                {
+                    display_menu();
+                } else if (login == 0)
+                {
+                    printf("Please make sure your credentials are correct.");
+                }
+
+            case 2:
                 if(!is_auth_file_empty(auth_file))
                 {
                     // We can also include; and ask the user if he/she is having 
@@ -67,9 +80,18 @@ int display_auth_menu()
                     fclose(auth_file);
                     continue;
                 }
+
                 printf("\n-- %s --\n", choices[1]);
-                printf("Enter username : ");
-                scanf("%s", username);
+                printf("Enter username: ");
+
+                if(strlen(username) < 3 && strlen(username) > MAX_USER)
+                {
+                    scanf("%s", username);
+                } else 
+                {
+                    printf("Username must not be less than 3 and greater than %d\nTry Again: ", MAX_USER);    
+                    scanf("%s", username);
+                }
 
                 printf("Enter pasword: ");
                 scanf("%s", password);
@@ -77,25 +99,24 @@ int display_auth_menu()
                 int register_status = register_user(username, password);
                 if(register_status == 0)
                 {
-                    printf("Failed ");
+                    printf("Failed Registration Please Try Again");
+                } else if(register_status == 1) {
+                    printf("Registration Sucessful;\n Please proceeed to login");
+                    continue;
                 }
-
-            case 2:
-
             case 3:
 
+                printf("Goodbye!");
+                printf("Exiting now...");
+                system("cls");
                 break;
         }
 
     } while(1);
 }
 
-int display_menu()
+void display_menu()
 {
-
-    // auth first 
-    // check if username: and password is empty; then display main menu
-    
     int user_choice;
     const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
@@ -131,6 +152,7 @@ int display_menu()
                 continue;
             // reviews - chelesea
             case 4:
+                
                 continue;
             // reports - lo
             case 5:
@@ -141,7 +163,6 @@ int display_menu()
         }
     } while(1);
 }
-
 
 int is_valid_choice(int n)
 {

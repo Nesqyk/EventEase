@@ -2,6 +2,8 @@
 #include <string.h>
 #include "data_handler.h"
 
+// auth seems fine now
+
 #define MAX_PASS 12
 #define MAX_USER 12
 #define DATA_DIR "data/"
@@ -16,7 +18,7 @@ int is_auth_file_empty(FILE *file) {
 }
 
 
-// 1 sucess 0 failed 2 login
+// 1 sucess 0 failed
 int register_user(char username[MAX_USER], char password[MAX_PASS]) {
     int result = 0;
     char filename[30];
@@ -26,7 +28,7 @@ int register_user(char username[MAX_USER], char password[MAX_PASS]) {
     if (file == NULL) {
         file = fopen(filename, "w");
         if (!file) {
-            perror("Error creating auth file");
+            // perror("Error creating auth file");
             return 0;
         }
         fprintf(file, "Username:\nPassword:");
@@ -34,10 +36,6 @@ int register_user(char username[MAX_USER], char password[MAX_PASS]) {
         file = fopen(filename, "r");
     }
 
-    if (!is_auth_file_empty(file)) {
-        fclose(file);
-        return 2;
-    }
     fclose(file);
 
     int username_size = strlen(username);
@@ -55,7 +53,7 @@ int register_user(char username[MAX_USER], char password[MAX_PASS]) {
 
     file = fopen(filename, "w");
     if (!file) {
-        perror("Error opening auth file for writing");
+        // perror("Error opening auth file for writing");
         return result;
     }
     fprintf(file, "Username:%s\nPassword:%s", username, password);
@@ -80,7 +78,30 @@ int login_user(const char username[MAX_USER], const char password[MAX_PASS]) {
             return 1;
         }
     }
-
     fclose(file);
     return 0;
+}
+
+char *read_username()
+{
+    char filename[30];
+
+    sprintf(filename, "%sauth.txt",DATA_DIR);
+
+    FILE *auth_file = fopen(filename, "r");
+
+    if(auth_file == NULL)
+    {
+        return NULL; 
+    }
+
+    static char stored_username[12];
+    while(fscanf(auth_file, "Username:%11s", stored_username) == 1)
+    {
+        fclose(auth_file);
+        return stored_username;
+    } 
+
+    fclose(auth_file);
+    return NULL;
 }

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 
 // save data when opening and closing the program so that it will store in the global variable
 
@@ -24,7 +24,10 @@
 
 const int max_attendee = 50;
 
+//
+int is_valid_event_type(char *type_eventname);
 int generate_unique_id();
+void get_event_type_list();
 
 // might also return this to event as a whole;
 // later na ang scanf sa main nalang kay para wala na hasol.
@@ -36,46 +39,133 @@ int generate_unique_id();
 
 // pangan ni gibayad ni client - variable
 // ang date ayaw kalimti!
+// date - created
+//      - kung when ang event
+
+void search_event(int id)
+{
+    // check kung naa ba ang id
+    // if naa, print ang details
+    // if wala, print not found
+    // store ang last searched id
+    // lastSearchedId <- no need nani
+
+    int id, i;
+    printf("Enter Event ID to search: ");
+    scanf("%d", &id);
+
+    // list every id in the event_ids.txt
+
+    if(!is_valid_id(id))
+    {
+        // false
+    }
+    /*
+
+    for (i = 0; i < count; i++)
+    {
+        // Check if the ID exists 
+        if (ids[i] == id)
+        {
+            printf("Event Found: %s (ID: %d, Cost: %.2lf, Revenue: %.2lf)\n", names[i], ids[i], costs[i], balance[i]);
+            lastSearchedId = id; // Store the searched ID
+            return;
+        }
+    }
+
+    */
+    printf("Event with ID %d not found.\n", id);
+    // lastSearchedId = -1; // Reset the last searched ID if the ID is not found
+}
+
 
 // events
 //  111.txt
 //  123.txt 
-void create_event(int type, char client_name[], float cost, float balance, int no_attendee, char venue[])
+// two separate date -> date of when the event is created, and when will it be initiated
+void create_event(char type[40], char client_name[30], float cost, float balance, int no_attendee, char venue[40], char completion_date[40])
 {
-    char filename[20];
-    // how can I randomize this id?
+    char event_filename[50];
+
     int id = generate_unique_id();
-    
-    sprintf(filename, "%s%d.txt", EVENT_DIR, id);
 
-    FILE *event = fopen(filename, "a");
+    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+    FILE *event_file = fopen(event_filename, "w");
 
-    if(event == NULL)
+    FILE *eventid_file = fopen(EVENTID_FILE, "a");
+
+    if(eventid_file == NULL)
     {
-        printf("Error opening %s", filename);
-    }
-
-    FILE *file_id = fopen("data/events_ids.txt", "a");
-
-    if(file_id != NULL) 
-    {
-        fprintf(file_id, "%d\n", id);
+        perror("Error oepning event id file");        
     } else 
     {
-        printf("Error opening events_ids.txt");
+        fprintf(eventid_file, "%d\n", id);
     }
 
-    fclose(file_id);
+    if(event_file == NULL)
+    {
+        perror("Error opening event file");
+    }
 
-    // 1 = done, 0 = wala pa
-    int classfication = 0;
-    char *review;
 
-    // time_t = time(NULL);
+    int valid_char = 0;
+
+    for(int i = 0; i <  strlen(client_name); i++)
+    {
+        if((client_name[i] < 'a' && client_name[i] > 'z') || (client_name[i] < 'A' && client_name[i]  > 'Z'))
+        {
+            valid_char = 1;
+        }
+    }
+
+    if(!valid_char)
+    {
+        printf("Invalid client name");
+    }
     
 
-    // how to randomize id; mt_rand maybe?
-    //  also don't forget to store the date using a string
+    time_t g_t;
+    time(&g_t);
+
+    char *generated_date = ctime(&g_t);
+
+
+    
+    fprintf(event_file, "type:\n%s\n", type);
+    fprintf(event_file, "client_name:\n%s\n", client_name);
+    fprintf(event_file, "cost:\n%f\n", cost);
+    fprintf(event_file, "balance:\n%f\n", balance);
+    fprintf(event_file, "no_attendee:\n%d\n", no_attendee);
+    fprintf(event_file, "venue:\n%s\n", venue);
+    fprintf(event_file, "completion_date:\n%s\n", completion_date);
+    fprintf(event_file, "date_created:\n%s\n", generated_date);
+
+    fclose(event_file);
+}
+
+// convert int to characters
+
+int is_valid_id(int id)
+{
+    FILE *event_file = fopen(EVENTID_FILE, "r");
+
+    if(event_file == NULL)
+    {
+        perror("Error opening event id file");
+        return 0;
+    }
+
+    char buffer[MAX_LINE];
+
+    while(fgets(buffer, MAX_LINE, event_file))
+    {
+        if(atoi(buffer) == id)
+        {
+            return 1;
+        }
+    }
+    fclose(event_file);
+    return 0;
 }
 
 // i'm trying to find out hgow to generae unique id efficiently
@@ -85,16 +175,18 @@ int generate_unique_id()
 
     do {
         event_id =  rand() % MAX_ID_RANGE;
-    } while (is_duplicated(event_id) == 1);
+    } while (is_duplicated(event_id));
 
     return event_id;
 }
 
+/*
 int event_ids[];
 
+// no use yet
 void save_event_id()
 {
-    FILE *event_id_file = fopen("data/event_ids.txt" ,"r");
+    FILE *event_id_file = fopen(EVENTID_FILE ,"r");
 
     int max_event = atoi(read_config("max_event:"));
     event_ids[max_event];
@@ -108,38 +200,55 @@ void save_event_id()
 
     char buffer[MAX_LINE];
 
-    while(fgets(buffer, sizeof(buffer), event_id_file))
+    while(fgets(buffer, MAX_LINE, event_id_file))
     {
-        buffer[strcspn(buffer,"\n")] = 0;
-
         if(max_event >= index)
         {
             event_ids[index]  = atoi(buffer);
             index++;
-        } else {
+        } else 
+        {
             break;
         }
     }
-}
-// it must return to event[];
-// TODO: find a better approch to this; a better way to 
-// allocate memory without losing the data from event[]; 
-// since  there are restraints; we can only use things that was taught to us.
+} 
+*/
 
-
-// Prints the event list 
+// Prints the type of event available
 void get_event_type_list()
 {
-    char *type_event = getEventType();
+    char *event_type = read_type_of_events();
 
-    for(int i = 0; sizeof(type_event) / sizeof(type_event[0]); i++)
+    int lines = 0;
+    FILE *event_file = fopen(CONFIG_FILE, "r");
+    while(fgets(event_type, MAX_LINE, event_file))
     {
-        printf("%d. %s", i + 1, type_event[i]);
+        if(strcmp(event_type, "type_of_events:") == 0)
+        {
+            break;
+        }
+        lines++;
+    }
+
+    strtok(event_type, " ");
+
+    for(int i = 0; i < lines; i++)
+    {
+        printf("%d. %s\n", i + 1, event_type[i]);
     }
 }
 
-// standard deviation is grade[index] - average
-// variance (deviation * deviation) + (deviation)
-// variance += deviation * deviation;
-// deviation[i] = grade[i] - average;
+// Checks if an event type is valid or not
+int is_valid_event_type(char *type_eventname)
+{
+    char *event_type[] = read_type_of_events();
 
+    for(int i = 0; i < sizeof(event_type); i++)
+    {
+        if(strcmp(event_type[i], type_eventname) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}

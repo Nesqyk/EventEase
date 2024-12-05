@@ -1,105 +1,135 @@
-// will handle data stuffs.
-
-// might include these f.f functions: read_events,read_reviews, save_event, update_reviews
-
-// will also check if the data.txt exist
-// will also check if data.txt isnt empty.
-
-#include <stdlib.h.>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
+
+
+
+/*
+TODO:
+Recreat everthing that is in here; because it's a mess.
+*/
+
 #define DATA_DIR "data/"
-#define EVENT_DIR "data/events"
-#define MAX_LINE 256
+#define EVENT_DIR "data/events/"
 
-FILE *check_file_existence(const char *file_name, const char *access_mode)
+#define EVENTID_FILE "data/events_ids.txt"
+#define CONFIG_FILE "data/config.txt"
+
+#define MAX_LINE 255
+
+// Checks whether an ID is a duplicate.
+int is_valid(int id)
 {
-    char file_path[50];
-
-    snprintf(file_path, sizeof(file_path), "%s%s", DATA_DIR, file_name);
-
-    FILE *file = fopen(file_path, access_mode);
-
-    if(file == NULL)
-    {
-        printf("Error: %s does not exist.\n", file_path);
-        return NULL;
-    } else {
-        return file;
-    }
-}
-
-
-// for event
-// dont forget to store everytime a txt file is created.
-int is_duplicated(int id)
-{
-    FILE *event_ids = fopen("events_id.txt","r");
-
-    char lines[MAX_LINE];
-
-    while(fgets(lines, sizeof(MAX_LINE), event_ids))
-    {
-        if(strcmp(id, lines) == 0)
-        {
-            return 1;
-        }
-    }
-
-    return 0;
-    // there should be a file that contains all the id of the event
-    //  this file should be crucial kay siya mo determine whether if that .txt file is a duplciate or not
-}
-
-// which key 
-char read_config(char key[30])
-{
-    char *valid_keys[] = {"type_of_events:", "max_attendee:","max_event:"};
-    int is_valid_key = 0;
-
-    for(int i = 0; i < sizeof(valid_keys) / sizeof(*valid_keys); i++)
-    {
-        if(strcmp(key, valid_keys[i]) == 0)
-        {
-            is_valid_key = 1;
-            break;
-        }      
-    }
-
-    if(!is_valid_key)
-    {
-        printf("Invalid key: %s", key);
-        return NULL;
-    }
-
-    FILE *config = fopen("config.txt", "r");  
-    if(config == NULL)
-    {
-        perror("Error opening file");
-        return NULL;
-    } 
+    FILE *event_ids = fopen(EVENTID_FILE,"r");
 
     char buffer[MAX_LINE];
 
-    while(fgets(buffer, sizeof(buffer), config))
+    if(event_ids == NULL) 
     {
-        buffer[strcspn(buffer, "\n")] = 0;
-
-        if(strcmp(buffer, key) == 0)
+        printf("Unable to open the file");
+    } else 
+    {
+        while(fgets(buffer, MAX_LINE, event_ids))
         {
-            // read for next; value
-            if(fgets(buffer, sizeof(buffer), config))
-            {
-                buffer[strcspn(buffer,"\n")] = 0;
-                fclose(config);
-                return buffer;
+            if (id == atoi(buffer)) {
+                return 1; 
             }
         }
-
+        fclose(event_ids);
     }
-    printf("Invalid Key: %s", key); 
-    fclose(config);
+    return 0;
+}
 
+char* read_type_of_events() {
+    static char buffer[MAX_LINE];
+    static char result[MAX_LINE * 10];
+    FILE *config = fopen("config.txt", "r");
+    if (config == NULL) {
+        perror("Error opening file");
+        return NULL;
+    }
+
+    int key_found = 0;
+    result[0] = '\0';  
+    while (fgets(buffer, sizeof(buffer), config)) 
+    {
+        if (strcmp(buffer, "type_of_events:") == 0) {
+            key_found = 1;
+            continue;
+        }
+
+        if (key_found) {
+            if (strcmp(buffer, "") == 0)
+                break;  
+
+            strcat(result, buffer);
+            strcat(result, "\n");
+        }
+    }
+
+    fclose(config);
+    return result;
+}
+
+// Read config.txt
+char* read_config(const char key[30]) {
+    const char *valid_keys[] = {"max_attendee:", "max_events:"};
+    int is_valid_key = 0;
+
+    // Validate the key
+    for (int i = 0; i < 2; i++) 
+    {
+        if (strcmp(key, valid_keys[i]) == 0) 
+        {
+            is_valid_key = 1;
+            break;
+        }
+    }
+
+    if (!is_valid_key) 
+    {
+        printf("Invalid key: %s\n", key);
+        return NULL;
+    }
+
+    static char buffer[MAX_LINE];
+    FILE *config = fopen("config.txt", "r");
+
+    if (config == NULL) 
+    {
+        perror("Error opening file");
+        return NULL;
+    }
+
+    int key_found = 0;
+    while (fgets(buffer, sizeof(buffer), config)) 
+    {
+        for(int i = 0; i < strlen(buffer); i++)
+        {
+            if(buffer[i] == '\n')
+            {
+                buffer[i] = '\0';
+                break;
+            }
+        }
+        if (strcmp(buffer, key) == 0) 
+        {
+            key_found = 1;
+            continue; 
+        }
+
+        if (key_found) 
+        {
+            if (strcmp(buffer, "") == 0) break;
+                return buffer;
+        }
+    }
+
+    fclose(config);
+    if (!key_found) 
+    {
+        printf("Key not found: %s\n", key);
+    }
     return NULL;
 }

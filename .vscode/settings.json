@@ -60,7 +60,8 @@
     "data_handler.h": "c",
     "stdlib.h": "c",
     "cstdlib": "c",
-    "typeinfo": "c"
+    "typeinfo": "c",
+    "auth.h": "c"
   },
   "makefile.configureOnOpen": true
 }

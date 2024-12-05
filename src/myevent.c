@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 // Function to search for an event by ID
 void searchById(int event_id[], char client_name[][100], long cost[], int no_attendee[], char venue[][100], int size, int searchId) {
     int found = 0;
