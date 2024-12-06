@@ -1,12 +1,17 @@
 # EventEase
 A terminal-based, menu-driven event management system. 
 
-## TODO
+### Installation
+```makefile
+make
+```
+### TODO
 *daghan*
 implement; 'cancel' option for each choices
 i.e enter name: blahblahj
 client_name
 type 'cancel' to read name again
+
 
 ## Userflow
 

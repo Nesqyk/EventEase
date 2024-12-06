@@ -5,10 +5,8 @@
 #include "auth.h"
 #include "data_handler.h"
 
-// #include "include/data_handler.h"
-
 void display_menu();
-void display_auth_menu();
+int display_auth_menu();
 int is_valid_choice(int n);
 
 int event_ids[10];
@@ -19,7 +17,7 @@ int main()
 }
 
 // Displays the main menu of the program.
-void display_auth_menu()
+int display_auth_menu()
 {
     char username[MAX_USER];
     char password[MAX_PASS];
@@ -38,7 +36,7 @@ void display_auth_menu()
 
         for(int i = 0; i < 3; i++)
         {
-            printf("%d. %s", i + 1, choices[i]);
+            printf("%d. %s\n", i + 1, choices[i]);
         }
 
         printf("Enter your choice: ");
@@ -49,7 +47,6 @@ void display_auth_menu()
             case 1:
                 if(is_auth_file_empty(auth_file))
                 {
-                    fclose(auth_file);
                     printf("Please register first.");
                     continue;
                 }
@@ -68,6 +65,7 @@ void display_auth_menu()
                 {
                     printf("Please make sure your credentials are correct.");
                 }
+                continue; 
 
             case 2:
                 if(!is_auth_file_empty(auth_file))
@@ -104,12 +102,14 @@ void display_auth_menu()
                     printf("Registration Sucessful;\n Please proceeed to login");
                     continue;
                 }
+                continue;
             case 3:
 
+                fclose(auth_file);
                 printf("Goodbye!");
                 printf("Exiting now...");
                 system("cls");
-                break;
+                return 0;
         }
 
     } while(1);
@@ -146,6 +146,7 @@ void display_menu()
                 continue;
             // create event - tyrone
             case 2:
+    
                 continue;
             // my events - junsay
             case 3:

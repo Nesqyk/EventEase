@@ -1,3 +1,5 @@
+/*
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +12,6 @@
 // Global variable para ni sa na search na ID sa option 1
 int lastSearchedId = -1;
 
-void search_event(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
 void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count);
 void calculate_profit(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
 void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
@@ -156,3 +157,5 @@ void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], doubl
     }
     printf("Event with ID %d not found.\n", lastSearchedId);
 }
+
+*/

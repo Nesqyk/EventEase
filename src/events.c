@@ -25,16 +25,19 @@
 const int max_attendee = 50;
 
 //
-int is_valid_event_type(char *type_eventname);
+char *read_event(int id, char key[20]);
+int is_valid_id(int id);
+// int is_valid_event_type(char *type_eventname);
 int generate_unique_id();
-void get_event_type_list();
+// void get_event_type_list();
 
-// might also return this to event as a whole;
+/* might also return this to event as a whole;
 // later na ang scanf sa main nalang kay para wala na hasol.
 // how should the events.txt look too?
 // if client name has special chars
 // if client name is valid?
 // if no_attendee > max_attendee
+*/
 
 
 // pangan ni gibayad ni client - variable
@@ -42,6 +45,39 @@ void get_event_type_list();
 // date - created
 //      - kung when ang event
 
+void list_events()
+{
+    FILE *event_file = fopen(EVENTID_FILE, "r");
+
+    if(event_file == NULL)
+    {
+        perror("Error opening event id file");
+    }
+
+    char buffer[MAX_LINE];
+
+    while(fgets(buffer, MAX_LINE, event_file))
+    {
+        int ids = atoi(buffer);
+
+        char event_filename[50];  
+
+        sprintf(event_filename, "%s%d", EVENT_DIR, ids);
+
+        FILE *event_file = fopen(event_filename, "r");
+
+        if(event_file == NULL)
+        {
+            continue;
+        }
+
+        printf("ID\tType\tClient Name\n");
+        printf("%d\t%s\t%s", ids, read_event(ids, "type:"), read_event(ids, "client_name:"));
+    }
+    fclose(event_file);
+}
+
+/*
 void search_event(int id)
 {
     // check kung naa ba ang id
@@ -60,7 +96,6 @@ void search_event(int id)
     {
         // false
     }
-    /*
 
     for (i = 0; i < count; i++)
     {
@@ -73,11 +108,10 @@ void search_event(int id)
         }
     }
 
-    */
     printf("Event with ID %d not found.\n", id);
     // lastSearchedId = -1; // Reset the last searched ID if the ID is not found
 }
-
+*/
 
 // events
 //  111.txt
@@ -143,6 +177,88 @@ void create_event(char type[40], char client_name[30], float cost, float balance
     fclose(event_file);
 }
 
+char *read_event(int id, char key[20])
+{
+    static char value[50]; // Use static to persist the value.
+    char event_filename[50];
+
+    if (is_valid_id(id) == 0)
+    {
+        return NULL; // Invalid ID.
+    }
+
+    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+
+    FILE *event_file = fopen(event_filename, "r");
+
+    if (event_file == NULL)
+    {
+        perror("Error opening event file");
+        return NULL;
+    }
+
+    char buffer[MAX_LINE];
+    char key_with_colon[25];
+    snprintf(key_with_colon, sizeof(key_with_colon), "%s:", key);
+
+    while (fgets(buffer, MAX_LINE, event_file))
+    {
+        if (strcmp(buffer, key_with_colon) == 0)
+        {
+            if (fgets(value, sizeof(value), event_file))
+            {
+                fclose(event_file);
+                return value;
+            }
+        }
+    }
+
+    fclose(event_file);
+    return NULL; // Return NULL if the key is not found.
+}
+// update the event
+
+void update_event(int id, char key[20], char value[50])
+{
+    char event_filename[50];
+
+    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+
+    char *string_keys[] = {"type:", "client_name:", "cost:", "balance:", "no_attendee:", "venue:", "completion_date:"};
+
+    int valid_key = 0;
+    for(int i = 0; i < 7; i++)
+    {
+        if(strcmp(key, string_keys[i]) == 0)
+        {
+            valid_key = 1;
+        }
+    }
+
+    if(valid_key == 0)
+    {
+        return;
+    }
+
+    FILE *event_file = fopen(event_filename, "a");
+
+    if(event_file == NULL)
+    {
+        perror("Error opening event file");
+    }
+
+    char buffer[MAX_LINE];
+    
+    while(fgets(buffer, MAX_LINE, event_file))
+    {
+        if(strcmp(buffer, key) == 0)
+        {
+            fprintf(event_file, "%s%s\n", key, value);
+        }
+    }
+    fclose(event_file);
+}
+
 // convert int to characters
 
 int is_valid_id(int id)
@@ -175,7 +291,7 @@ int generate_unique_id()
 
     do {
         event_id =  rand() % MAX_ID_RANGE;
-    } while (is_duplicated(event_id));
+    } while (is_valid_id(event_id) == 1);
 
     return event_id;
 }
@@ -214,7 +330,8 @@ void save_event_id()
 } 
 */
 
-// Prints the type of event available
+
+/*
 void get_event_type_list()
 {
     char *event_type = read_type_of_events();
@@ -237,11 +354,15 @@ void get_event_type_list()
         printf("%d. %s\n", i + 1, event_type[i]);
     }
 }
+*/
+// Prints the type of event available
 
 // Checks if an event type is valid or not
+
+/*
 int is_valid_event_type(char *type_eventname)
 {
-    char *event_type[] = read_type_of_events();
+    char *event_type = read_type_of_events();
 
     for(int i = 0; i < sizeof(event_type); i++)
     {
@@ -252,3 +373,5 @@ int is_valid_event_type(char *type_eventname)
     }
     return 0;
 }
+
+*/

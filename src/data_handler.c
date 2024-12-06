@@ -19,27 +19,6 @@ Recreat everthing that is in here; because it's a mess.
 #define MAX_LINE 255
 
 // Checks whether an ID is a duplicate.
-int is_valid(int id)
-{
-    FILE *event_ids = fopen(EVENTID_FILE,"r");
-
-    char buffer[MAX_LINE];
-
-    if(event_ids == NULL) 
-    {
-        printf("Unable to open the file");
-    } else 
-    {
-        while(fgets(buffer, MAX_LINE, event_ids))
-        {
-            if (id == atoi(buffer)) {
-                return 1; 
-            }
-        }
-        fclose(event_ids);
-    }
-    return 0;
-}
 
 char* read_type_of_events() {
     static char buffer[MAX_LINE];

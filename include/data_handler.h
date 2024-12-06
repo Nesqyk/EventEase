@@ -9,8 +9,6 @@
 
 #define MAX_LINE 256
 
-int is_duplicated(int id);
-
 char* read_config(const char key[30]);
 
 char* read_type_of_events();
