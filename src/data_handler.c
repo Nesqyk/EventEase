@@ -41,7 +41,6 @@ char* read_type_of_events() {
         if (key_found) {
             if (strcmp(buffer, "") == 0)
                 break;  
-
             strcat(result, buffer);
             strcat(result, "\n");
         }

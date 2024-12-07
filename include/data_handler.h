@@ -13,6 +13,8 @@ char* read_config(const char key[30]);
 
 char* read_type_of_events();
 
+char* read_auth_key(const char key[20]);
+
 
 #endif // DATA_HANDLER_H
 

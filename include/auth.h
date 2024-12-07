@@ -15,7 +15,7 @@ int login_user(const char username[MAX_USER], const char password[MAX_PASS]);
 int is_auth_file_empty(FILE *file);
 
 // Checks the username of the user
-char *check_username();
+
 
 
 #endif // COLLECTIONS_AUTH_H

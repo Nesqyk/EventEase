@@ -124,13 +124,14 @@ void create_event(char type[40], char client_name[30], float cost, float balance
     int id = generate_unique_id();
 
     sprintf(event_filename, "%s%d", EVENT_DIR, id);
+
     FILE *event_file = fopen(event_filename, "w");
 
     FILE *eventid_file = fopen(EVENTID_FILE, "a");
 
     if(eventid_file == NULL)
     {
-        perror("Error oepning event id file");        
+        perror("Error opening event id file");        
     } else 
     {
         fprintf(eventid_file, "%d\n", id);
@@ -163,8 +164,6 @@ void create_event(char type[40], char client_name[30], float cost, float balance
 
     char *generated_date = ctime(&g_t);
 
-
-    
     fprintf(event_file, "type:\n%s\n", type);
     fprintf(event_file, "client_name:\n%s\n", client_name);
     fprintf(event_file, "cost:\n%f\n", cost);
@@ -175,6 +174,22 @@ void create_event(char type[40], char client_name[30], float cost, float balance
     fprintf(event_file, "date_created:\n%s\n", generated_date);
 
     fclose(event_file);
+}
+
+// Deletes the event 
+void delete_event(int id)
+{
+    char event_filename[50];
+
+    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+
+    if(remove(event_filename) == 0)
+    {
+        printf("Event %d has been deleted", id);
+    } else 
+    {
+        printf("Event %d not found", id);
+    }
 }
 
 char *read_event(int id, char key[20])
@@ -214,10 +229,10 @@ char *read_event(int id, char key[20])
     }
 
     fclose(event_file);
-    return NULL; // Return NULL if the key is not found.
+    return NULL;
 }
-// update the event
 
+// Updates the event
 void update_event(int id, char key[20], char value[50])
 {
     char event_filename[50];
@@ -253,7 +268,7 @@ void update_event(int id, char key[20], char value[50])
     {
         if(strcmp(buffer, key) == 0)
         {
-            fprintf(event_file, "%s%s\n", key, value);
+            fprintf(event_file, "%s:%s\n", key, value);
         }
     }
     fclose(event_file);
@@ -330,31 +345,22 @@ void save_event_id()
 } 
 */
 
-
 /*
-void get_event_type_list()
+int get_event_type_list()
 {
     char *event_type = read_type_of_events();
 
     int lines = 0;
     FILE *event_file = fopen(CONFIG_FILE, "r");
-    while(fgets(event_type, MAX_LINE, event_file))
-    {
-        if(strcmp(event_type, "type_of_events:") == 0)
-        {
-            break;
-        }
-        lines++;
-    }
 
-    strtok(event_type, " ");
-
-    for(int i = 0; i < lines; i++)
+    if(event_file == NULL)
     {
-        printf("%d. %s\n", i + 1, event_type[i]);
+        return 0;
     }
 }
+
 */
+
 // Prints the type of event available
 
 // Checks if an event type is valid or not
