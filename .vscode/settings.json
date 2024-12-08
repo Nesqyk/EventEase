@@ -61,7 +61,10 @@
     "stdlib.h": "c",
     "cstdlib": "c",
     "typeinfo": "c",
-    "auth.h": "c"
+    "auth.h": "c",
+    "type_traits": "c",
+    "cmath": "c",
+    "compare": "c"
   },
   "makefile.configureOnOpen": true
 }

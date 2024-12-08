@@ -11,6 +11,8 @@
 
 #include "data_handler.h"
 
+static char type_events[4][100] = {"Wedding","Birthday","Graduation","Party"};
+
 // check if an event exist
 // I could probably add a config here and let the event organizer 
 //  edit his/her type of events he / she is catering.
@@ -22,7 +24,12 @@
 #define MAX_TYPE_EVENTS 10
 #define MAX_ID_RANGE 1000
 
-const int max_attendee = 50;
+
+int translate_event_type(const char key[]);
+
+
+
+void get_event_type_status();
 
 //
 char *read_event(int id, char key[20]);
@@ -44,6 +51,85 @@ int generate_unique_id();
 // ang date ayaw kalimti!
 // date - created
 //      - kung when ang event
+
+void get_event_type_status()
+{
+    int counts[4];
+
+    FILE *event_file = fopen(EVENTID_FILE, "r");
+
+    if(event_file == NULL)
+    {
+        perror("Error opening event id file");
+    }
+
+    char buffer[MAX_LINE];
+
+    while(fgets(buffer, MAX_LINE, event_file))
+    {
+        if(strcmp(buffer, "") == 0) break;
+        int ids = atoi(buffer);
+
+        char event_filename[50];  
+
+        sprintf(event_filename, "%s%d", EVENT_DIR, ids);
+
+        for(int i = 0; i < sizeof(type_events) / sizeof(type_events[0]); i++)
+        {
+            if(strcmp(type_events[i], read_event(ids, "type")) == 0)
+            {
+                counts[translate_event_type(type_events[i])]++;
+            }
+        }
+    }
+    fclose(event_file);
+    // implement sort; use selection sort. Popular to least popular.
+    printf("Event Type Status: \n");
+    
+    for(int i = 0; i < sizeof(type_events) / sizeof(type_events[0]); i++)
+    {
+        int key = translate_event_type(type_events[i]);
+        printf("Event Type:%s. Count: %d\n", type_events[i], counts[key]);
+    }
+}
+
+int translate_event_type(const char key[])
+{
+    for(int i = 0; i < sizeof(type_events) / sizeof(type_events[0]); i++)
+    {
+        if(strcmp(type_events[i], key) != 0)
+        {
+            return -1;
+        } else {
+            return i + 1; // start at 1
+        }
+    }
+    return 0;
+}
+
+int count_events()
+{
+    FILE *event_file = fopen(EVENTID_FILE, "r");
+    
+    if(event_file == NULL)
+    {
+        return 0;
+    }
+
+    char buffer[MAX_LINE];
+    int count = 0;
+    while(fgets(buffer, MAX_LINE, event_file))
+    {
+        if(strcmp(buffer, "") == 0)
+        {
+            break;
+        }
+        count++;
+    }
+
+    return count;
+
+}
 
 void list_events()
 {
@@ -117,11 +203,9 @@ void search_event(int id)
 //  111.txt
 //  123.txt 
 // two separate date -> date of when the event is created, and when will it be initiated
-void create_event(char type[40], char client_name[30], float cost, float balance, int no_attendee, char venue[40], char completion_date[40])
+void create_event(int id, int type_event_key, char client_name[30], float cost, float balance, int no_attendee, char venue[40], char completion_date[40])
 {
     char event_filename[50];
-
-    int id = generate_unique_id();
 
     sprintf(event_filename, "%s%d", EVENT_DIR, id);
 
@@ -164,7 +248,7 @@ void create_event(char type[40], char client_name[30], float cost, float balance
 
     char *generated_date = ctime(&g_t);
 
-    fprintf(event_file, "type:\n%s\n", type);
+    fprintf(event_file, "type:\n%d\n", type_event_key);
     fprintf(event_file, "client_name:\n%s\n", client_name);
     fprintf(event_file, "cost:\n%f\n", cost);
     fprintf(event_file, "balance:\n%f\n", balance);
@@ -192,6 +276,7 @@ void delete_event(int id)
     }
 }
 
+
 char *read_event(int id, char key[20])
 {
     static char value[50]; // Use static to persist the value.
@@ -213,14 +298,14 @@ char *read_event(int id, char key[20])
     }
 
     char buffer[MAX_LINE];
-    char key_with_colon[25];
+    char key_with_colon[100];
     snprintf(key_with_colon, sizeof(key_with_colon), "%s:", key);
 
     while (fgets(buffer, MAX_LINE, event_file))
     {
         if (strcmp(buffer, key_with_colon) == 0)
         {
-            if (fgets(value, sizeof(value), event_file))
+            if (fgets(value, sizeof(value), event_file) != NULL)
             {
                 fclose(event_file);
                 return value;

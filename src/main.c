@@ -32,6 +32,9 @@ int display_auth_menu()
         // 2. register
         // 3. exit
         char *choices[] = {"Login","Register", "Exit"};
+        if(!is_auth_file_empty(auth_file)) {
+            printf("Welcome Back! %s\n", read_auth_key("Username"));
+        } 
 
         for(int i = 0; i < 3; i++)
         {
@@ -49,7 +52,7 @@ int display_auth_menu()
                     printf("\nPlease register first.\n\n");
                     continue;
                 }
-                printf("\n-- %s --\n", choices[1]);
+                printf("\n-- %s --\n", choices[0]);
                 printf("Enter username : ");
                 scanf("%s", username);
 
@@ -59,6 +62,7 @@ int display_auth_menu()
                 int login = login_user(username, password);
                 if(login == 1)
                 {
+                    system("cls");
                     display_menu();
                 } else if (login == 0)
                 {
@@ -71,8 +75,7 @@ int display_auth_menu()
                 {
                     // We can also include; and ask the user if he/she is having 
                     // a problem regarding to their account's credentials?
-                    printf("Please proceed to login\n");
-                    fclose(auth_file);
+                    printf("\nPlease proceed to login\n\n");
                     continue;
                 }
 
@@ -102,6 +105,7 @@ int display_auth_menu()
 
                 fclose(auth_file);
                 char *name = read_auth_key("Username");
+                system("cls");
                 printf("Goodbye %s\n!", name);
                 printf("Exiting now...\n");
                 return 0;
@@ -125,48 +129,67 @@ int display_menu()
             printf("%d. %s\n", i + 1, menu_options[i]);
         }
 
-        printf("Enter your option");
+        printf("Enter your option: ");
         scanf("%d", &user_choice);
 
         if(is_valid_choice(user_choice) != 1)
         {
-            printf("Invalid Option");
+            printf("Invalid Option\n");
             continue;
         }
 
         switch(user_choice)
         {
-            // TODO: Ari initialize sa tanan :>
+            // TODO : Ari initialize sa tanan :>
             // TODO: Initialize events according to their assigned value.
             // dashboard - rusell
             case 1:
                 continue;
             // create event - tyrone
             case 2:
-                // list the type first
-                int event_type_key;
+                // check if max event == count of 
+                if(count_events() > atoi(read_config("max_events")))
+                {
+                    printf("You cannot create more event; Reached the max limit");
+                    continue;
+                }
+
                 printf("Please select what type of event it is;\n");
                 
-                char *list_types = read_type_of_events();
-                int list_size = sizeof(list_types) / sizeof(list_types[0]);
-                char *event_type_name;
+                /*
+                char** list_types = read_type_of_events();
+                int list_size = 0;
+                 while(list_types[list_size] != NULL)
+                {
+                    list_size++;
+                }
+
                 for(int i = 0; i < list_size; i++)
                 {
                     printf("%d. %s", i + 1, list_types[i]);
                 }
-                printf("%d. Back", list_size);
+                */
+               
+                int event_type_key;
+
+                int list_size = sizeof(type_events) / sizeof(type_events[0]);
+
+                for(int i = 0 ; i < list_size; i++)
+                {
+                    printf("%d. %s\n", i + 1, type_events[i]);
+                } 
+
+                printf("%d. Back", list_size + 1);
                 scanf("%d", &event_type_key);
 
-                if(event_type_key == list_size)
+                if(event_type_key == list_size + 1)
                 {
                     display_menu();
                 }
 
-                event_type_name = list_types[event_type_key];
+                // char **event_type_name = &list_types[event_type_key];
 
                 char client_name[30];
-                float cost;
-
 
                 printf("Input the Following:\n");
                 printf("Client Name: ");
@@ -174,9 +197,35 @@ int display_menu()
 
                 if(strlen(client_name) <= 3 && strlen(client_name))
                 {
-                    printf("Client Name must not be less than 3 or greater than 20\n");
+                    printf("Client Name must not be less than 3 or greater than 20: ");
                     scanf("%s", client_name);
                 }
+
+                float cost;
+                float balance;
+                int no_attendee;
+                char *venue = "";
+                char *completion_date = "";
+
+                printf("Enter the approx. cost: ");
+                scanf("%f", &cost);
+
+                printf("Enter %s's Balance: ", client_name);
+                scanf("%f", &balance);
+
+                printf("Enter No. of Attendee: ");
+                scanf("%d", &no_attendee);
+
+                printf("Enter Event's Venue: ");
+                scanf("%s", venue);
+
+                printf("Enter Event's Completion Date: ");
+                scanf("%s", completion_date);
+
+                int id = generate_unique_id();
+
+                // the reason for -1 is that because I want to start 0 again;
+                create_event(id, event_type_key - 1, client_name, cost, balance, no_attendee, venue, completion_date);
 
                 continue;
             // my events - junsay

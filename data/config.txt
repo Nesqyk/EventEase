@@ -1,9 +1,1 @@
-type_of_events: 
-Wedding
-Birthdays 
-Party
-Graduation
-max_attendee:
-20
-max_events:
-10
+max_events:10

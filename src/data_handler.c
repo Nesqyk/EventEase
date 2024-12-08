@@ -18,96 +18,63 @@ Recreat everthing that is in here; because it's a mess.
 
 #define MAX_LINE 255
 
+#define MAX_LENGTH 100
+
 // Checks whether an ID is a duplicate.
 
-char* read_type_of_events() {
+/*
+
+char **read_type_of_events() {
     static char buffer[MAX_LINE];
-    static char result[MAX_LINE * 10];
-    FILE *config = fopen("config.txt", "r");
+
+    
+    int size = 0;
+    char** arr = NULL;
+    arr = (char**)malloc(size * sizeof(char*));
+
+    FILE *config = fopen(CONFIG_FILE, "r");
     if (config == NULL) {
         perror("Error opening file");
         return NULL;
     }
 
-    int key_found = 0;
-    result[0] = '\0';  
     while (fgets(buffer, sizeof(buffer), config)) 
     {
         if (strcmp(buffer, "type_of_events:") == 0) {
-            key_found = 1;
+            if(fgets(arr[size], MAX_LENGTH, config) != NULL)
+            {
+                size++;
+            }
             continue;
         }
-
-        if (key_found) {
-            if (strcmp(buffer, "") == 0)
-                break;  
-            strcat(result, buffer);
-            strcat(result, "\n");
-        }
     }
 
     fclose(config);
-    return result;
+    return arr;
 }
+*/
 
 // Read config.txt
-char* read_config(const char key[30]) {
-    const char *valid_keys[] = {"max_attendee:", "max_events:"};
-    int is_valid_key = 0;
+char *read_config(const char key[20]) {
+    char filename[30];
+    sprintf(filename, "%sauth.txt", DATA_DIR);
 
-    // Validate the key
-    for (int i = 0; i < 2; i++) 
-    {
-        if (strcmp(key, valid_keys[i]) == 0) 
-        {
-            is_valid_key = 1;
-            break;
-        }
-    }
-
-    if (!is_valid_key) 
-    {
-        printf("Invalid key: %s\n", key);
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
         return NULL;
     }
 
-    static char buffer[MAX_LINE];
-    FILE *config = fopen("config.txt", "r");
-
-    if (config == NULL) 
-    {
-        perror("Error opening file");
-        return NULL;
-    }
-
-    int key_found = 0;
-    while (fgets(buffer, sizeof(buffer), config)) 
-    {
-        for(int i = 0; i < strlen(buffer); i++)
+    static char stored_max_event[5], stored_max_attendee[5];
+    while (fscanf(file, "max_events:%s\nmax_attendee:%s", stored_max_event, stored_max_attendee) == 2) {
+        if (strcmp(key, "max_events") == 0) 
         {
-            if(buffer[i] == '\n')
-            {
-                buffer[i] = '\0';
-                break;
-            }
-        }
-        if (strcmp(buffer, key) == 0) 
-        {
-            key_found = 1;
-            continue; 
-        }
-
-        if (key_found) 
-        {
-            if (strcmp(buffer, "") == 0) break;
-                return buffer;
+            fclose(file);
+            return stored_max_event;
+        } else if (strcmp(key, "max_attendee") == 0) {
+            fclose(file);
+            return stored_max_attendee;
         }
     }
-
-    fclose(config);
-    if (!key_found) 
-    {
-        printf("Key not found: %s\n", key);
-    }
+    fclose(file);
     return NULL;
 }
