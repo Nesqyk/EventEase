@@ -27,8 +27,6 @@ static char type_events[4][100] = {"Wedding","Birthday","Graduation","Party"};
 
 int translate_event_type(const char key[]);
 
-
-
 void get_event_type_status();
 
 //
@@ -36,6 +34,7 @@ char *read_event(int id, char key[20]);
 int is_valid_id(int id);
 // int is_valid_event_type(char *type_eventname);
 int generate_unique_id();
+
 // void get_event_type_list();
 
 /* might also return this to event as a whole;
@@ -131,6 +130,7 @@ int count_events()
 
 }
 
+
 void list_events()
 {
     FILE *event_file = fopen(EVENTID_FILE, "r");
@@ -156,6 +156,7 @@ void list_events()
         {
             continue;
         }
+
 
         printf("ID\tType\tClient Name\n");
         printf("%d\t%s\t%s", ids, read_event(ids, "type:"), read_event(ids, "client_name:"));
@@ -219,6 +220,7 @@ void create_event(int id, int type_event_key, char client_name[30], float cost, 
     } else 
     {
         fprintf(eventid_file, "%d\n", id);
+        fclose(eventid_file);
     }
 
     if(event_file == NULL)
@@ -227,13 +229,14 @@ void create_event(int id, int type_event_key, char client_name[30], float cost, 
     }
 
 
-    int valid_char = 0;
+    // int valid_char = 0;
 
+    /*
     for(int i = 0; i <  strlen(client_name); i++)
     {
         if((client_name[i] < 'a' && client_name[i] > 'z') || (client_name[i] < 'A' && client_name[i]  > 'Z'))
         {
-            valid_char = 1;
+        
         }
     }
 
@@ -241,6 +244,7 @@ void create_event(int id, int type_event_key, char client_name[30], float cost, 
     {
         printf("Invalid client name");
     }
+    */
     
 
     time_t g_t;
