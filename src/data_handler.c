@@ -35,14 +35,13 @@ FILE *check_file_existence(const char *file_name, const char *access_mode)
 // dont forget to store everytime a txt file is created.
 int is_duplicated(int id)
 {
-    char file_id[20];
-    FILE *event_ids = check_file_existence("event_ids", "r");
+    FILE *event_ids = fopen("events_id.txt","r");
 
-    int lines[MAX_LINE];
+    char lines[MAX_LINE];
 
     while(fgets(lines, sizeof(MAX_LINE), event_ids))
     {
-        if(strcmp(id, event_ids) == 0)
+        if(strcmp(id, lines) == 0)
         {
             return 1;
         }
@@ -54,7 +53,7 @@ int is_duplicated(int id)
 }
 
 // which key 
-char *read_config(char key[30])
+char read_config(char key[30])
 {
     char *valid_keys[] = {"type_of_events:", "max_attendee:","max_event:"};
     int is_valid_key = 0;

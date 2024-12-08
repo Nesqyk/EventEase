@@ -5,7 +5,7 @@
 // choices
 // cost, profit, receipt (if possible)
 // cost args -
-
+// cost - gibayad sa client.
 
 // calculate sa profit
 // lista sa cost
