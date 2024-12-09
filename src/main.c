@@ -150,11 +150,11 @@ int display_menu()
                 // check if max event == count of 
                 if(count_events() > atoi(read_config("max_events")))
                 {
-                    printf("You cannot create more event; Reached the max limit");
+                    printf("You cannot create more event; Reached the max limit\n");
                     continue;
                 }
 
-                printf("Please select what type of event it is;\n");
+                printf("\nPlease select what type of event it is;\n");
                 
                 /*
                 char** list_types = read_type_of_events();
@@ -179,7 +179,8 @@ int display_menu()
                     printf("%d. %s\n", i + 1, type_events[i]);
                 } 
 
-                printf("%d. Back", list_size + 1);
+                printf("%d. Back\n", list_size + 1);
+                printf("Enter Option: ");
                 scanf("%d", &event_type_key);
 
                 if(event_type_key == list_size + 1)
@@ -204,11 +205,12 @@ int display_menu()
                 float cost;
                 float balance;
                 int no_attendee;
-                char *venue = "";
-                char *completion_date = "";
+                char venue[100];
+                char completion_date[100];
 
                 printf("Enter the approx. cost: ");
                 scanf("%f", &cost);
+                
 
                 printf("Enter %s's Balance: ", client_name);
                 scanf("%f", &balance);
@@ -219,6 +221,7 @@ int display_menu()
                 printf("Enter Event's Venue: ");
                 scanf("%s", venue);
 
+                // segmentation after venue?
                 printf("Enter Event's Completion Date: ");
                 scanf("%s", completion_date);
 

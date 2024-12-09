@@ -1,10 +1,10 @@
 /*
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "data_handler.h"
+#include "events.h"
 
 #define MAX_EVENTS 100
 #define MAX_LENGTH 100
@@ -12,7 +12,8 @@
 // Global variable para ni sa na search na ID sa option 1
 int lastSearchedId = -1;
 
-void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count);
+int generate_cost(int id);
+// void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count);
 void calculate_profit(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
 void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
 //  -> search id first 
@@ -21,34 +22,9 @@ void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], doubl
 // cost args -
 // cost - gibayad sa client.
 
-int inititalize_reports(int id)
+void inititalize_reports()
 {
-    int ids[MAX_EVENTS];
-    char names[MAX_EVENTS][MAX_LENGTH];
-    double costs[MAX_EVENTS];
-    double balance[MAX_EVENTS];
-    int eventCount = 0;
-    int option;
-
-    // Open ang txt file //unsay name sa file?
-    // check 
-
-    char filename[30]; // events/1100.txt
-
-    sprintf(filename, "%s%d.txt", DATA_DIR, id);
-
-    FILE *file = fopen(filename, "r");
-    if (!file)
-    {
-        perror("Error opening file");
-        return EXIT_FAILURE;
-    }
-
-    while (fscanf(file, "%d,%[^,],%lf,%lf\n", &ids[eventCount], names[eventCount], &costs[eventCount], &balance[eventCount]) == 4)
-    {
-        eventCount++;
-    }
-    fclose(file);
+    int option; 
 
     do
     {
@@ -66,10 +42,22 @@ int inititalize_reports(int id)
         {
             // options ni user
             case 1:
-                search_event(ids, names, costs, balance, eventCount);
+                list_events();
                 break;
             case 2:
-                generate_cost(ids, names, costs, eventCount);
+                list_events();
+                int id;
+
+                printf("Input ID: ");
+                scanf("%d", &id);
+
+                if(!s_valid_id(id))
+                {
+                    printf("Invalid ID please try again.");
+                    continue;
+                }
+                int cost = generate_cost(id);
+                printf("Generated Cost: %d", cost);
                 break;
             case 3:
                 calculate_profit(ids, names, costs, balance, eventCount);
@@ -90,9 +78,9 @@ int inititalize_reports(int id)
 
 //  -> search id first
 //Himo sa cost
-void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count)
+int generate_cost(int id)
 {
-    if (lastSearchedId == -1)
+        if (lastSearchedId == -1)
     {
         printf("No event ID has been searched. Please search the event ID.\n");
         return;
@@ -109,10 +97,20 @@ void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int coun
         }
     }
     printf("Event with ID %d not found.\n", lastSearchedId);
+
+   // check sa if si ID kay naa.
+    if(!is_valid_id(id))
+    {
+        printf("invalid id. ");
+    }
+
+    // atoi will convert your char * into int.
+    int cost = atoi(read_event(id, "cost"));
+    return cost;
 }
 
 //Calculate sa profit
-void calculate_profit(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count)
+void calculate_profit(int id)
 {
     if (lastSearchedId == -1)
     {
@@ -157,5 +155,4 @@ void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], doubl
     }
     printf("Event with ID %d not found.\n", lastSearchedId);
 }
-
 */
