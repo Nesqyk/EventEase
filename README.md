@@ -1,18 +1,22 @@
 # EventEase
 A terminal-based, menu-driven event management system. 
 
-## TODO
+### Installation
+```makefile
+make
+```
+### TODO
 *daghan*
 implement; 'cancel' option for each choices
 i.e enter name: blahblahj
 client_name
 type 'cancel' to read name again
 
+
 ## Userflow
 
 ### Start
 1. User launches the EventEase system in the terminal.
-
 
 2. Authentication System (Optional):
 If handling confidential data, implement a login system.
@@ -87,5 +91,3 @@ Option to generate summary reports for a range of dates or types of events.
 Allow custom tags or notes for events for better categorization.
 - **Back Option:**
 Ensure every submenu has a “Back to Main Menu” option.
-
-
