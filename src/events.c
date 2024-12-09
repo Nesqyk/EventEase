@@ -22,7 +22,7 @@ static char type_events[4][100] = {"Wedding","Birthday","Graduation","Party"};
 
 #define MAX_LINE 256
 #define MAX_TYPE_EVENTS 10
-#define MAX_ID_RANGE 1000
+#define MAX_ID_RANGE 100
 
 
 int translate_event_type(const char key[]);
@@ -119,7 +119,7 @@ int count_events()
     int count = 0;
     while(fgets(buffer, MAX_LINE, event_file))
     {
-        if(strcmp(buffer, "") == 0)
+        if(strcmp(buffer, "\n") == 0 && strcmp(buffer, "") == 0)
         {
             break;
         }
@@ -127,7 +127,6 @@ int count_events()
     }
 
     return count;
-
 }
 
 
@@ -148,7 +147,7 @@ void list_events()
 
         char event_filename[50];  
 
-        sprintf(event_filename, "%s%d", EVENT_DIR, ids);
+        sprintf(event_filename, "%s%d.txt", EVENT_DIR, ids);
 
         FILE *event_file = fopen(event_filename, "r");
 
@@ -159,7 +158,7 @@ void list_events()
 
 
         printf("ID\tType\tClient Name\n");
-        printf("%d\t%s\t%s", ids, read_event(ids, "type:"), read_event(ids, "client_name:"));
+        printf("%d\t%s\t%s", ids, read_event(ids, "type"), read_event(ids, "client_name"));
     }
     fclose(event_file);
 }
@@ -208,7 +207,7 @@ void create_event(int id, int type_event_key, char client_name[30], float cost, 
 {
     char event_filename[50];
 
-    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+    sprintf(event_filename, "%s%d.txt", EVENT_DIR, id);
 
     FILE *event_file = fopen(event_filename, "w");
 
@@ -252,14 +251,14 @@ void create_event(int id, int type_event_key, char client_name[30], float cost, 
 
     char *generated_date = ctime(&g_t);
 
-    fprintf(event_file, "type:\n%d\n", type_event_key);
-    fprintf(event_file, "client_name:\n%s\n", client_name);
-    fprintf(event_file, "cost:\n%f\n", cost);
-    fprintf(event_file, "balance:\n%f\n", balance);
-    fprintf(event_file, "no_attendee:\n%d\n", no_attendee);
-    fprintf(event_file, "venue:\n%s\n", venue);
-    fprintf(event_file, "completion_date:\n%s\n", completion_date);
-    fprintf(event_file, "date_created:\n%s\n", generated_date);
+    fprintf(event_file, "type:%d\n", type_event_key);
+    fprintf(event_file, "client_name:%s\n", client_name);
+    fprintf(event_file, "cost:%.2f\n", cost);
+    fprintf(event_file, "balance:%.2f\n", balance);
+    fprintf(event_file, "no_attendee:%d\n", no_attendee);
+    fprintf(event_file, "venue:%s\n", venue);
+    fprintf(event_file, "completion_date:%s\n", completion_date);
+    fprintf(event_file, "date_created:%s\n", generated_date);
 
     fclose(event_file);
 }
@@ -281,54 +280,80 @@ void delete_event(int id)
 }
 
 
-char *read_event(int id, char key[20])
-{
-    static char value[50]; // Use static to persist the value.
-    char event_filename[50];
-
-    if (is_valid_id(id) == 0)
-    {
-        return NULL; // Invalid ID.
+// PROBLEM: where shit returns to null every fking time
+// Reads the event
+char *read_event(int id, char key[20]) {
+    if (is_valid_id(id) == 0) {
+        return NULL;
     }
 
-    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+    char event_filename[50];
+    sprintf(event_filename, "%s%d.txt", EVENT_DIR, id); 
 
+    char *string_keys[] = {"type", "client_name", "cost", "balance", "no_attendee", "venue", "completion_date"};
+
+    int valid_key = 0;
+    for (int i = 0; i < 7; i++) {
+        if (strcmp(key, string_keys[i]) == 0) {
+            valid_key = 1;
+            break; 
+        }
+    }
+
+    if (!valid_key) {
+        return NULL; 
+    }
+
+    
     FILE *event_file = fopen(event_filename, "r");
-
-    if (event_file == NULL)
-    {
+    if (event_file == NULL) {
         perror("Error opening event file");
         return NULL;
     }
 
-    char buffer[MAX_LINE];
-    char key_with_colon[100];
-    snprintf(key_with_colon, sizeof(key_with_colon), "%s:", key);
+    static char type[50], client_name[50], cost[20], balance[20], no_attendee[10], venue[50], completion_date[20];
 
-    while (fgets(buffer, MAX_LINE, event_file))
-    {
-        if (strcmp(buffer, key_with_colon) == 0)
-        {
-            if (fgets(value, sizeof(value), event_file) != NULL)
-            {
-                fclose(event_file);
-                return value;
-            }
+    while (fscanf(event_file,
+                  "type:%49s\nclient_name:%49s\ncost:%19s\nbalance:%19s\nno_attendee:%9s\nvenue:%49s\ncompletion_date:%19s\n",
+                  type, client_name, cost, balance, no_attendee, venue, completion_date) == 7) {
+
+        if (strcmp(key, "type") == 0) {
+            fclose(event_file);
+            return type;
+        } else if (strcmp(key, "client_name") == 0) {
+            fclose(event_file);
+            return client_name;
+        } else if (strcmp(key, "cost") == 0) {
+            fclose(event_file);
+            return cost;
+        } else if (strcmp(key, "balance") == 0) {
+            fclose(event_file);
+            return balance;
+        } else if (strcmp(key, "no_attendee") == 0) {
+            fclose(event_file);
+            return no_attendee;
+        } else if (strcmp(key, "venue") == 0) {
+            fclose(event_file);
+            return venue;
+        } else if (strcmp(key, "completion_date") == 0) {
+            fclose(event_file);
+            return completion_date;
         }
     }
 
     fclose(event_file);
-    return NULL;
+    return NULL; 
 }
+
 
 // Updates the event
 void update_event(int id, char key[20], char value[50])
 {
     char event_filename[50];
 
-    sprintf(event_filename, "%s%d", EVENT_DIR, id);
+    sprintf(event_filename, "%s%d.txt", EVENT_DIR, id);
 
-    char *string_keys[] = {"type:", "client_name:", "cost:", "balance:", "no_attendee:", "venue:", "completion_date:"};
+    char *string_keys[] = {"type", "client_name", "cost", "balance", "no_attendee", "venue", "completion_date"};
 
     int valid_key = 0;
     for(int i = 0; i < 7; i++)
@@ -357,7 +382,7 @@ void update_event(int id, char key[20], char value[50])
     {
         if(strcmp(buffer, key) == 0)
         {
-            fprintf(event_file, "%s:%s\n", key, value);
+            fprintf(event_file, "%s:%s", key, value);
         }
     }
     fclose(event_file);
@@ -391,14 +416,30 @@ int is_valid_id(int id)
 // i'm trying to find out hgow to generae unique id efficiently
 int generate_unique_id()
 {
+    static int is_seeded = 0;
+
+    if (!is_seeded) {
+        srand(time(NULL)); 
+        is_seeded = 1;
+    }
+
     int event_id;
 
     do {
-        event_id =  rand() % MAX_ID_RANGE;
+        event_id = rand() % MAX_ID_RANGE;
     } while (is_valid_id(event_id) == 1);
 
     return event_id;
 }
+
+// y:m:d
+/*
+char translate_date(char format[])
+{
+
+}
+*/
+
 
 /*
 int event_ids[];
