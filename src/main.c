@@ -5,6 +5,7 @@
 #include "auth.h"
 #include "data_handler.h"
 #include "events.h"
+#include "utils.h"
 
 int display_menu();
 int display_auth_menu();
@@ -31,6 +32,7 @@ int display_auth_menu()
         // 1.login
         // 2. register
         // 3. exit
+        system("cls");
         char *choices[] = {"Login","Register", "Exit"};
         if(!is_auth_file_empty(auth_file)) {
             printf("Welcome Back! %s\n", read_auth_key("Username"));
@@ -120,8 +122,10 @@ int display_menu()
     const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
     
     do {
+        system("cls");
         char *n = read_auth_key("Username");
-        printf("Welcome to the EventEase %s\n", n);
+        printf("Welcome to EventEase %s\n", n);
+        printf("Manage your events easily!\n\n");
         printf("Select an Option\n");
 
         for(int i = 0; i < 6; i++)
@@ -144,99 +148,134 @@ int display_menu()
             // TODO: Initialize events according to their assigned value.
             // dashboard - rusell
             case 1:
+                
                 continue;
-            // create event - tyrone
             case 2:
-                // check if max event == count of 
-                if(count_events() > atoi(read_config("max_events")))
-                {
-                    printf("You cannot create more event; Reached the max limit\n");
+                // Implement 'back' smth 'or 'cancel'
+                if (count_events() >= atoi(read_config("max_events"))) {
+                    printf("You cannot create more events; reached the max limit\n");
                     continue;
                 }
 
-                printf("\nPlease select what type of event it is;\n");
-                
-                /*
-                char** list_types = read_type_of_events();
-                int list_size = 0;
-                 while(list_types[list_size] != NULL)
-                {
-                    list_size++;
-                }
+                printf("\nPlease select what type of event it is:\n");
 
-                for(int i = 0; i < list_size; i++)
-                {
-                    printf("%d. %s", i + 1, list_types[i]);
-                }
-                */
-               
-                int event_type_key;
-
+                char type_events[4][100] = {"Wedding", "Birthday", "Graduation", "Party"};
                 int list_size = sizeof(type_events) / sizeof(type_events[0]);
 
-                for(int i = 0 ; i < list_size; i++)
-                {
+                for (int i = 0; i < list_size; i++) {
                     printf("%d. %s\n", i + 1, type_events[i]);
-                } 
+                }
 
                 printf("%d. Back\n", list_size + 1);
+
+                int event_type_key;
                 printf("Enter Option: ");
                 scanf("%d", &event_type_key);
-
-                if(event_type_key == list_size + 1)
-                {
-                    display_menu();
+                
+                if (event_type_key == list_size + 1) {
+                    display_menu(); 
                 }
 
-                // char **event_type_name = &list_types[event_type_key];
-
+                getchar();
                 char client_name[30];
-
                 printf("Input the Following:\n");
                 printf("Client Name: ");
-                scanf("%s", client_name);
+                fgets(client_name, sizeof(client_name), stdin);
+                client_name[strcspn(client_name, "\n")] = '\0';  
 
-                if(strlen(client_name) <= 3 && strlen(client_name))
-                {
-                    printf("Client Name must not be less than 3 or greater than 20: ");
-                    scanf("%s", client_name);
+                while (strlen(client_name) < 3 || strlen(client_name) > 20) {
+                    printf("Client Name must not be less than 3 or greater than 20. Please enter again: ");
+                    fgets(client_name, sizeof(client_name), stdin);
                 }
 
-                float cost;
-                float balance;
+                float cost, balance;
                 int no_attendee;
-                char venue[100];
-                char completion_date[100];
+                char venue[100], completion_date[100];
 
+                // Collect remaining event details
                 printf("Enter the approx. cost: ");
                 scanf("%f", &cost);
-                
-
                 printf("Enter %s's Balance: ", client_name);
                 scanf("%f", &balance);
-
-                printf("Enter No. of Attendee: ");
+                printf("Enter No. of Attendees: ");
                 scanf("%d", &no_attendee);
 
+                getchar(); 
                 printf("Enter Event's Venue: ");
-                scanf("%s", venue);
+                fgets(venue, sizeof(venue), stdin);
+                
 
-                // segmentation after venue?
                 printf("Enter Event's Completion Date: ");
-                scanf("%s", completion_date);
+                fgets(completion_date, sizeof(completion_date), stdin);
+                
 
+                // Generate a unique event ID
                 int id = generate_unique_id();
 
-                // the reason for -1 is that because I want to start 0 again;
+                printf("ID 1:%d", id);
+
                 create_event(id, event_type_key - 1, client_name, cost, balance, no_attendee, venue, completion_date);
 
+                printf("ID 2:%d\n", id);
+                char * result = read_event(id, "client_name");
+                printf("Name: %s\n", result);
+                print_event_values(id);
+
+                char confirmation;
+                while (1) {
+                    printf("Please confirm the details; Y/N\n");
+                    scanf(" %c", &confirmation); 
+
+                    switch (confirmation) {
+                        case 'Y':
+                            system("cls");
+                            display_menu();
+                            break;
+                        case 'N':
+                            printf("Which details would you like to update?\n");
+                            printf("Select from the following:\n");
+
+                            char *valid_string_keys[] = {"type", "client_name", "cost", "balance", "no_attendee", "venue", "completion_date"};
+                            for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) {
+                                printf("%s, ", valid_string_keys[i]);
+                            }
+                            printf("\nInput: ");
+                            char temp[20];
+                            scanf("%s", temp);
+
+                            
+                            int valid = 0;
+                            for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) {
+                                if (strcmp(valid_string_keys[i], temp) == 0) {
+                                    valid = 1;
+                                    break;
+                                }
+                            }
+
+                            if (!valid) {
+                                printf("Invalid input. Please try again.\n");
+                                continue;
+                            }
+
+                            printf("Enter new value: ");
+                            char temp_value[50];
+                            scanf("%s", temp_value);
+
+                        
+                            update_event(id, temp, temp_value);
+                            printf("Successfully updated: %s : %s\n", temp, temp_value);
+                            continue; 
+                        default:
+                            printf("Invalid choice. Please confirm again.\n");
+                    }
+                }
                 continue;
             // my events - junsay
             case 3:
                 continue;
             // reviews - chelesea
             case 4:
-                
+                printf("Client Name: %s", read_event(68,"client_name"));
                 continue;
             // reports - lo
             case 5:

@@ -57,7 +57,7 @@ char **read_type_of_events() {
 // Read config.txt
 char *read_config(const char key[20]) {
     char filename[30];
-    sprintf(filename, "%sauth.txt", DATA_DIR);
+    sprintf(filename, "%sconfig.txt", DATA_DIR);
 
     FILE *file = fopen(filename, "r");
     if (file == NULL) {

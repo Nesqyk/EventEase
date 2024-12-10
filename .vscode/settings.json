@@ -64,7 +64,8 @@
     "auth.h": "c",
     "type_traits": "c",
     "cmath": "c",
-    "compare": "c"
+    "compare": "c",
+    "events.h": "c"
   },
   "makefile.configureOnOpen": true
 }
