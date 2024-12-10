@@ -25,6 +25,9 @@
 
 void searchById(int event_id[], char client_name[][100], char event_name[][100], long cost[], int no_attendee[], char venue[][100], int size, int searchId);
 void viewEvent(char client_name[][100], char event_name[][100], int size);
+void editEvent(int event_id[], char client_name[][100], char event_name[][100], long cost[], int no_attendee[], char venue[][100], int size);
+void cancelEvent(int event_id[], char client_name[][100], char event_name[][100], long cost[], int no_attendee[], char venue[][100], int size);
+
 
 int main()
 {
@@ -68,6 +71,11 @@ int main()
         searchById(event_id, client_name, event_name, cost, no_attendee, venue, size, searchId);
         break;
     case 4:
+        cancelEvent(event_id, client_name, event_name, cost, no_attendee, venue, size);
+        printf("\nEnter ID to search: ");
+        scanf("%d", &searchId);
+
+        searchById(event_id, client_name, event_name, cost, no_attendee, venue, size, searchId);
         break;
     }
 
@@ -141,5 +149,26 @@ void editEvent(int event_id[], char client_name[][100], char event_name[][100], 
     }
     printf("Event with ID %d not found.\n", searchId);
 }
+void cancelEvent(int event_id[], char client_name[][100], char event_name[][100], long cost[], int no_attendee[], char venue[][100], int size)
+{
+    int searchId;
+    printf("\nEnter Event ID to Cancel: ");
+    scanf("%d", &searchId);
 
+    for (int i = 0; i < size; i++) {
+        if (event_id[i] == searchId)
+        {
+            event_id[i] = 0;
+            client_name[i][0] = '\0';
+            event_name[i][0] = '\0';
+            cost[i] = 0;
+            no_attendee[i] = 0;
+            venue[i][0] = '\0';
+
+            printf("Event is cancelled.");
+            return;
+        }
+    }
+    printf("Event with ID %d not found.\n", searchId);
+}
 
