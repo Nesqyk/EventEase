@@ -65,7 +65,9 @@
     "type_traits": "c",
     "cmath": "c",
     "compare": "c",
-    "events.h": "c"
+    "events.h": "c",
+    "cctype": "c",
+    "utils.h": "c"
   },
   "makefile.configureOnOpen": true
 }

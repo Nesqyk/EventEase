@@ -3,6 +3,6 @@
 
 #include "events.h"
 
-void print_event_values(int id);
+void preview_event(int id);
 
 #endif // UTILS_H

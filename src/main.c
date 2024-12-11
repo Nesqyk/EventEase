@@ -35,7 +35,7 @@ int display_auth_menu()
         system("cls");
         char *choices[] = {"Login","Register", "Exit"};
         if(!is_auth_file_empty(auth_file)) {
-            printf("Welcome Back! %s\n", read_auth_key("Username"));
+            printf("Welcome Back! %s\n", read_auth("Username"));
         } 
 
         for(int i = 0; i < 3; i++)
@@ -64,7 +64,6 @@ int display_auth_menu()
                 int login = login_user(username, password);
                 if(login == 1)
                 {
-                    system("cls");
                     display_menu();
                 } else if (login == 0)
                 {
@@ -98,7 +97,8 @@ int display_auth_menu()
                 if(register_status == 0)
                 {
                     printf("Failed Registration Please Try Again\n");
-                } else if(register_status == 1) {
+                } else if(register_status == 1) 
+                {
                     printf("Registration Sucessful;\nPlease proceeed to login\n");
                     continue;
                 }
@@ -106,7 +106,7 @@ int display_auth_menu()
             case 3:
 
                 fclose(auth_file);
-                char *name = read_auth_key("Username");
+                char *name = read_auth("Username");
                 system("cls");
                 printf("Goodbye %s\n!", name);
                 printf("Exiting now...\n");
@@ -119,16 +119,15 @@ int display_auth_menu()
 int display_menu()
 {
     int user_choice;
-    const char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Exit"};
+    char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Back"};
     
     do {
-        system("cls");
-        char *n = read_auth_key("Username");
-        printf("Welcome to EventEase %s\n", n);
+        char *n = read_auth("Username");
+        printf("\nWelcome to EventEase %s\n", n);
         printf("Manage your events easily!\n\n");
         printf("Select an Option\n");
 
-        for(int i = 0; i < 6; i++)
+        for(int i = 0; i < sizeof(menu_options) / sizeof(menu_options[0]); i++)
         {
             printf("%d. %s\n", i + 1, menu_options[i]);
         }
@@ -144,10 +143,10 @@ int display_menu()
 
         switch(user_choice)
         {
-            // TODO : Ari initialize sa tanan :>
-            // TODO: Initialize events according to their assigned value.
+            // TODO: Implement; everytime the client picks a choice it'll clear the previous printed stuffs.
             // dashboard - rusell
             case 1:
+                preview_events();
                 
                 continue;
             case 2:
@@ -159,20 +158,25 @@ int display_menu()
 
                 printf("\nPlease select what type of event it is:\n");
 
-                char type_events[4][100] = {"Wedding", "Birthday", "Graduation", "Party"};
+                char type_events[5][100] = {"Wedding", "Birthday", "Graduation", "Party", "Back"};
                 int list_size = sizeof(type_events) / sizeof(type_events[0]);
 
-                for (int i = 0; i < list_size; i++) {
-                    printf("%d. %s\n", i + 1, type_events[i]);
-                }
-
-                printf("%d. Back\n", list_size + 1);
+                event_types:
+                    for (int i = 0; i < list_size; i++) {
+                        printf("%d. %s\n", i + 1, type_events[i]);
+                    }
 
                 int event_type_key;
-                printf("Enter Option: ");
+                printf("\nEnter Option: ");
                 scanf("%d", &event_type_key);
+
+                if (event_type_key < 1 || event_type_key > list_size) 
+                {
+                    printf("Invalid option. Please choose a number between 1 and %d.\n", list_size);
+                    goto event_types;
+                }
                 
-                if (event_type_key == list_size + 1) {
+                if (event_type_key == list_size) {
                     display_menu(); 
                 }
 
@@ -192,99 +196,116 @@ int display_menu()
                 int no_attendee;
                 char venue[100], completion_date[100];
 
-                // Collect remaining event details
+                // implement; check if numbers are numbers?
                 printf("Enter the approx. cost: ");
-                scanf("%f", &cost);
-                printf("Enter %s's Balance: ", client_name);
-                scanf("%f", &balance);
-                printf("Enter No. of Attendees: ");
-                scanf("%d", &no_attendee);
+                // repetitive  
+                while(scanf("%f", &cost) != 1)
+                {
+                    printf("Please input a valid number!\n");
+                    printf("Enter the approx. cost: ");
+                    while(getchar() != '\n');
+                }
+                             
+                printf("Enter %s's: Balance:  ", client_name);  
+                while(scanf("%f", &balance) != 1)
+                {
+                    printf("Please input a valid number.\n");
+                    printf("Enter %s's: Balance:  ", client_name);
+                    while(getchar() != '\n');
+                }
 
-                getchar(); 
+                printf("Enter No. of Attendees: ");
+                while(scanf("%d", &no_attendee) != 1)
+                {
+                    printf("Please input a valid number.\n");
+                    printf("Enter No. of Attendees: ");
+                    while(getchar() != '\n');
+                }
+
+                getchar();
                 printf("Enter Event's Venue: ");
                 fgets(venue, sizeof(venue), stdin);
-                
+                venue[strcspn(venue, "\n")] = '\0';  
 
                 printf("Enter Event's Completion Date: ");
                 fgets(completion_date, sizeof(completion_date), stdin);
                 
-
                 // Generate a unique event ID
                 int id = generate_unique_id();
 
-                printf("ID 1:%d", id);
+                int event = create_event(id, event_type_key - 1, client_name, cost, balance, no_attendee, venue, completion_date);
+                
+                if(event != 1)
+                {
+                    printf("Error creating event. Please try again");
+                    delete_event(id);
+                }
 
-                create_event(id, event_type_key - 1, client_name, cost, balance, no_attendee, venue, completion_date);
-
-                printf("ID 2:%d\n", id);
-                char * result = read_event(id, "client_name");
-                printf("Name: %s\n", result);
-                print_event_values(id);
+                preview_event(id);
 
                 char confirmation;
-                while (1) {
-                    printf("Please confirm the details; Y/N\n");
-                    scanf(" %c", &confirmation); 
 
-                    switch (confirmation) {
-                        case 'Y':
-                            system("cls");
-                            display_menu();
-                            break;
-                        case 'N':
-                            printf("Which details would you like to update?\n");
-                            printf("Select from the following:\n");
+                printf("\n\nPlease confirm the details; Y/N\n");
+                printf("(Y) Finish Creating Event\n(N) Edit the value: ");
+                scanf("%c", &confirmation); 
 
-                            char *valid_string_keys[] = {"type", "client_name", "cost", "balance", "no_attendee", "venue", "completion_date"};
-                            for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) {
+                switch (confirmation) 
+                {
+                    case 'Y':
+                        printf("Created Event %d Sucessfully.\n", id);
+                        display_menu();
+                    case 'N':
+                        printf("Which details would you like to update?\n");
+                        printf("Select from the following:\n");
+
+                        // editable details
+                        char *valid_string_keys[] = {"client_name", "cost", "balance", "no_attendee", "venue", "completion_date"};
+                        valid_key:
+                            for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) 
+                            {
                                 printf("%s, ", valid_string_keys[i]);
                             }
-                            printf("\nInput: ");
-                            char temp[20];
-                            scanf("%s", temp);
 
-                            
-                            int valid = 0;
-                            for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) {
-                                if (strcmp(valid_string_keys[i], temp) == 0) {
-                                    valid = 1;
-                                    break;
-                                }
-                            }
+                        printf("\nValue to Change: ");
 
-                            if (!valid) {
-                                printf("Invalid input. Please try again.\n");
-                                continue;
-                            }
-
-                            printf("Enter new value: ");
-                            char temp_value[50];
-                            scanf("%s", temp_value);
-
+                        char temp[20];
+                        scanf("%s", temp);
                         
-                            update_event(id, temp, temp_value);
-                            printf("Successfully updated: %s : %s\n", temp, temp_value);
-                            continue; 
-                        default:
-                            printf("Invalid choice. Please confirm again.\n");
-                    }
+                        for (int i = 0; i < sizeof(valid_string_keys) / sizeof(valid_string_keys[0]); i++) 
+                        {
+                            if (strcmp(temp, valid_string_keys[i]) != 0) 
+                            {
+                                printf("Invalid input. Please try again.\n");
+                                goto valid_key;
+                            }
+                        }
+
+                        printf("Enter new value: ");
+                        char temp_value[50];
+                        scanf("%s", temp_value);
+
+                        update_event(id, temp, temp_value);
+                        printf("Successfully updated: %s : %s\n", temp, temp_value);
+                        continue; 
+                    default:
+                        printf("Invalid choice. Please confirm again.\n");
                 }
                 continue;
             // my events - junsay
-            case 3:
+            case 3: 
+                init_myevent();     
                 continue;
             // reviews - chelesea
             case 4:
-                printf("Client Name: %s", read_event(68,"client_name"));
                 continue;
             // reports - lo
             case 5:
                 continue;
             // exit
             case 6: 
-                printf("See you again!\n");
+                printf("Go Back!\n");
                 printf("Exiting now...\n");
-                return 0;
+                return -1;
         }
     } while(1);
 }

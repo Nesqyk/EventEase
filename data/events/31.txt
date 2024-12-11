@@ -1,0 +1,10 @@
+type:3
+client_name:tyrone
+cost:123.00
+balance:123.00
+no_attendee:123
+venue:secret
+completion_date:asd
+
+date_created:Wed Dec 11 08:24:26 2024
+

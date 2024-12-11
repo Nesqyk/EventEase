@@ -17,7 +17,7 @@ int is_auth_file_empty(FILE *file) {
     return 0;
 }
 
-char *read_auth_key(const char key[20]) {
+char *read_auth(const char key[20]) {
     char filename[30];
     sprintf(filename, "%sauth.txt", DATA_DIR);
 

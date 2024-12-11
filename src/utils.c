@@ -4,7 +4,8 @@
 #include "events.h"
 
 
-void print_event_values(int id)
+
+void preview_event(int id)
 {    
     char *cost_str = read_event(id, "cost");
     char *balance_str = read_event(id, "balance");
@@ -16,10 +17,13 @@ void print_event_values(int id)
     int no_attendee = (no_attendee_str != NULL) ? atoi(no_attendee_str) : 0;
 
     // Print the values
+    printf("\n\n-- Event %d Details --\n", id);
+    printf("ID: %d\n", id);
     printf("Client Name: %s\n", read_event(id, "client_name"));
     printf("Cost: %.2f\n", cost);
     printf("Balance: %.2f\n", balance);
     printf("No Attendee: %d\n", no_attendee);
     printf("Venue: %s\n", read_event(id, "venue"));
     printf("Completion Date: %s\n", read_event(id, "completion_date"));
+    printf("Date Created: %s\n", read_event(id, "date_created"));
 }
