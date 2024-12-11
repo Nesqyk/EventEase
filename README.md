@@ -1,17 +1,22 @@
 # EventEase
 A terminal-based, menu-driven event management system. 
 
-### Installation
+## Compilation / Installation 
+Run this command to compile the `.exe` file. But make sure you've installed Mingw before doing so.
 ```makefile
 make
 ```
-### TODO
-*daghan*
-implement; 'cancel' option for each choices
-i.e enter name: blahblahj
-client_name
-type 'cancel' to read name again
+After compiling run the `.exe` file.
 
+## Todo: 
+###### December 13, 2024.
+* Make the errors readable to the client's end.
+* Make the code as efficient as possible.
+* Get More Great Ideas! 
+    * Especially the statistics part -> dashboard
+    * What can we implement more? more features -> but make sure these 'features' make sense.
+* Center terminal printed output.
+* Need to review the codes for `report.c`, `review.c`
 
 ## Userflow
 

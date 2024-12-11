@@ -55,7 +55,6 @@ int register_user(char username[MAX_USER], char password[MAX_PASS]) {
         }
         fprintf(file, "Username:\nPassword:");
         fclose(file);
-        file = fopen(filename, "r");
     }
 
     fclose(file);
@@ -63,6 +62,8 @@ int register_user(char username[MAX_USER], char password[MAX_PASS]) {
     int username_size = strlen(username);
     int password_size = strlen(password);
 
+    // Need to implement to check if password is a strong password or smth
+    // need to implement to exclude spaces -> if space = error.
     if ((username_size < 3 && username_size > MAX_USER) || (password_size < 6 && password_size > MAX_PASS)) {
         return 0;
     }

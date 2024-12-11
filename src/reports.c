@@ -1,4 +1,3 @@
-/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,153 +5,144 @@
 #include "data_handler.h"
 #include "events.h"
 
-#define MAX_EVENTS 100
-#define MAX_LENGTH 100
-
-// Global variable para ni sa na search na ID sa option 1
-int lastSearchedId = -1;
+/*
+Still need to implement stuffs.
+*/
 
 int generate_cost(int id);
-// void generate_cost(int ids[], char names[][MAX_LENGTH], double costs[], int count);
-void calculate_profit(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
-void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count);
-//  -> search id first 
-// choices
-// cost, profit, receipt (if possible)
-// cost args -
-// cost - gibayad sa client.
+int calculate_profit(int id);
+void generate_receipt(int id);
 
-void inititalize_reports()
+int init_reports()
 {
-    int option; 
+    int option;
+    int id; 
 
     do
     {
-        //Menu
         printf("\nGenerate Reports\n");
         printf("1. Search Event by ID\n");
         printf("2. Cost Breakdown\n");
         printf("3. Profit Calculation\n");
-        printf("4. Receipt (Printable Format)\n");
+        printf("4. Receipt \n");
         printf("5. Back to Main Menu\n");
         printf("Enter your choice: ");
         scanf("%d", &option);
 
         switch (option)
         {
-            // options ni user
             case 1:
-                list_events();
-                break;
-            case 2:
-                list_events();
-                int id;
+                preview_events(); 
+                continue;
 
+            case 2:
+                preview_events(); 
+                printf("\nInput ID: ");
+                scanf("%d", &id);
+
+                
+                printf("Invalid ID. Please try again.\n");
+                while(is_valid_id(id) != 1)
+                {
+                    printf("Please Enter a valid ID");
+                    while(getchar() != '\n');                 
+                }
+
+                int cost = generate_cost(id);
+                printf("Generated Cost: %d\n", cost);
+                continue;
+
+            case 3:
+                preview_events(); 
+                printf("\nInput ID: ");
+                scanf("%d", &id);
+
+                printf("Invalid ID. Please try again.\n");
+                while(is_valid_id(id) != 1)
+                {
+                    printf("Please Enter a valid ID");
+                    while(getchar() != '\n');    
+                }
+
+                int profit = calculate_profit(id);
+                printf("Generated Profit: %d", profit);
+                continue;
+
+            case 4:
+                preview_events(); 
                 printf("Input ID: ");
                 scanf("%d", &id);
 
-                if(!s_valid_id(id))
+                printf("Invalid ID. Please try again.\n");
+                while(is_valid_id(id) != 1)
                 {
-                    printf("Invalid ID please try again.");
-                    continue;
+                    printf("Please Enter a valid ID");
+                    while(getchar() != '\n');
                 }
-                int cost = generate_cost(id);
-                printf("Generated Cost: %d", cost);
-                break;
-            case 3:
-                calculate_profit(ids, names, costs, balance, eventCount);
-                break;
-            case 4:
-                generate_receipt(ids, names, costs, balance, eventCount);
-                break;
+                generate_receipt(id);
+                continue;
+
             case 5:
-                printf("Exiting program...\n");
-                break;
+                printf("Exiting Reports...\n");
+                return -1;
+
             default:
-                printf("Invalid choice.\n");
+                printf("Invalid choice. Please try again.\n");
         }
     } while (option != 5);
-
     return 0;
 }
 
-//  -> search id first
-//Himo sa cost
+// Generate cost for the event
 int generate_cost(int id)
 {
-        if (lastSearchedId == -1)
+    // goods ni
+    if (!is_valid_id(id))
     {
-        printf("No event ID has been searched. Please search the event ID.\n");
-        return;
+        printf("Invalid ID.\n");
+        return -1;
     }
 
-    //ambot if mag fprintf ba sd ko diri
-    for (int i = 0; i < count; i++)
-    {
-        if (ids[i] == lastSearchedId)
-        {
-            printf("Cost Breakdown for Event %s (ID: %d):\n", names[i], ids[i]);
-            printf("Total Cost: %.2lf\n", costs[i]);
-            return;
-        }
-    }
-    printf("Event with ID %d not found.\n", lastSearchedId);
-
-   // check sa if si ID kay naa.
-    if(!is_valid_id(id))
-    {
-        printf("invalid id. ");
-    }
-
-    // atoi will convert your char * into int.
     int cost = atoi(read_event(id, "cost"));
+    
     return cost;
 }
 
-//Calculate sa profit
-void calculate_profit(int id)
+// Calculate profit for the event
+int calculate_profit(int id)
 {
-    if (lastSearchedId == -1)
+    if (!is_valid_id(id))
     {
-        printf("No event ID has been searched. Please search the event ID.\n");
+        printf("Invalid ID.\n");
+        return -1;
+    }
+
+    int cost = atoi(read_event(id, "cost"));
+    int balance = atoi(read_event(id, "balance"));
+    
+    return cost - balance;
+    
+}
+
+// Generate receipt for the event
+void generate_receipt(int id)
+{
+    if (!is_valid_id(id))
+    {
+        printf("Invalid ID.\n");
         return;
     }
 
-    for (int i = 0; i < count; i++)
-    {
-        if (ids[i] == lastSearchedId)
-        {
-            double profit = balance[i] - costs[i]; //calculate ang profit
-            printf("Profit for Event %s (ID: %d): %.2lf\n", names[i], ids[i], profit);
-            return;
-        }
-    }
-    printf("Event with ID %d not found.\n", lastSearchedId);
+    int cost = atoi(read_event(id, "cost"));
+    int balance = atoi(read_event(id, "balance"));
+    int profit = calculate_profit(id);
+    
+    printf("\nReceipt for Event %d\n", id);
+    printf("ID: %d\n", id);
+    printf("Client Name: %s\n", read_event(id, "client_name"));
+    printf("Cost: %d\n", cost);
+    printf("Balance: %d\n", balance);
+    printf("Profit: %d\n", profit);
+    printf("Date Created: %s\n", read_event(id, "date_created"));
+    return;
 }
-
-//Himog Receipt
-void generate_receipt(int ids[], char names[][MAX_LENGTH], double costs[], double balance[], int count)
-{
-    if (lastSearchedId == -1)
-    {
-        printf("No event ID has been searched. Please search the event ID.\n");
-        return;
-    }
-    //ambot if mag fprintf ba sd ko diri
-    for (int i = 0; i < count; i++)
-    {
-        if (ids[i] == lastSearchedId)
-        {
-            //Print tanan naa sa events apil na ang cost og profit
-            printf("Receipt for The Event");
-            printf("Event ID: %d\n", ids[i]);
-            printf("Event Name: %s\n", names[i]);
-            printf("Cost: %.2lf\n", costs[i]);
-            printf("Revenue: %.2lf\n", balance[i]);
-            printf("Profit: %.2lf\n", balance[i] - costs[i]);
-            return;
-        }
-    }
-    printf("Event with ID %d not found.\n", lastSearchedId);
-}
-*/

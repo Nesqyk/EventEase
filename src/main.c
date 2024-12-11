@@ -9,7 +9,6 @@
 
 int display_menu();
 int display_auth_menu();
-int is_valid_choice(int n);
 
 int main()
 {
@@ -17,6 +16,7 @@ int main()
 }
 
 // Displays the main menu of the program.
+// TODO: kung naa auth system the need to implement profile stuffs is necessary?
 int display_auth_menu()
 {
     char username[MAX_USER];
@@ -120,6 +120,7 @@ int display_menu()
 {
     int user_choice;
     char *menu_options[] = {"Dashboard", "Create Event", "My Events","Reports","Reviews", "Back"};
+    int menu_size = sizeof(menu_options) / sizeof(menu_options[0]);
     
     do {
         char *n = read_auth("Username");
@@ -135,9 +136,9 @@ int display_menu()
         printf("Enter your option: ");
         scanf("%d", &user_choice);
 
-        if(is_valid_choice(user_choice) != 1)
+        if(user_choice < 1 || user_choice > menu_size)
         {
-            printf("Invalid Option\n");
+            printf("Invalid Option Please Try Again\n");
             continue;
         }
 
@@ -147,7 +148,6 @@ int display_menu()
             // dashboard - rusell
             case 1:
                 preview_events();
-                
                 continue;
             case 2:
                 // Implement 'back' smth 'or 'cancel'
@@ -308,13 +308,4 @@ int display_menu()
                 return -1;
         }
     } while(1);
-}
-
-int is_valid_choice(int n)
-{
-    if (n >= 1 && n <= 6)
-    {
-        return 1;
-    }
-    return 0;
 }

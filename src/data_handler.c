@@ -20,8 +20,6 @@ Recreat everthing that is in here; because it's a mess.
 
 #define MAX_LENGTH 100
 
-// Checks whether an ID is a duplicate.
-
 /*
 
 char **read_type_of_events() {
@@ -64,6 +62,7 @@ char *read_config(const char key[20]) {
         return NULL;
     }
 
+    // Find a better way to read the keys; one for buffer one for value.
     static char stored_max_event[5], stored_max_attendee[5];
     while (fscanf(file, "max_events:%s\nmax_attendee:%s", stored_max_event, stored_max_attendee) == 2) {
         if (strcmp(key, "max_events") == 0) 

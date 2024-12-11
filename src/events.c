@@ -75,6 +75,7 @@ void count_event_types()
     
     fclose(event_id_file);
     // implement sort; use selection sort. Popular to least popular.
+    // learn how to sort stuffs
     printf("Event Type Status: \n");
     
     for(int i = 0; i < sizeof(type_events) / sizeof(type_events[0]); i++)
@@ -90,6 +91,8 @@ void count_event_types()
     }
 }
 
+/*
+might find use for this later.
 int translate_event_type(const char key[])
 {
     for(int i = 0; i < sizeof(type_events) / sizeof(type_events[0]); i++)
@@ -101,6 +104,8 @@ int translate_event_type(const char key[])
     }
     return 0;
 }
+
+*/
 
 int count_events()
 {
@@ -136,6 +141,7 @@ void preview_events()
 
     char buffer[MAX_LINE];
 
+    // Implement a better print format than this 
     printf("ID\tType\tClient Name\tBalance\t\tCompletion Date:\n");
     while(fgets(buffer, MAX_LINE, event_file))
     {
@@ -204,6 +210,8 @@ int create_event(int id, int type_event_key, char client_name[30], float cost, f
 // Deletes the event 
 void delete_event(int id)
 {
+    if(is_valid_id(id) == 0) return;
+
     char event_filename[50];
 
     sprintf(event_filename, "%s%d.txt", EVENT_DIR, id);
@@ -251,6 +259,7 @@ char *read_event(int id, char key[20]) {
 
     static char type[50], client_name[50], cost[20], balance[20], no_attendee[10], venue[50], completion_date[20], date_created[50];
 
+    // need to implement a better way to read things
     while (fscanf(event_file,
                   "type:%[^\n]\nclient_name:%[^\n]\ncost:%[^\n]\nbalance:%[^\n]\nno_attendee:%[^\n]\nvenue:%[^\n]\ncompletion_date:%[^\n]\ndate_created:%[^\n]",
                   type, client_name, cost, balance, no_attendee, venue, completion_date, date_created) == 8) {
@@ -327,10 +336,12 @@ int update_event(int id, char key[20], char value[50])
         if(strcmp(buffer, key) == 0)
         {
             fprintf(event_file, "%s:%s\n", key, value);
+            fclose(event_file);
             return 1;
         }
     }
     fclose(event_file);
+    return 0;
 }
 
 // convert int to characters
