@@ -1,0 +1,9 @@
+id:75
+username:hellno
+password:helloworld
+full_name:asd
+email:trone@gmail.com
+phone:09123456789
+role:client
+signed_in:1
+date_created:Sat Dec 21 15:05:47 2024

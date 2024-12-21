@@ -4,6 +4,8 @@ SRCDIR = src
 OBJDIR = obj
 LOGDIR = log
 TARGET = app
+LDFLAGS+= `pkg-config --libs sqlite3`
+
 
 SOURCES = $(wildcard $(SRCDIR)/*.c)
 OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))

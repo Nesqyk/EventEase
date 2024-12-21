@@ -1,29 +1,89 @@
+
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <stdlib.h>   
+#include <string.h>   
 #include <stdio.h>
-#include <stdlib.h>
+#include <direct.h>
+#include <ctype.h>
 
-#include "events.h"
+#include "utils.h"
 
+int is_numeric(const char *input) {
+    if (input == NULL || *input == '\0') {
+        return 0;
+    }
 
-
-void preview_event(int id)
-{    
-    char *cost_str = read_event(id, "cost");
-    char *balance_str = read_event(id, "balance");
-    char *no_attendee_str = read_event(id, "no_attendee");
-
-    // Convert strings to numbers
-    float cost = (cost_str != NULL) ? atof(cost_str) : 0.0;
-    float balance = (balance_str != NULL) ? atof(balance_str) : 0.0;
-    int no_attendee = (no_attendee_str != NULL) ? atoi(no_attendee_str) : 0;
-
-    // Print the values
-    printf("\n\n-- Event %d Details --\n", id);
-    printf("ID: %d\n", id);
-    printf("Client Name: %s\n", read_event(id, "client_name"));
-    printf("Cost: %.2f\n", cost);
-    printf("Balance: %.2f\n", balance);
-    printf("No Attendee: %d\n", no_attendee);
-    printf("Venue: %s\n", read_event(id, "venue"));
-    printf("Completion Date: %s\n", read_event(id, "completion_date"));
-    printf("Date Created: %s\n", read_event(id, "date_created"));
+    for (int i = 0; input[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)input[i])) {
+            return 0; 
+        }
+    }
+    return 1;
 }
+
+void create_dir(const char *path)
+{
+   if(_mkdir(path) != 0)
+   {
+      perror("[ERROR] Failed creating directory");
+   }
+}
+
+
+FILE *create_file(const char *path) {
+    FILE *file = fopen(path, "w");
+
+    if (file == NULL) {
+        perror("[ERROR] Error creating file");
+        return NULL; 
+    }
+
+    return file;
+}
+
+int remove_directory(const char *path) {
+   DIR *d = opendir(path);
+   size_t path_len = strlen(path);
+   int r = -1;
+
+   if (d) {
+      struct dirent *p;
+
+      r = 0;
+      while (!r && (p=readdir(d))) {
+          int r2 = -1;
+          char *buf;
+          size_t len;
+
+          /* Skip the names "." and ".." as we don't want to recurse on them. */
+          if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, ".."))
+             continue;
+
+          len = path_len + strlen(p->d_name) + 2; 
+          buf = malloc(len);
+
+          if (buf) {
+             struct stat statbuf;
+
+             snprintf(buf, len, "%s/%s", path, p->d_name);
+             if (!stat(buf, &statbuf)) {
+                if (S_ISDIR(statbuf.st_mode))
+                   r2 = remove_directory(buf);
+                else
+                   r2 = unlink(buf);
+             }
+             free(buf);
+          }
+          r = r2;
+      }
+      closedir(d);
+   }
+
+   if (!r)
+      r = rmdir(path);
+
+   return r;
+}
+

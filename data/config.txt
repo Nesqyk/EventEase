@@ -1,2 +1,0 @@
-max_events:100
-max_attendee:0
