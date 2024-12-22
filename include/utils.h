@@ -52,6 +52,11 @@
 
 #define RESET   "\033[0m"
 
+#define EVENT_EASE_HEAD "+------------------------------------------------+\n|               Welcome to EventEase       |\n+------------------------------------------------+\n\n"
+
+
+void log_event(int client_id,int type, const char *message);
+
 int is_numeric(const char *input);
 
 FILE *create_file(const char *path);

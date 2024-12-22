@@ -6,5 +6,5 @@
 
 int main()
 {
-    auth_menu();
+    client_menu(75);
 }

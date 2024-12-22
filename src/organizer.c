@@ -27,6 +27,76 @@ events/
         packages
 */
 
+char *read_eventtype_all(const char key[50]) 
+{
+    FILE *ids_file = fopen("data/events/type_event_id.txt", "r");
+    if (ids_file == NULL) 
+    {
+        perror("[ERROR] Unable to open type_event_id.txt");
+        return NULL;
+    }
+
+    char *result = malloc(1); 
+    if (result == NULL) 
+    {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return NULL;
+    }
+
+    result[0] = '\0';
+    int id;
+    while (fscanf(ids_file, "%d\n", &id) != EOF) 
+    {
+        char info_filename[256];
+
+        sprintf(info_filename, "%s%d/%s", TYPE_EVENTS_DIR, id, TYPE_INFO_FILE);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) 
+        {
+            perror("[ERROR] Unable to open type_info.txt");
+            continue; 
+        }
+
+        char key_buffer[50];
+        char value_buffer[50];
+        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            if (strcmp(key, key_buffer) == 0) 
+            {
+                size_t current_length = strlen(result);
+                size_t additional_length = strlen(value_buffer) + 50; 
+
+                char *temp = realloc(result, current_length + additional_length);
+                if (temp == NULL) 
+                {
+                    perror("[ERROR] Memory reallocation failed");
+                    free(result);
+                    fclose(info_file);
+                    fclose(ids_file);
+                    return NULL;
+                }
+                result = temp;
+
+                sprintf(result + current_length, "%s\n", value_buffer);
+
+            }
+        }
+        fclose(info_file);
+    }
+    fclose(ids_file);
+
+    // If no matches were found, return NULL
+    if (strlen(result) == 0) 
+    {
+        free(result);
+        return NULL;
+    }
+
+    return result;
+}
+
 
 int create_typeevent(TypeEvent typeevent) 
 {
@@ -52,12 +122,22 @@ int create_typeevent(TypeEvent typeevent)
 
     char *generated_date = ctime(&g_t);
 
-    fprintf(info_file, "event_event_id:%d\n", typeevent.id);
+    fprintf(info_file, "event_id:%d\n", typeevent.id);
     fprintf(info_file, "event_name:%s\n", typeevent.name);
     fprintf(info_file, "description:%s\n", typeevent.description);
     fprintf(info_file, "date_created:%s\n", generated_date);
     // instead of separating we could use "," as a delimiter
     fprintf(info_file,"venues: %s\n",typeevent.venues);
+
+    FILE *id_file = fopen(TYPE_EVENT_ID_FILE, "a");
+
+    if(id_file == NULL)
+    {
+        return -1;
+    }
+
+    fprintf(id_file , "%d\n", typeevent.id);
+    fclose(id_file);
 
     fclose(info_file);
 

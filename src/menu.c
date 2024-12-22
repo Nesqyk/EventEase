@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <direct.h>
 #include "menu.h"
 
 
@@ -258,8 +258,6 @@ int auth_menu()
                     
                     printf("-- Register Menu --\n");
                     printf("Please enter the remaining information (%d of 6 fields completed).\n%s\n\n", data_filled, register_info);    
-
-                    
 
                     for (int i = 0; i < 6; i++)  
                     {
@@ -673,50 +671,66 @@ int auth_menu()
 
     } while (1);
 }
+
 int client_menu(int client_id)
 {
     int client_choice;
+    // initiate log here
 
     char client_options[7][50] = {"Profile", "Book Event", "My Events", "View Packages", "Feedback & Support", "Notifications", "Logout"};
 
     while(1)
     {
         system("cls");
-        printf("WELCOME TO EVENT EASE\n");
-        printf("Welcome, %s ! Here's a quick overview of your events and options.\n\n", read_user(client_id, "username"));
+        printf("%s", EVENT_EASE_HEAD);
+        printf("Welcome, %s! Here's a quick overview of your events and options.\n\n", read_user(client_id, "username"));
+        
+        // Log the event (Info)
+        log_event(client_id, 0, "User accessed the main menu.");
 
-        // up coming events
-
-        // notifcation
-
-        // options
+        // Upcoming events, notifications, options (omitted for brevity)
 
         // -- Options --
-
-        for(int i = 0 ; i < 7; i ++)
+        for (int i = 0; i < 7; i++) 
         {
             printf("%d. %s\n", i + 1, client_options[i]);
         }
 
-        printf("Enter the number corresponding to your choice: ");
+        printf("\nEnter your choice: ");
         scanf("%d", &client_choice);
+
+        // Log user choice (Info)
+        char choice_message[100];
+        sprintf(choice_message, "User selected option %d from the main menu.", client_choice);
+        log_event(client_id, 0, choice_message);
 
         switch (client_choice) 
         {
             case 1:
                 // Profile
+                log_event(client_id, 0, "User selected 'Profile' option.");
+
                 while(1)
                 {
+                    system("cls");
+
                     int choice_profile;
-                    printf("-- Profile Menu --");
-                    printf("1. View Profile \n");
-                    printf("2. Update Profile \n");
-                    printf("3. Back to Main Menu\n");
+                    printf("\n-- Profile Menu --\n");
+                    printf("1. View Profile\n");
+                    printf("2. Update Profile\n");
+                    printf("3. Back to Main Menu\n\n");
+                    printf("Enter your choice: ");
                     scanf("%d", &choice_profile);
                     
-                    // View Profile
+                    // Log profile menu choice (Info)
+                    char profile_choice_message[100];
+                    sprintf(profile_choice_message, "User selected option %d from the profile menu.", choice_profile);
+                    log_event(client_id, 0, profile_choice_message);
+                    
                     if(choice_profile == 1)
                     {
+                        // View Profile
+                        log_event(client_id, 0, "User viewed their profile.");
                         UserField fields[] = 
                         {
                             {"id", "ID"},
@@ -727,13 +741,12 @@ int client_menu(int client_id)
                             {"date_created", "Date Created"}
                         };
 
-                        printf("-- User Profile --");
+                        printf("-- User Profile --\n");
                         size_t field_count = sizeof(fields) / sizeof(fields[0]);
 
                         for (size_t i = 0; i < field_count; i++) 
                         {
                             const char *value = read_user(client_id, fields[i].key);
-
                             if (value) 
                             {
                                 printf("%-15s: %s\n", fields[i].display_name, value);
@@ -742,73 +755,123 @@ int client_menu(int client_id)
                                 printf("%-15s: %s\n", fields[i].display_name, "N/A");
                             }
                         }
-
-                    // Update Profile
-                    } else if (choice_profile == 2)
+                    } 
+                    else if(choice_profile == 2)
                     {
+                        // Update Profile
+                        log_event(client_id, 0, "User selected to update their profile.");
                         const char *updatable_keys[] = {"username", "full_name", "password", "email", "phone"};
                         const char *updatable_labels[] = {"Username", "Full Name", "Password", "Email", "Phone"};
                         size_t key_count = sizeof(updatable_keys) / sizeof(updatable_keys[0]);
 
-                        // Display updatable options
                         printf("\n-- Update Profile --\n");
                         for (size_t i = 0; i < key_count; i++) 
                         {
                             printf("%zu. %s\n", i + 1, updatable_labels[i]);
                         }
+                        printf("%zu. Cancel\n\n", key_count + 1);
 
                         int field_choice;
-                        printf("Enter the number of the field you'd like to update: ");
+                        printf("\nEnter the number of the field you'd like to update: ");
                         scanf("%d", &field_choice);
-                        getchar(); 
-                        if (field_choice < 1 || field_choice > (int)key_count) 
+                        getchar();
+
+                        if (field_choice < 1 || field_choice > (int)key_count + 1) 
                         {
+                            log_event(client_id, 1, "Invalid profile update choice. Returning to profile menu.");
                             printf("Invalid choice. Returning to profile menu.\n");
+                            return;
+                        }
+
+                        if (field_choice == (int)key_count + 1) 
+                        {
+                            log_event(client_id, 1, "Profile update canceled. Returning to profile menu.");
+                            printf("Update canceled. Returning to profile menu.\n");
                             return;
                         }
 
                         const char *selected_key = updatable_keys[field_choice - 1];
                         const char *selected_label = updatable_labels[field_choice - 1];
-
                         char new_value[100];
                         char confirm_value[100];
 
-                        printf("Enter new %s: ", selected_label);
+                        printf("Enter new %s (type 'cancel' to cancel): ", selected_label);
                         fgets(new_value, sizeof(new_value), stdin);
-                        new_value[strcspn(new_value, "\n")] = 0; 
+                        new_value[strcspn(new_value, "\n")] = 0;
+
+                        if (strcmp(new_value, "cancel") == 0) 
+                        {
+                            log_event(client_id, 1, "Profile update canceled by the user.");
+                            printf("Update canceled. Returning to profile menu.\n");
+                            return;
+                        }
 
                         if (strcmp(selected_key, "password") == 0) 
                         {
-
-                            printf("Confirm new Password: ");
-                            fgets(confirm_value, sizeof( confirm_value), stdin);
+                            printf("Confirm new Password (type 'cancel' to cancel): ");
+                            fgets(confirm_value, sizeof(confirm_value), stdin);
                             confirm_value[strcspn(confirm_value, "\n")] = 0;
+
+                            if (strcmp(confirm_value, "cancel") == 0) 
+                            {
+                                log_event(client_id, 1, "Profile password update canceled by the user.");
+                                printf("Update canceled. Returning to profile menu.\n");
+                                return;
+                            }
 
                             if (strcmp(new_value, confirm_value) != 0) 
                             {
+                                log_event(client_id, 1, "Password update failed: passwords do not match.");
                                 printf("Passwords do not match. Update canceled.\n");
+                                return;
                             }
                         }
 
                         if (update_user(client_id, selected_key, new_value) == 1) 
                         {
+                            log_event(client_id, 0, "Profile updated successfully.");
                             printf("%s updated successfully!\n", selected_label);
-                        } else 
+                        } 
+                        else 
                         {
+                            log_event(client_id, 2, "Failed to update profile.");
                             printf("Failed to update %s. Please try again.\n", selected_label);
                         }
-                    } else if(choice_profile == 3)
+                    }
+                    else if(choice_profile == 3)
                     {
+                        log_event(client_id, 0, "User returned to main menu from profile.");
                         client_menu(client_id);
-                    } else 
+                    }
+                    else 
                     {
+                        log_event(client_id, 1, "Invalid profile menu choice.");
                         printf("Please select a valid option:\n");
                         continue;
                     }
                 }
                 break;
             case 2:
-                // Book Event
+                log_event(client_id, 0, "User selected 'Book Event' option.");
+
+                /*
+                Book Event
+                    Select Event Type.
+                    View Available Packages <- make sure first event type is not empty
+                    Confirm. <- make sure that event_type is not empty as well as packages. 
+                    Cancel.
+                */
+                while(1)
+                {
+                    int book_event_choice;
+                    char book_event_options[30] = {"Select Event Type", "View Available Packages", "Confirm"};
+                    
+                    printf("-- Book Event Submenu --\n");
+
+                    printf("1. Select Event Type.");
+                    
+                }
+                
                 break;
             case 3:
                 // My Events
@@ -832,7 +895,11 @@ int client_menu(int client_id)
     }
 }
 
-/* int organizer_menu()
+int organizer_menu(int organizer_id)
 {
     
-} */
+    while(1)
+    {
+
+    }
+} 

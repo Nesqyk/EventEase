@@ -26,7 +26,6 @@ User Removal: For user removal, delete the corresponding folder and remove the u
 // 12.txt
 // 
 
-
 int login_user(char user_input[50], const char password[50]) {
     FILE *ids_file = fopen("data/users_id.txt", "r");
     if (ids_file == NULL) {
@@ -215,6 +214,8 @@ int register_user(User user)
     fprintf(info_file, "signed_in:%d\n", user.signed_in);  // %d for signed_in
     fprintf(info_file, "date_created:%s\n", generated_date);
     fclose(info_file);
+
+    // should I add log? I should.
 
     fprintf(ids_file, "%d:%s\n", user.id, user.username);
     fclose(ids_file);
@@ -429,6 +430,7 @@ char *read_all_user_by_key(const char key[50])
         fclose(ids_file);
         return NULL;
     }
+
     result[0] = '\0';
     int id;
     while (fscanf(ids_file, "%d:%*s\n", &id) != EOF) 
@@ -496,7 +498,8 @@ char *read_last_login(char key[50])
     char buffer_value[50];
     char key_buffer[50];
 
-    while (!feof(info_file)) {
+    while (!feof(info_file)) 
+    {
         if (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, buffer_value) == 2) 
         {
             if (strcmp(key, key_buffer) == 0) 
@@ -580,6 +583,7 @@ int get_id_username(char username[50])
             return buffer_id;
         }
     }
+
     fclose(event_file);
     printf("[ERROR] Username %s not found.\n", username);
     return -1; // Return -1 if the username was not found

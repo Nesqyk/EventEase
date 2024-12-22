@@ -36,6 +36,8 @@ typedef struct
     char venues[300];
 } TypeEvent;
 // typeevent prototypes
+
+char *read_eventtype_all(const char key[50]);
 int create_typeevent(TypeEvent typeevent);
 
 char *read_typevent(int event_id, char key[50]);

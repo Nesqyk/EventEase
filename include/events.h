@@ -30,9 +30,9 @@ typedef struct
 
 typedef struct {
     int id;
-    int package_id;
+    int package_id; // depend
     int event_type_id;
-    char venue[50];
+    char venue[50]; // not necessary?
     char name[50];
     time_t event_date;
     time_t booking_date;

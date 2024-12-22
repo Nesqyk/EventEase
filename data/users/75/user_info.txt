@@ -1,6 +1,6 @@
 id:75
 username:hellno
-password:helloworld
+password:sd
 full_name:asd
 email:trone@gmail.com
 phone:09123456789

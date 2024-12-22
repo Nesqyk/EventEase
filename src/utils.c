@@ -7,8 +7,73 @@
 #include <stdio.h>
 #include <direct.h>
 #include <ctype.h>
-
+#include <sys/stat.h>
 #include "utils.h"
+#include <time.h>
+
+
+// type: info 0, warn 1, error 2
+void log_event(int client_id,int type, const char *message) 
+{
+    char log_path[100];
+    char log_filename[100];
+    FILE *log_file;
+    
+    sprintf(log_path, "data/users/%d/logs/", client_id);
+    
+    if (_access(log_path, 0) != 0) // If directory doesn't exist
+    {
+        // Try creating the directory
+        if (_mkdir(log_path) != 0) 
+        {
+            perror("Failed to create directory");
+            return;
+        }
+    }
+
+    time_t t = time(NULL);
+    struct tm tm_info;
+    char date_str[20], time_str[20];
+    
+    localtime_s(&tm_info, &t); 
+    strftime(date_str, sizeof(date_str), "%Y-%m-%d", &tm_info);
+   strftime(time_str, sizeof(time_str), "%H:%M:%S", &tm_info);
+
+
+
+    sprintf(log_filename, "%s%s.txt", log_path, date_str);
+
+    log_file = fopen(log_filename, "a");
+    if (log_file == NULL) 
+    {
+        perror("Failed to open log file");
+        return;
+    }
+
+    char *type_log;
+
+    switch(type)
+    {
+      case 1:
+         type_log = "[INFO]";
+         break;
+      case 2:
+         type_log = "[WARN]";
+         break;
+      case 3:
+         type_log = "[ERROR]";
+         break;
+      default:
+         type_log = "[INFO]";
+         break;
+    }
+
+
+   fprintf(log_file, "%s %s %s: %s\n", date_str, time_str, type_log, message);
+
+   fclose(log_file);
+}
+
 
 int is_numeric(const char *input) {
     if (input == NULL || *input == '\0') {

@@ -1,0 +1,20 @@
+2024-12-22 11:08:14 [INFO]: User selected option 3 from the profile menu.
+2024-12-22 11:08:14 [INFO]: User returned to main menu from profile.
+2024-12-22 11:08:15 [INFO]: User accessed the main menu.
+2024-12-22 11:08:19 [INFO]: User selected option 1 from the main menu.
+2024-12-22 11:08:19 [INFO]: User selected 'Profile' option.
+2024-12-22 11:08:26 [INFO]: User selected option 240 from the profile menu.
+2024-12-22 11:14:20 [INFO]: User accessed the main menu.
+2024-12-22 11:14:22 [INFO]: User selected option 1 from the main menu.
+2024-12-22 11:14:22 [INFO]: User selected 'Profile' option.
+2024-12-22 11:14:23 [INFO]: User selected option 1 from the profile menu.
+2024-12-22 11:14:23 [INFO]: User viewed their profile.
+2024-12-22 11:14:24 [INFO]: User selected option 1 from the profile menu.
+2024-12-22 11:14:24 [INFO]: User viewed their profile.
+2024-12-22 11:14:25 [INFO]: User selected option 1 from the profile menu.
+2024-12-22 11:14:25 [INFO]: User viewed their profile.
+2024-12-22 11:14:25 [INFO]: User selected option 1 from the profile menu.
+2024-12-22 11:14:25 [INFO]: User viewed their profile.
+2024-12-22 11:14:27 [INFO]: User selected option 3 from the profile menu.
+2024-12-22 11:14:27 [INFO]: User returned to main menu from profile.
+2024-12-22 11:14:27 [INFO]: User accessed the main menu.
