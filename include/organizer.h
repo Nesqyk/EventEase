@@ -1,9 +1,6 @@
 #ifndef ORGANIZER_H
 #define ORGANIZER_H
 
-const char *type_keys[] = {"event_name","event_description","event_event_id","venues"};
-int type_keys_size = sizeof(type_keys) / sizeof(type_keys[0]);
-
 #define MAX_LINE 256
 
 #define TYPE_EVENT_ID_FILE "data/type_event_ids.txt"
@@ -27,6 +24,22 @@ typedef struct
     char inclusions[200]; // , as a delimeter. or next line?
 } Package;
 
+// "package_id:%d\n" 
+//     "package_name:%s\n"
+//     "price:%.2f\n"
+//     "event_type:%d\n"
+//     "description:%s\n"
+//     "availability:%d\n"
+//     "created_date:%s\n"
+//     "max_guest:%d\n"
+//     "duration:%d\n"
+//     "inclusions:%s\n\n",
+typedef struct 
+{
+    const char *key;
+    const char *display_name;
+} Field;
+
 typedef struct 
 {
     int id;
@@ -35,6 +48,8 @@ typedef struct
     char description[100];
     char venues[300];
 } TypeEvent;
+
+
 // typeevent prototypes
 
 char *read_eventtype_all(const char key[50]);
@@ -52,6 +67,8 @@ int generate_typeevent_id();
 // packages prototype
 int add_pkg(int event_id, Package pkg);
 
+char *preview_pkgs(int event_id);
+
 char *read_pkg(int event_id, int pkg_id, char key[50]);
 
 int update_pkg(int event_id, int pkg_id, char key[50], char *value);
@@ -62,6 +79,7 @@ int generate_pkg_id(int event_id);
 
 int valid_pkg_id(int event_id, int pkg_id);
 
+char *read_all_pkg(int event_id, char key[50]);
 
 
-#endif //ORGANIZER.H
+#endif //ORGANIZER_H

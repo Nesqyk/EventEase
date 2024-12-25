@@ -21,23 +21,24 @@ int book_event(int client_id, BookEvent event)
         return 0;
     }
 
+    time_t g_t;
+    time(&g_t);
+
+    char *generated_date = ctime(&g_t);
+
     fprintf(e_file, "id:%d\n", event.id);
     fprintf(e_file, "package_id:%d\n", event.package_id);
     fprintf(e_file, "event_type_id:%d\n", event.event_type_id);
     fprintf(e_file, "venue:%s\n", event.venue);
     fprintf(e_file, "name:%s\n", event.name);
 
-    char date_buffer[80];
-    strftime(date_buffer, sizeof(date_buffer), "%Y-%m-%d %H:%M:%S", localtime(&event.event_date));
-    fprintf(e_file, "event_date:%s\n", date_buffer);
+    fprintf(e_file, "event_date:%s\n", event.event_date);
 
-    strftime(date_buffer, sizeof(date_buffer), "%Y-%m-%d %H:%M:%S", localtime(&event.booking_date));
-    fprintf(e_file, "booking_ate:%s\n", date_buffer);
+    fprintf(e_file, "booking_date:%s\n", generated_date);
 
     fprintf(e_file, "balance:%d\n",event.balance);
 
-    strftime(date_buffer, sizeof(date_buffer), "%H:%M:%S", localtime(event.start_time));
-    fprintf(e_file, "start_time:%s\n", date_buffer);
+    fprintf(e_file, "start_time:%s\n", event.start_time);
 
     fprintf(e_file, "status:%d\n", event.status);
 

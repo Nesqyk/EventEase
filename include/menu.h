@@ -14,4 +14,6 @@ typedef struct {
 
 int client_menu(int client_menu);
 
-#endif //MENU.H
+int organizer_menu(int organizer_id);
+
+#endif //MENU_H

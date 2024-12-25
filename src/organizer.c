@@ -8,6 +8,8 @@
 #include "organizer.h"
 
 
+
+
 /*
 add_type_event
 add_package
@@ -217,6 +219,77 @@ char *read_typevent(int event_id, char key[50])
     return NULL;
 }
 
+
+char *preview_event_type()
+{
+    FILE *ids_file = fopen("data/events/type_event_id.txt", "r");
+    if (ids_file == NULL) 
+    {
+        perror("[ERROR] Unable to open type_event_id.txt");
+        return NULL;
+    }
+
+    char *result = malloc(1); 
+    if (result == NULL) 
+    {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return NULL;
+    }
+
+    result[0] = '\0';
+    int id;
+
+
+    while (fscanf(ids_file, "%d\n", &id) != EOF) 
+    {
+        char info_filename[256];
+
+        sprintf(info_filename, "%s%d/%s", TYPE_EVENTS_DIR, id, TYPE_INFO_FILE);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) 
+        {
+            perror("[ERROR] Unable to open type_info.txt");
+            continue; 
+        }
+
+        char key_buffer[50];
+        char value_buffer[50];
+        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            
+            size_t current_length = strlen(result);
+            size_t additional_length = strlen(value_buffer) + 50; 
+
+            char *temp = realloc(result, current_length + additional_length);
+            if (temp == NULL) 
+            {
+                perror("[ERROR] Memory reallocation failed");
+                free(result);
+                fclose(info_file);
+                fclose(ids_file);
+                return NULL;
+            }
+            result = temp;
+
+            sprintf(result + current_length, "%s\n", value_buffer);
+
+        }
+        fclose(info_file);
+    }
+    fclose(ids_file);
+
+    // If no matches were found, return NULL
+    if (strlen(result) == 0) 
+    {
+        free(result);
+        return NULL;
+    }
+
+    return result;
+}
+
 int update_typeevent(int event_id, char key[50], char *value) 
 {
     if (valid_typeevent_id(event_id) != 1) 
@@ -368,7 +441,7 @@ int add_pkg(int event_id, Package pkg)
     "created_date:%s\n"
     "max_guest:%d\n"
     "duration:%d\n"
-    "inclusions:%s\n\n",
+    "inclusions:%s\n",
     pkg.id,
     pkg.package_name,
     pkg.price,
@@ -383,6 +456,183 @@ int add_pkg(int event_id, Package pkg)
 
     fclose(pkg_file);
     return 1;
+}
+
+char *preview_pkgs(int event_id)
+{
+    char event_dir[50];
+
+    sprintf(event_dir,"data/events/%d/", event_id);
+
+    char pkg_id_file[50];
+
+    sprintf(pkg_id_file, "%s%s", event_dir, TYPE_PKG_ID_FILE);
+
+    FILE *ids_file = fopen("%s", "r");
+    if (ids_file == NULL) 
+    {
+        perror("[ERROR] Unable to open type_event_id.txt");
+        return NULL;
+    }
+
+    char *result = malloc(1); 
+    if (result == NULL) 
+    {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return NULL;
+    }
+
+    result[0] = '\0';
+    int id;
+    while (fscanf(ids_file, "%d\n", &id) != EOF) 
+    {
+        char info_filename[256];
+
+        sprintf(info_filename, "%spackages/%d.txt", event_dir, id);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) 
+        {
+            perror("[ERROR] Unable to open type_info.txt");
+            continue; 
+        }
+
+        char key_buffer[50];
+        char value_buffer[50];
+
+        // figure out how to allocate more memory for inclusions and description.
+        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+
+            size_t current_length = strlen(result);
+            size_t additional_length = strlen(value_buffer) + 50; 
+
+            char *temp = realloc(result, current_length + additional_length);
+            if (temp == NULL) 
+            {
+                perror("[ERROR] Memory reallocation failed");
+                free(result);
+                fclose(info_file);
+                fclose(ids_file);
+                return NULL;
+            }
+            result = temp;
+
+
+            Field package_field[] = 
+            {
+                {"package_id", "Package ID"},
+                {"price", "Price"},
+                {"event_type", "Event Type"},
+                {"description", "Description"},
+                {"availability", "Availability"},
+                {"created_date", "Date Created"},
+                {"max_guest", "Max Guest"},
+                {"duration", "Duration"},
+                {"inclusions", "Inclusions"}
+            };
+
+            for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
+            {
+                if(strcmp(key_buffer, package_field[i].key) == 0)
+                {
+                    sprintf(result + current_length, "%s : %s\n", package_field[i].display_name, value_buffer);
+                }
+            }
+            sprintf(result + current_length, "Unknown Key : %s\n", value_buffer);
+
+        }
+        fclose(info_file);
+    }
+    fclose(ids_file);
+
+    // If no matches were found, return NULL
+    if (strlen(result) == 0) 
+    {
+        free(result);
+        return NULL;
+    }
+
+    return result;
+}
+
+char *read_all_pkg(int event_id, char key[50])
+{
+    char event_dir[50];
+
+    sprintf(event_dir,"data/events/%d/", event_id);
+
+    char pkg_id_file[50];
+
+    sprintf(pkg_id_file, "%s%s", event_dir, TYPE_PKG_ID_FILE);
+
+    FILE *ids_file = fopen("%s", "r");
+    if (ids_file == NULL) 
+    {
+        perror("[ERROR] Unable to open type_event_id.txt");
+        return NULL;
+    }
+
+    char *result = malloc(1); 
+    if (result == NULL) 
+    {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return NULL;
+    }
+
+    result[0] = '\0';
+    int id;
+    while (fscanf(ids_file, "%d\n", &id) != EOF) 
+    {
+        char info_filename[256];
+
+        sprintf(info_filename, "%spackages/%d.txt", event_dir, id);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) 
+        {
+            perror("[ERROR] Unable to open type_info.txt");
+            continue; 
+        }
+
+        char key_buffer[50];
+        char value_buffer[50];
+        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            if (strcmp(key, key_buffer) == 0) 
+            {
+                size_t current_length = strlen(result);
+                size_t additional_length = strlen(value_buffer) + 50; 
+
+                char *temp = realloc(result, current_length + additional_length);
+                if (temp == NULL) 
+                {
+                    perror("[ERROR] Memory reallocation failed");
+                    free(result);
+                    fclose(info_file);
+                    fclose(ids_file);
+                    return NULL;
+                }
+                result = temp;
+
+                sprintf(result + current_length, "%s\n", value_buffer);
+
+            }
+        }
+        fclose(info_file);
+    }
+    fclose(ids_file);
+
+    // If no matches were found, return NULL
+    if (strlen(result) == 0) 
+    {
+        free(result);
+        return NULL;
+    }
+
+    return result;
 }
 
 char *read_pkg(int event_id, int pkg_id, char key[50]) 

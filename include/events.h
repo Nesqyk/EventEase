@@ -5,40 +5,16 @@
 
 #define MAX_LINE 256
 
-typedef struct 
-{
-    int id;
-    char package_name[50];
-    float price;
-    int event_type;
-    char description[50];
-    int availability;
-    char created_date[50];
-    int max_guest; 
-    int duration; // in hours
-    char inclusions[200]; // , as a delimeter. or next line?
-} Package;
-
-typedef struct 
-{
-    int id;
-    char type[50];
-    char name[50];
-    char description[100];
-    char venues[300];
-} TypeEvent;
-
 typedef struct {
-    int id;
-    int package_id; // depend
-    int event_type_id;
-    char venue[50]; // not necessary?
-    char name[50];
-    time_t event_date;
-    time_t booking_date;
-    int balance;
-    time_t start_time;
-    int status;
+    int id; // generated
+    int package_id; // generated
+    int event_type_id; // generated
+    char venue[50]; // input
+    char name[50]; // input
+    char event_date[50]; // input
+    int balance; // package balance or down payment
+    char start_time[50]; // input
+    int status; // 1 -> Book  2 - > In Progress 3 - > Balance
 } BookEvent;
 
 int book_event(int client_id, BookEvent event);
