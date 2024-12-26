@@ -52,7 +52,7 @@
 
 #define RESET   "\033[0m"
 
-#define EVENT_EASE_HEAD "+------------------------------------------------+\n|               Welcome to EventEase       |\n+------------------------------------------------+\n\n"
+#define EVENT_EASE_HEAD "+------------------------------------------------+\n|                  Welcome to EventEase         |\n+------------------------------------------------+\n\n"
 
 
 void log_event(int client_id,int type, const char *message);

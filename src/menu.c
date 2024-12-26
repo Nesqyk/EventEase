@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <direct.h>
-
+#include <windows.h>
 #include "menu.h"
 #include "organizer.h"
 
@@ -54,7 +54,7 @@ int auth_menu()
         int valid_email = 0;
         int valid_full_name = 0;
         int valid_phone = 0;
-
+        int read_tos = 0;
         int valid_login_username = 0;
         int vaid_login_password = 0;
 
@@ -88,7 +88,6 @@ int auth_menu()
                     system("cls");
                     printf("-- Login Menu --\n");
                     printf("Please select a data field to input (%d/2):\n%s\n\n", login_filled, info_login);
-
 
                     // Data fields with their validation status
                     for (int i = 0; i < 2; i++) 
@@ -431,13 +430,13 @@ int auth_menu()
                                         {
                                             edit_mode = 0;
                                             printf("\n Full Name Succesffully Updated\n");
-                                            _sleep(500);
+                                            Sleep(500);
                                         } else {
                                             valid_full_name = 1;
                                             data_filled += 1;
                                             
                                             printf("\nFull Name Succesffully set.\n");
-                                            _sleep(500);
+                                            Sleep(500);
                                     
                                         }
                                     }
@@ -578,12 +577,12 @@ int auth_menu()
                                 } else 
                                 {
                                     printf("\nInvalid choice. Please select a valid option.\n");
-                                    _sleep(500);
+                                    Sleep(500);
                                 }
                                 break;
                             default:
                                 printf("\nInvalid choice. Please select a valid option.\n");
-                                _sleep(500);
+                                Sleep(500);
                                 break;
                         }
                     }
@@ -695,24 +694,32 @@ int client_menu(int client_id)
 
     char client_options[7][50] = {"Profile", "Book Event", "My Events", "View Packages", "Feedback & Support", "Notifications", "Logout"};
 
+    BookEvent bk_event = {
+        .name = "",
+        .venue = "",
+        .event_date = "",
+        .event_type_id = -1,
+        .package_id = -1
+    };
 
     while(1)
     {
-        BookEvent bk_event = {
-            .name = "",
-            .venue = "",
-            .event_date = ""
-        };
-                    
+
+        int book_event_filled = 0;
 
         system("cls");
         printf("%s", EVENT_EASE_HEAD);
         printf("Welcome, %s! Here's a quick overview of your events and options.\n\n", read_user(client_id, "username"));
         
+
+        /* printf("%s---------------\nUpcoming Events\n---------------%s\n\n", BOLD_WHITE, RESET);
+
+        printf("%s---------------\nNotification\n---------------%s\n\n", BOLD_WHITE, RESET); */
+        printf("%s---------------\nOptions\n---------------%s\n\n", BOLD_WHITE, RESET);
         // Log the event (Info)
         log_event(client_id, 0, "User accessed the main menu.");
 
-        // Upcoming events, notifications, options (omitted for brevity)
+        // Upcoming events, notifications, options 
 
         // -- Options --
         for (int i = 0; i < 7; i++) 
@@ -780,7 +787,7 @@ int client_menu(int client_id)
                             }
                         }
 
-                        _sleep(2000);
+                        Sleep(2000);
                     } 
                     else if(choice_profile == 2)
                     {
@@ -806,7 +813,7 @@ int client_menu(int client_id)
                         {
                             log_event(client_id, 1, "Invalid profile update choice. Returning to profile menu.");
                             printf("Invalid choice. Returning to profile menu.\n");
-                            _sleep(500);
+                            Sleep(500);
 
                             continue;
                         }
@@ -815,7 +822,7 @@ int client_menu(int client_id)
                         {
                             log_event(client_id, 1, "Profile update canceled. Returning to profile menu.");
                             printf("Update canceled. Returning to profile menu.\n");
-                            _sleep(500);
+                            Sleep(500);
                             continue;
                         }
 
@@ -876,7 +883,7 @@ int client_menu(int client_id)
                     {
                         log_event(client_id, 1, "Invalid profile menu choice.");
                         printf("\nPlease select a valid option:\n");
-                        _sleep(500);
+                        Sleep(500);
                         continue;
                     }
                 }
@@ -893,122 +900,252 @@ int client_menu(int client_id)
                 */
                 while(1)
                 {
+                    system("cls");
                     int valid_event_type = 0; 
                     int valid_package = 0;
+                    int valid_event_name = 0;
+                    int valid_balance = 0;
 
                     int book_event_choice;
                     char book_event_options[5][30] = {"Event Name", "Select Event Type", "View Available Packages", "Venue", "Set Date"};
-                    
                     printf("\n-- Book Event Submenu --\n\n");
+                    printf("Please select a data field to input\n\n");
+
 
                     // shud show preview here. 
-
-                    for(size_t i = 0; i < sizeof(book_event_options)/ sizeof(book_event_options[0]); i++)
+                    for (int i = 0; i < 5; i++) 
                     {
                         char *field = NULL;
-                        switch(i)
+                        int is_valid = 0;
+
+                        switch (i) 
                         {
                             case 0: field = bk_event.name; break;
-                            case 1: field = sprintf(field, "%d", bk_event.event_type_id); break;
-                            case 2: field = sprintf(field, "%d", bk_event.package_id); break;
+                            case 1: is_valid = (bk_event.event_type_id != -1); break;
+                            case 2: is_valid = (bk_event.package_id != -1); break;
                             case 3: field = bk_event.venue; break;
                             case 4: field = bk_event.event_date; break;
                         }
 
-                        if(strlen(field) > 0 && field)
+                        // Check field or is_valid to decide status
+                        if (field) 
                         {
-                            printf("%zu. %s %s(/)%s\n", i + 1, book_event_options[i], GREEN, RESET);
-                        } else {
-                            printf("%zu. %s %s(x)%s\n", i + 1, book_event_options[i], RED, RESET);
+                            if (strlen(field) > 0) 
+                            {
+                                printf("%d. %s %s(/)%s\n", i + 1, book_event_options[i], GREEN, RESET);
+                            } 
+                            else 
+                            {
+                                printf("%d. %s %s(x)%s\n", i + 1, book_event_options[i], RED, RESET);
+                            }
+                        } 
+                        else if (i == 1 || i == 2) 
+                        {
+                            if (is_valid) 
+                            {
+                                printf("%d. %s %s(/)%s\n", i + 1, book_event_options[i], GREEN, RESET);
+                            } 
+                            else 
+                            {
+                                printf("%d. %s %s(x)%s\n", i + 1, book_event_options[i], RED, RESET);
+                            }
                         }
                     }
+
+                    if(book_event_filled >= 5)
+                    {
+                        printf("%s6. Confirm%s\n", GREEN, RESET);
+                    } else {
+                        printf("6. Confirm\n");                          
+                    }
+                    printf("7. Cancel / Back\n");
                     printf("\nEnter Choice: ");
                     scanf("%d", &book_event_choice);
+                    getchar();
                     if(book_event_choice == 1)
                     {
+                        while(!valid_event_name)
+                        {
+                            printf("\n\nPlease enter event name (or type '-1' to cancel): ");
+                            fgets(bk_event.name, sizeof(bk_event.name), stdin);
+                            bk_event.name[strcspn(bk_event.name, "\n")] = 0;
 
+                            if(strcmp(bk_event.name, "-1") == 0)
+                            {
+                                break;
+                            }
+
+                            size_t len = strlen(bk_event.name);
+
+                            if(len < 4 || len > 40)
+                            {
+                                printf("Invalid length! Event Name must be 4-40 characters.\n");
+                            } else 
+                            {
+                                valid_event_name = 1;
+                                book_event_filled++;
+                            }
+                        }
                     }
                     else if(book_event_choice == 2)
                     {
                         while(!valid_event_type)
                         {
-                             char *event_choices = read_eventtype_all("event_name");
 
-                            if(event_choices != NULL)
+                            char *preview_event = preview_event_type();
+
+                            if(preview_event != NULL)
                             {
+                                system("cls");
                                 printf("-- Please Select the Kind of Event You're Booking -- \n");
-                                printf("Event ID: %d\t\tEvent Name: %s \t\t Description: %s", read_eventtype_all("event_id"), event_choices, read_eventtype_all("event_description"));
+                                printf("%s",preview_event);
+                                printf("\n\nEnter the ID of your choice (or type '-1' to cancel): ");
+                                scanf("%d", &bk_event.event_type_id);
 
-                                printf("Please pick by specifying their ID (enter '-1' to cancel): ");
-                                scanf("%d", &book_event_choice);
-
-                                if(book_event_choice == -1) 
+                                if(bk_event.event_type_id == -1) 
                                 {
-                                    return -1;
+                                    break;
                                 }
 
-                                if(valid_typeevent_id(book_event_choice) != 1)
+                                if(valid_typeevent_id(bk_event.event_type_id) != 1)
                                 {
-                                    printf("Please Enter a Valid ID.\n");
-                                    continue;
+                                    printf("\nPlease Enter a Valid ID.\n");
+                                    Sleep(1000);
                                 } else
                                 {
-                                    bk_event.event_type_id = book_event_choice;
                                     valid_event_type = 1;
+                                    book_event_filled++;
                                 }
                             } else 
                             {
-                                printf("-- No Events are available for booking. --\n");
-                            } 
-                        }
+                                printf("\n-- No Events are available for booking. --\n");
+                                Sleep(1000);
+                                break;
+                            }  
+                        }               
                         // review all choices
 
                         // read_eventtype_all will read all event_name. i.e Birthday\nWedding\n and so on.
 
                     } else if (book_event_choice == 3)
                     {
-                        if(bk_event.event_type_id == -1)
-                        {
-                            printf("\nPlease make sure you've picked a type of event.\n");
-                            _sleep(500);
-                            continue;
-                        }
-
+                        
                         while(!valid_package)
                         {
-                            printf("-- Please select Package for the Event --\n");
-                            if(preview_pkgs(bk_event.event_type_id) == NULL)
+                            system("cls");
+                            if(bk_event.event_type_id == -1)
+                            {
+                                printf("\nPlease select a type of event first (choose Option 2 from the menu).\n");
+                                Sleep(1000);
+                                break;
+                            }
+
+                            printf("\n-- Please select Package for the Event --\n");
+                            char *preview_pkg = preview_pkgs(bk_event.event_type_id);
+                            if(preview_pkg == NULL)
                             {
                                 printf("No Available Packages for this Event.\n");
-                                return;
+                                Sleep(1000);
+                                break;
                             } else 
                             {
-                                printf("Please select Package for Event: ");
-                                printf("%d", &book_event_choice);
+                                printf("%s", preview_pkg);
+                                printf("\nPlease select Package for Event: ");
 
-                                if(valid_pkg_id(bk_event.event_type_id, book_event_choice) != 1)
+                                scanf("%d", &bk_event.package_id);
+
+                                if(valid_pkg_id(bk_event.event_type_id, bk_event.package_id) != 1)
                                 {
-                                    printf("Please enter a valid pakage id.\n");
+                                    
+                                    printf("\nPlease enter a valid pakage id.\n");
+                                    Sleep(1000);
                                 } else
                                 {
-                                    printf("You've selected Package %s", read_pkg(bk_event.id, book_event_choice, "package_name"));
+                                    
+                                    printf("\nYou've selected Package %s\n", read_pkg(bk_event.event_type_id, bk_event.package_id, "package_name"));
+
+                                    printf("Before Proceeding, you need to pay 50% of the package's price.\n");
+
+                                    while(1)
+                                    {
+                                        char agree_balance[5];
+                                        printf("For Confirmation Enter (Y or N): ");
+                                        scanf("%s", agree_balance);
+                                    
+                                        if(strcasecmp(agree_balance, "y") == 0 || strcasecmp(agree_balance, "n") == 0)
+                                        {
+                                            if(strcasecmp(agree_balance, "y") == 0)
+                                            {
+                                                bk_event.balance = atoi(read_pkg(bk_event.id, bk_event.package_id, "price")) / 0.5;
+
+                                                printf("Opening your receipt...");
+                                            } else
+                                            {
+                                                printf("Cancelling Book Creation Session\n");
+                                                break;
+                                            }
+                                        } else 
+                                        {
+                                            printf("Please pick a valid input.");
+                                            continue;
+                                        }
+                                    }
+
+                                    // while(!valid_balance)
+                                    // {
+                                    //     printf("Please Enter Payment (10000 FORMAT): ");
+                                        
+                                    //     scanf("%d", &bk_event.balance);
+
+                                    //     if(bk_event.balance != atoi(read_pkg(bk_event.id, bk_event.package_id, "price")) / 0.5)
+                                    //     {
+                                    //         printf("")
+                                    //     }
+                                    
+                                    
+                
+                                    // confirmation
+                                    // then show agreement.
+                                    // inform that a cvs file is upload to this folder...
+                                    
 
                                     // ask for the if they're willing to pay 50%
                                     // 50% payment.
                                     // then balance.
                                     valid_package = 1;
+                                    book_event_filled++;
                                 }
                             }
                         }
+                        
                     } else if (book_event_choice == 4)
                     {
                         
+                        // will depend on the package or event?
                         // venue 
                         /* code */
                     } else if (book_event_choice == 5)
                     {
+                        // format of coruse Y:M:D TIME HERE.
                         // set date
                         return;
+                    } else if(book_event_choice == 6)
+                    {
+                        if(book_event_filled >= 5)
+                        {
+                            
+                        } else {
+                            printf("\nPlease make sure you've filled-up the data fields.\n");
+                            Sleep(1000);
+                        }
+                    } else if(book_event_choice == 7)
+                    {
+                        if(book_event_filled > 1)
+                        {
+                            memset(&bk_event, 0, sizeof(bk_event));
+                            book_event_filled = 0;
+                        }
+                        break;
                     }
                 }
                 
@@ -1030,7 +1167,7 @@ int client_menu(int client_id)
                 break;
             default:
                 printf("\nInvalid choice. Please enter a number between 1 and 8.\n");
-                _sleep(500);
+                Sleep(500);
                 break;
         }
     }
@@ -1137,7 +1274,7 @@ int organizer_menu(int organizer_id)
                         } else
                         {
                             printf("Please fill in the fields first.");
-                            _sleep(1000);
+                            Sleep(1000);
                             continue;
                         }
                     } else if(event_choice == 6) // cancel nga part.
@@ -1170,7 +1307,7 @@ int organizer_menu(int organizer_id)
             
             default:
                 printf("\nInvalid choice. Please enter a number between 1 and 8.\n");
-                _sleep(1000);
+                Sleep(1000);
                 break;
         }
     }

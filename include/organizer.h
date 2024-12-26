@@ -17,7 +17,7 @@ typedef struct
     float price;
     int event_type;
     char description[50];
-    int availability;
+    int availability; // 1 available 0 Not Available
     char created_date[50];
     int max_guest; 
     int duration; // in hours
@@ -62,6 +62,8 @@ int update_typeevent(int event_id, char key[50], char *value);
 int valid_typeevent_id(int event_id);
 
 int generate_typeevent_id();
+
+char *preview_event_type();
 
 
 // packages prototype

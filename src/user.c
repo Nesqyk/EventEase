@@ -372,6 +372,21 @@ int update_user(int id, char *key, char *value)
 }
 
 
+int add_notification(int id)
+{
+    
+}
+
+char *read_notification(int id)
+{
+
+}
+
+char *delete_notifcation(int id)
+{
+
+}
+
 char *read_user(int id, char key[50]) 
 {
     if (valid_user_id(id) != 1)

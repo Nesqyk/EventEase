@@ -6,7 +6,7 @@
 #include <sys/stat.h> 
 
 #include "organizer.h"
-
+#include "utils.h"
 
 
 
@@ -31,7 +31,7 @@ events/
 
 char *read_eventtype_all(const char key[50]) 
 {
-    FILE *ids_file = fopen("data/events/type_event_id.txt", "r");
+    FILE *ids_file = fopen("data/type_event_ids.txt", "r");
     if (ids_file == NULL) 
     {
         perror("[ERROR] Unable to open type_event_id.txt");
@@ -82,7 +82,6 @@ char *read_eventtype_all(const char key[50])
                 result = temp;
 
                 sprintf(result + current_length, "%s\n", value_buffer);
-
             }
         }
         fclose(info_file);
@@ -127,9 +126,10 @@ int create_typeevent(TypeEvent typeevent)
     fprintf(info_file, "event_id:%d\n", typeevent.id);
     fprintf(info_file, "event_name:%s\n", typeevent.name);
     fprintf(info_file, "description:%s\n", typeevent.description);
-    fprintf(info_file, "date_created:%s\n", generated_date);
     // instead of separating we could use "," as a delimiter
     fprintf(info_file,"venues: %s\n",typeevent.venues);
+    fprintf(info_file, "date_created:%s", generated_date);
+
 
     FILE *id_file = fopen(TYPE_EVENT_ID_FILE, "a");
 
@@ -158,7 +158,7 @@ int create_typeevent(TypeEvent typeevent)
 
     char pkg_dir[50];
 
-    sprintf(pkg_dir, "%s/packages", pkg_dir);
+    sprintf(pkg_dir, "%s/packages", type_path);
 
     if(_mkdir(pkg_dir) != 0)
     {
@@ -182,12 +182,14 @@ int create_typeevent(TypeEvent typeevent)
 char *read_typevent(int event_id, char key[50]) 
 {
     if (valid_typeevent_id(event_id) != 1) {
-        return NULL;
+        return NULL; // not this
     }
 
     char type_dir[256];   
     // data/events/id/type_info,txt
+    
     sprintf(type_dir, "%s%d/%s", TYPE_EVENTS_DIR, event_id, TYPE_INFO_FILE);
+    printf("%s\n", type_dir);
 
     FILE *info_file = fopen(type_dir, "r");
 
@@ -216,13 +218,13 @@ char *read_typevent(int event_id, char key[50])
         }
     }
     fclose(info_file);
-    return NULL;
+    return NULL; // this
 }
 
 
 char *preview_event_type()
 {
-    FILE *ids_file = fopen("data/events/type_event_id.txt", "r");
+    FILE *ids_file = fopen("data/type_event_ids.txt", "r");
     if (ids_file == NULL) 
     {
         perror("[ERROR] Unable to open type_event_id.txt");
@@ -262,6 +264,11 @@ char *preview_event_type()
             size_t current_length = strlen(result);
             size_t additional_length = strlen(value_buffer) + 50; 
 
+            if (strcmp(key_buffer, "date_created") == 0) 
+            {
+                continue;
+            }
+            
             char *temp = realloc(result, current_length + additional_length);
             if (temp == NULL) 
             {
@@ -273,10 +280,43 @@ char *preview_event_type()
             }
             result = temp;
 
-            sprintf(result + current_length, "%s\n", value_buffer);
+            Field package_field[] = 
+            {
+                {"event_id", "\033[32mEvent ID\033[0m"},
+                {"event_name", "Event Name"},
+                {"description", "Description"},
+                {"venues", "Venues"},
+            };
+            int valid = 0;
+            for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
+            {   
+                if(strcmp(key_buffer, package_field[i].key) == 0 )
+                {
+                    valid = 1;
+                    sprintf(result + current_length, "\n%s: %s", package_field[i].display_name, value_buffer);
+                    current_length += strlen(result + current_length);
+                }
+            }
+            
+            if(valid != 1)
+            {
+                sprintf(result + current_length, "\nUnknown Key : %s\n", value_buffer);
+            }
 
         }
         fclose(info_file);
+        
+        size_t current_length = strlen(result);
+        char *temp = realloc(result, current_length + 2); // Allocate space for '\n' and '\0'
+        if (temp == NULL) 
+        {
+            perror("[ERROR] Memory reallocation failed");
+            free(result);
+            fclose(ids_file);
+            return NULL;
+        }
+        result = temp;
+        strcat(result, "\n");
     }
     fclose(ids_file);
 
@@ -372,9 +412,6 @@ int generate_typeevent_id()
         rewind(file);
     }
 
-    fprintf(file, "%d\n", last_event_id);
-    fclose(file);
-
     return last_event_id;
 }
 
@@ -422,8 +459,6 @@ int add_pkg(int event_id, Package pkg)
     // ../data/events/id/packages/package_name.txt
     sprintf(pkg_dir, "%s%d/packages/", TYPE_EVENTS_DIR, event_id);
 
-    create_dir(pkg_dir);
-
     char pkg_path[256];
 
     // ..data/events/id/packages/A.txt
@@ -455,6 +490,15 @@ int add_pkg(int event_id, Package pkg)
     );
 
     fclose(pkg_file);
+
+    char id_path[50];
+    sprintf(id_path, "%s%d/%s", TYPE_EVENTS_DIR, event_id, TYPE_PKG_ID_FILE);
+    
+    FILE *id_file = fopen(id_path, "r");
+
+    fprintf(id_file, "%d\n", pkg.id);
+    fclose(id_file);
+
     return 1;
 }
 
@@ -468,10 +512,10 @@ char *preview_pkgs(int event_id)
 
     sprintf(pkg_id_file, "%s%s", event_dir, TYPE_PKG_ID_FILE);
 
-    FILE *ids_file = fopen("%s", "r");
+    FILE *ids_file = fopen(pkg_id_file, "r");
     if (ids_file == NULL) 
     {
-        perror("[ERROR] Unable to open type_event_id.txt");
+        perror("[ERROR] failed to open ");
         return NULL;
     }
 
@@ -504,6 +548,10 @@ char *preview_pkgs(int event_id)
         // figure out how to allocate more memory for inclusions and description.
         while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
         {
+            if(strcmp(key_buffer, "date_created") == 0)
+            {
+                continue;
+            }
 
             size_t current_length = strlen(result);
             size_t additional_length = strlen(value_buffer) + 50; 
@@ -519,10 +567,10 @@ char *preview_pkgs(int event_id)
             }
             result = temp;
 
-
             Field package_field[] = 
             {
                 {"package_id", "Package ID"},
+                {"package_name", "Package Name"},
                 {"price", "Price"},
                 {"event_type", "Event Type"},
                 {"description", "Description"},
@@ -533,17 +581,36 @@ char *preview_pkgs(int event_id)
                 {"inclusions", "Inclusions"}
             };
 
+            int valid = 0;
             for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
-            {
-                if(strcmp(key_buffer, package_field[i].key) == 0)
+            {   
+                if(strcmp(key_buffer, package_field[i].key) == 0 )
                 {
-                    sprintf(result + current_length, "%s : %s\n", package_field[i].display_name, value_buffer);
+                    valid = 1;
+                    sprintf(result + current_length, "\n%s: %s", package_field[i].display_name, value_buffer);
+                    current_length += strlen(result + current_length);
                 }
             }
-            sprintf(result + current_length, "Unknown Key : %s\n", value_buffer);
+            
+            if(valid != 1)
+            {
+                sprintf(result + current_length, "\nUnknown Key : %s\n", value_buffer);
+            }
 
         }
         fclose(info_file);
+        
+        size_t current_length = strlen(result);
+        char *temp = realloc(result, current_length + 2); // Allocate space for '\n' and '\0'
+        if (temp == NULL) 
+        {
+            perror("[ERROR] Memory reallocation failed");
+            free(result);
+            fclose(ids_file);
+            return NULL;
+        }
+        result = temp;
+        strcat(result, "\n");
     }
     fclose(ids_file);
 
@@ -842,7 +909,6 @@ int generate_pkg_id(int event_id)
         rewind(file);
     }
 
-    fprintf(file, "%d\n", last_event_id);
     fclose(file);
 
     return last_event_id;

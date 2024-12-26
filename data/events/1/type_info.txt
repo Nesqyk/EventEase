@@ -1,0 +1,6 @@
+event_id:1
+event_name:BDAAAYY
+description:This is a test event
+venues: School, Jabee, Mcdo
+date_created:Thu Dec 26 10:15:53 2024
+

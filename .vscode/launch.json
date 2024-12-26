@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Tyty/Downloads/EventEase",
-      "program": "c:/Users/Tyty/Downloads/EventEase/build/Debug/outDebug",
+      "cwd": "c:/Users/Tyty/Downloads/EventEase/src",
+      "program": "c:/Users/Tyty/Downloads/EventEase/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
