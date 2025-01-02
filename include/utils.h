@@ -65,5 +65,18 @@ int remove_directory(const char *path);
 
 void create_dir(const char *path);
 
+int validate_date(int year, int month, int day);
+
+int validate_time(int hour, int minute);
+
+char *format_number(int number);
+
+int parse_date_manual(const char *date_str, char *formatted_date, char *formatted_time);
+
+int validate_time_manual(int hour, int minute, int second);
+
+int validate_date_manual(int day, int month, int year);
+
+char *display_current_month_with_highlight();
 
 #endif // UTILS_H

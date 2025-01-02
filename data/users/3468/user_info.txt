@@ -1,0 +1,11 @@
+id:3468
+username:hello123456
+password:hello@123
+full_name:
+email:tyrone@gmail.com
+phone:09123456789
+role:client
+signed_in:1
+stay_logged_in:0
+date_created:Sun Dec 29 20:55:08 2024
+

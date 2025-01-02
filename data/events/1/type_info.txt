@@ -1,6 +1,7 @@
 event_id:1
 event_name:BDAAAYY
 description:This is a test event
-venues: School, Jabee, Mcdo
+venues:School,Jabee,Mcdo
+dp_percentage:50
 date_created:Thu Dec 26 10:15:53 2024
-
+payment_deadline_days:6

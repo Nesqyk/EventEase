@@ -7,4 +7,5 @@ availability:1
 created_date:nah
 max_guest:100
 duration:0
-inclusions:Test inclusions
+inclusions: 100 guest, food and venue, use of venue for 5 hours, 1 hotel room accommodation for dress-up, 24 LED parlight, 4 wireless microphone, sound system, wedding gown, veil, cord, 3 cushion, thigh garter, headdress, groom complete attire, 4 male & 4 female entourage attire, 1 maid of honor attire, 1 bestman attire, 3 flower girl attire, 3 bearers attire, both parents attire, bridal robe, bride quad robe, mannequin, venue decoration, giveaways 50pcs (hands-on), personalized invitation 50pcs, church or garden, beach decorations, special fresh bouquet for bride, corsage 35pcs, fresh entourage bouquet, basket special made for flower girl's, one pair of dove, special centerpiece, stage decorations and backdrop, entrance decorations, unity candles, emcee for church and reception, coordinator with 3 assistant, church rehearsal 3 days before wedding, bridal car with floral decoration, van for entourage (Grandia), party poppers/confetti, 3 layer cake, hair and make-up 10 pax on the wedding day, hair and make-up for prenuptial shoot with accessories, professional photo and video coverage, prenuptial shoot, 100 copies printed in 4R pictures, guestbook for reception, soft copy unlimited shoot with selected pictures, copy edited in digital with USB, LCD projector for reception
+

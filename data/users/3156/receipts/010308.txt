@@ -1,0 +1,38 @@
+==================================================
+                   🧾 EventEase Receipt              
+==================================================
+
+Receipt No.        : 010308
+Transaction Date   : Jan  1 2025
+
+--------------------------------------------------
+🔖 Client Information
+--------------------------------------------------
+Name               : Tyrone Tabornal
+Email              : tyrone@gmail.com
+Phone              : 09123456789
+
+--------------------------------------------------
+🎉 Event Details
+--------------------------------------------------
+Event Name         : Lola's 60th Birthday
+Event Date         : 2024-12-29 | Time: 21:42:36
+Venue              : Jabee
+Package            : A
+
+--------------------------------------------------
+💳 Payment Details
+--------------------------------------------------
+Total Package Cost : PHP 10000.00
+Down Payment       : PHP 5000.00
+Remaining Balance  : PHP 5000.00
+Payment Deadline   : Tue Dec 31 11:41:26 2024
+
+--------------------------------------------------
+📜 Notes
+--------------------------------------------------
+- Please settle the remaining balance by the deadline.
+- Contact us for any inquiries or changes to your booking.
+
+==================================================
+✨ Thank you for choosing EventEase! ✨

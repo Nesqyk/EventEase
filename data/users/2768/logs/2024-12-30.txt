@@ -1,0 +1,588 @@
+2024-12-30 08:49:50 [INFO]: User accessed the main menu.
+2024-12-30 08:54:47 [INFO]: User accessed the main menu.
+2024-12-30 08:54:49 [INFO]: User selected option 2 from the main menu.
+2024-12-30 08:54:49 [INFO]: User selected 'Book Event' option.
+2024-12-30 08:55:47 [INFO]: User accessed the main menu.
+2024-12-30 08:55:49 [INFO]: User selected option 3 from the main menu.
+2024-12-30 08:55:51 [INFO]: User accessed the main menu.
+2024-12-30 08:55:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 08:55:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 09:08:30 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:30 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:31 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:32 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:32 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:33 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:33 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:34 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:35 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:35 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:36 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:36 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:37 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:37 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:38 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:39 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:39 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:40 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:40 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:41 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:42 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:42 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:43 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:43 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:44 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:45 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:45 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:46 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:46 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:47 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:48 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:48 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:49 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:49 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:50 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:50 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:51 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:52 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:52 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:08:53 [INFO]: User selected option 455 from the main menu.
+2024-12-30 09:18:54 [INFO]: User selected option 1 from the main menu.
+2024-12-30 09:18:54 [INFO]: User selected 'Profile' option.
+2024-12-30 09:57:56 [INFO]: User selected option 1 from the main menu.
+2024-12-30 09:57:56 [INFO]: User selected 'Profile' option.
+2024-12-30 09:59:10 [INFO]: User selected option 587 from the profile menu.
+2024-12-30 09:59:30 [INFO]: User selected option 1 from the main menu.
+2024-12-30 09:59:30 [INFO]: User selected 'Profile' option.
+2024-12-30 10:00:16 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:00:16 [INFO]: User selected 'Profile' option.
+2024-12-30 10:00:34 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 10:00:34 [INFO]: User returned to main menu from profile.
+2024-12-30 10:00:37 [INFO]: User selected option 2 from the main menu.
+2024-12-30 10:00:37 [INFO]: User selected 'Book Event' option.
+2024-12-30 10:00:45 [INFO]: User selected option 7 from the main menu.
+2024-12-30 10:02:05 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:02:05 [INFO]: User selected 'Profile' option.
+2024-12-30 10:02:09 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:09 [INFO]: Invalid profile menu choice.
+2024-12-30 10:02:09 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:09 [INFO]: Invalid profile menu choice.
+2024-12-30 10:02:10 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:10 [INFO]: Invalid profile menu choice.
+2024-12-30 10:02:10 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:10 [INFO]: Invalid profile menu choice.
+2024-12-30 10:02:11 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:11 [INFO]: Invalid profile menu choice.
+2024-12-30 10:02:12 [INFO]: User selected option 32763 from the profile menu.
+2024-12-30 10:02:12 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:11 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:09:11 [INFO]: User selected 'Profile' option.
+2024-12-30 10:09:12 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:12 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:13 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:13 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:13 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:13 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:14 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:14 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:15 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:15 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:15 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:15 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:16 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:16 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:16 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:16 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:17 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:17 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:18 [INFO]: User selected option 477 from the profile menu.
+2024-12-30 10:09:18 [INFO]: Invalid profile menu choice.
+2024-12-30 10:09:44 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:09:44 [INFO]: User selected 'Profile' option.
+2024-12-30 10:09:45 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:09:45 [INFO]: User viewed their profile.
+2024-12-30 10:09:48 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:09:48 [INFO]: User viewed their profile.
+2024-12-30 10:10:25 [INFO]: User selected option 2 from the main menu.
+2024-12-30 10:10:25 [INFO]: User selected 'Book Event' option.
+2024-12-30 10:10:27 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:10:27 [INFO]: User selected 'Profile' option.
+2024-12-30 10:10:43 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:10:43 [INFO]: User viewed their profile.
+2024-12-30 10:10:48 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:10:48 [INFO]: User viewed their profile.
+2024-12-30 10:10:56 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 10:10:56 [INFO]: User selected to update their profile.
+2024-12-30 10:12:57 [INFO]: User selected option 2 from the main menu.
+2024-12-30 10:12:57 [INFO]: User selected 'Book Event' option.
+2024-12-30 10:13:00 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:13:00 [INFO]: User selected 'Profile' option.
+2024-12-30 10:13:00 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:13:00 [INFO]: User viewed their profile.
+2024-12-30 10:14:50 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 10:14:50 [INFO]: User returned to main menu from profile.
+2024-12-30 10:17:38 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:17:38 [INFO]: User selected 'Profile' option.
+2024-12-30 10:17:39 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:17:39 [INFO]: User viewed their profile.
+2024-12-30 10:18:11 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:18:11 [INFO]: User selected 'Profile' option.
+2024-12-30 10:18:11 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:18:11 [INFO]: User viewed their profile.
+2024-12-30 10:18:25 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:18:25 [INFO]: User selected 'Profile' option.
+2024-12-30 10:18:26 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:18:26 [INFO]: User viewed their profile.
+2024-12-30 10:21:42 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:21:42 [INFO]: User selected 'Profile' option.
+2024-12-30 10:21:42 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:21:42 [INFO]: User viewed their profile.
+2024-12-30 10:23:18 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:23:18 [INFO]: User selected 'Profile' option.
+2024-12-30 10:23:19 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:23:19 [INFO]: User viewed their profile.
+2024-12-30 10:23:23 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:23:23 [INFO]: User viewed their profile.
+2024-12-30 10:23:26 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:23:26 [INFO]: User viewed their profile.
+2024-12-30 10:24:14 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:24:14 [INFO]: User viewed their profile.
+2024-12-30 10:24:17 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:24:17 [INFO]: User viewed their profile.
+2024-12-30 10:28:46 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:28:46 [INFO]: User selected 'Profile' option.
+2024-12-30 10:28:48 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:28:48 [INFO]: User viewed their profile.
+2024-12-30 10:28:51 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:28:51 [INFO]: User viewed their profile.
+2024-12-30 10:29:56 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:29:56 [INFO]: User selected 'Profile' option.
+2024-12-30 10:29:56 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:29:56 [INFO]: User viewed their profile.
+2024-12-30 10:33:24 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:33:24 [INFO]: User selected 'Profile' option.
+2024-12-30 10:33:25 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:33:25 [INFO]: User viewed their profile.
+2024-12-30 10:33:33 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:33:33 [INFO]: User viewed their profile.
+2024-12-30 10:34:18 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:34:18 [INFO]: User viewed their profile.
+2024-12-30 10:34:20 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:34:20 [INFO]: User viewed their profile.
+2024-12-30 10:34:59 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 10:34:59 [INFO]: User returned to main menu from profile.
+2024-12-30 10:35:01 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:35:01 [INFO]: User selected 'Profile' option.
+2024-12-30 10:35:02 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 10:35:02 [INFO]: User selected to update their profile.
+2024-12-30 10:35:06 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 10:35:09 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:35:09 [INFO]: User viewed their profile.
+2024-12-30 10:35:33 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:35:33 [INFO]: User selected 'Profile' option.
+2024-12-30 10:35:38 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:35:38 [INFO]: User viewed their profile.
+2024-12-30 10:36:10 [INFO]: User selected option 1 from the main menu.
+2024-12-30 10:36:10 [INFO]: User selected 'Profile' option.
+2024-12-30 10:36:11 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:36:11 [INFO]: User viewed their profile.
+2024-12-30 10:36:26 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:36:26 [INFO]: User viewed their profile.
+2024-12-30 10:36:43 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:36:43 [INFO]: User viewed their profile.
+2024-12-30 10:36:44 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 10:36:44 [INFO]: User selected to update their profile.
+2024-12-30 10:36:46 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 10:36:47 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 10:36:47 [INFO]: User viewed their profile.
+2024-12-30 10:53:12 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 10:53:12 [INFO]: User returned to main menu from profile.
+2024-12-30 11:29:22 [INFO]: User selected option 1 from the main menu.
+2024-12-30 11:29:22 [INFO]: User selected 'Profile' option.
+2024-12-30 11:29:24 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 11:29:24 [INFO]: User selected to update their profile.
+2024-12-30 11:30:25 [INFO]: User selected option 1 from the main menu.
+2024-12-30 11:30:25 [INFO]: User selected 'Profile' option.
+2024-12-30 11:30:26 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 11:30:26 [INFO]: User selected to update their profile.
+2024-12-30 11:30:28 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 11:30:29 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 11:30:29 [INFO]: User viewed their profile.
+2024-12-30 11:30:41 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 11:30:41 [INFO]: User selected to update their profile.
+2024-12-30 11:30:45 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 11:32:59 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 11:32:59 [INFO]: User returned to main menu from profile.
+2024-12-30 11:33:00 [INFO]: User selected option 2 from the main menu.
+2024-12-30 11:33:00 [INFO]: User selected 'Book Event' option.
+2024-12-30 11:33:06 [INFO]: User selected option 1 from the main menu.
+2024-12-30 11:33:06 [INFO]: User selected 'Profile' option.
+2024-12-30 11:33:11 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 11:33:11 [INFO]: User returned to main menu from profile.
+2024-12-30 11:33:12 [INFO]: User selected option 1 from the main menu.
+2024-12-30 11:33:12 [INFO]: User selected 'Profile' option.
+2024-12-30 11:33:13 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 11:33:13 [INFO]: User viewed their profile.
+2024-12-30 11:35:33 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 11:35:33 [INFO]: User returned to main menu from profile.
+2024-12-30 11:37:33 [INFO]: User selected option 1 from the main menu.
+2024-12-30 11:37:33 [INFO]: User selected 'Profile' option.
+2024-12-30 11:37:36 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 11:37:36 [INFO]: User viewed their profile.
+2024-12-30 11:37:50 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 11:37:50 [INFO]: User returned to main menu from profile.
+2024-12-30 11:40:46 [INFO]: User selected option 2 from the main menu.
+2024-12-30 11:40:46 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:07:07 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:07:07 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:14:41 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:14:41 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:15:56 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:15:56 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:16:46 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:16:46 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:16:49 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:16:49 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:16:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:16:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:18:27 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:18:27 [INFO]: User selected 'Profile' option.
+2024-12-30 13:18:30 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 13:18:30 [INFO]: User selected to update their profile.
+2024-12-30 13:18:33 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 13:18:35 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:18:35 [INFO]: User viewed their profile.
+2024-12-30 13:18:40 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:18:40 [INFO]: User selected 'Profile' option.
+2024-12-30 13:18:41 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:18:41 [INFO]: User viewed their profile.
+2024-12-30 13:19:21 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:19:22 [INFO]: User selected 'Profile' option.
+2024-12-30 13:19:23 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:19:23 [INFO]: User viewed their profile.
+2024-12-30 13:19:28 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:19:28 [INFO]: User selected 'Profile' option.
+2024-12-30 13:19:30 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:19:30 [INFO]: User viewed their profile.
+2024-12-30 13:21:01 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:21:01 [INFO]: User selected 'Profile' option.
+2024-12-30 13:21:01 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:21:01 [INFO]: User viewed their profile.
+2024-12-30 13:21:19 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:21:19 [INFO]: User selected 'Profile' option.
+2024-12-30 13:21:20 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:21:20 [INFO]: User viewed their profile.
+2024-12-30 13:21:27 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:21:27 [INFO]: User selected 'Profile' option.
+2024-12-30 13:21:28 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:21:28 [INFO]: User viewed their profile.
+2024-12-30 13:21:31 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:21:31 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:21:34 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:21:34 [INFO]: User selected 'Profile' option.
+2024-12-30 13:21:35 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 13:21:35 [INFO]: User selected to update their profile.
+2024-12-30 13:22:15 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:22:15 [INFO]: User selected 'Profile' option.
+2024-12-30 13:22:16 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 13:22:16 [INFO]: User selected to update their profile.
+2024-12-30 13:24:12 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:24:12 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:24:15 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:24:15 [INFO]: User selected 'Profile' option.
+2024-12-30 13:24:16 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:24:16 [INFO]: User viewed their profile.
+2024-12-30 13:24:36 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:24:36 [INFO]: User selected 'Profile' option.
+2024-12-30 13:24:37 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:24:37 [INFO]: User viewed their profile.
+2024-12-30 13:25:01 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:25:01 [INFO]: User selected 'Profile' option.
+2024-12-30 13:25:02 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:25:02 [INFO]: User viewed their profile.
+2024-12-30 13:25:10 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:25:10 [INFO]: User selected 'Profile' option.
+2024-12-30 13:25:10 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:25:10 [INFO]: User viewed their profile.
+2024-12-30 13:27:28 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:27:28 [INFO]: User selected 'Profile' option.
+2024-12-30 13:27:29 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:27:29 [INFO]: User viewed their profile.
+2024-12-30 13:27:45 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 13:27:45 [INFO]: User selected to update their profile.
+2024-12-30 13:27:48 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 13:29:41 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:29:41 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:30:06 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:30:06 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:30:25 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:30:25 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:31:36 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:31:36 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:32:59 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:32:59 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:33:05 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:33:05 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:33:27 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:33:27 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:34:22 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:34:22 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:34:46 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:34:46 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:35:35 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:35:35 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:35:46 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:35:46 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:36:15 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:36:15 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:36:29 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:36:29 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:36:56 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:36:56 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:37:15 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:37:15 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:37:20 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:37:20 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:37:58 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:37:58 [INFO]: User selected 'Profile' option.
+2024-12-30 13:37:59 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:37:59 [INFO]: User viewed their profile.
+2024-12-30 13:38:02 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:38:02 [INFO]: User viewed their profile.
+2024-12-30 13:38:07 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 13:38:07 [INFO]: User returned to main menu from profile.
+2024-12-30 13:38:09 [INFO]: User selected option 3 from the main menu.
+2024-12-30 13:38:11 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:38:11 [INFO]: User selected 'Profile' option.
+2024-12-30 13:38:13 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:38:13 [INFO]: User viewed their profile.
+2024-12-30 13:38:15 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 13:38:15 [INFO]: User returned to main menu from profile.
+2024-12-30 13:38:15 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:38:15 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:38:25 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:38:25 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:39:14 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:39:14 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:39:38 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:39:38 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:40:08 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:40:08 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:42:38 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:42:38 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:43:07 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:43:07 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:43:56 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:43:56 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:44:27 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:44:27 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:45:07 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:45:07 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:45:24 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:45:24 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:45:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:45:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:46:25 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:46:25 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:46:47 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:46:47 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:47:11 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:47:11 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:49:06 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:49:06 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:49:33 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:49:33 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:50:24 [INFO]: User selected option 1 from the main menu.
+2024-12-30 13:50:24 [INFO]: User selected 'Profile' option.
+2024-12-30 13:50:25 [INFO]: User selected option 1 from the profile menu.
+2024-12-30 13:50:25 [INFO]: User viewed their profile.
+2024-12-30 13:50:29 [INFO]: User selected option 2 from the profile menu.
+2024-12-30 13:50:29 [INFO]: User selected to update their profile.
+2024-12-30 13:50:31 [INFO]: Profile update canceled. Returning to profile menu.
+2024-12-30 13:50:33 [INFO]: User selected option 3 from the profile menu.
+2024-12-30 13:50:33 [INFO]: User returned to main menu from profile.
+2024-12-30 13:50:37 [INFO]: User selected option 3 from the main menu.
+2024-12-30 13:51:42 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:51:42 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:51:55 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:51:55 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:55:30 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:55:30 [INFO]: User selected 'Book Event' option.
+2024-12-30 13:58:39 [INFO]: User selected option 2 from the main menu.
+2024-12-30 13:58:39 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:00:39 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:00:39 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:00:45 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:00:45 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:01:04 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:01:04 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:01:37 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:01:37 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:02:20 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:02:20 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:03:29 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:03:29 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:03:43 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:03:43 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:04:21 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:04:21 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:04:37 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:04:37 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:43:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:43:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:44:20 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:44:20 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:45:19 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:45:19 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:46:20 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:46:20 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:46:38 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:46:38 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:47:34 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:47:34 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:48:12 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:48:12 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:49:24 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:49:24 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:49:34 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:49:34 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:50:36 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:50:36 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:51:52 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:51:52 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:52:03 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:52:03 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:53:52 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:53:52 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:55:21 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:55:21 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:55:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:55:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:56:47 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:56:47 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:57:24 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:57:24 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:57:55 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:57:55 [INFO]: User selected 'Book Event' option.
+2024-12-30 14:58:19 [INFO]: User selected option 2 from the main menu.
+2024-12-30 14:58:19 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:00:24 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:00:24 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:03:07 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:03:07 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:03:26 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:03:26 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:05:21 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:05:21 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:21:46 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:21:46 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:25:01 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:25:01 [INFO]: User selected 'Book Event' option.
+2024-12-30 15:30:50 [INFO]: User selected option 2 from the main menu.
+2024-12-30 15:30:50 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:18:44 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:18:44 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:19:22 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:19:22 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:21:10 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:21:10 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:21:39 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:21:39 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:26:08 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:26:08 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:26:26 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:26:26 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:30:58 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:30:58 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:32:31 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:32:31 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:32:57 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:32:57 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:33:35 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:33:35 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:33:44 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:33:44 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:34:53 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:34:53 [INFO]: User selected 'Book Event' option.
+2024-12-30 16:35:20 [INFO]: User selected option 2 from the main menu.
+2024-12-30 16:35:20 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:08:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:08:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:23:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:23:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:25:29 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:25:29 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:32:57 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:32:58 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:36:19 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:36:19 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:36:25 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:36:25 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:36:59 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:36:59 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:37:56 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:37:56 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:38:06 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:38:06 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:40:10 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:40:10 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:40:37 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:40:37 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:42:44 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:42:44 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:43:32 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:43:32 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:44:14 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:44:14 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:44:48 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:44:48 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:46:28 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:46:28 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:47:24 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:47:24 [INFO]: User selected 'Book Event' option.
+2024-12-30 17:48:41 [INFO]: User selected option 2 from the main menu.
+2024-12-30 17:48:41 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:00:36 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:00:36 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:01:41 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:01:41 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:02:36 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:02:36 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:02:55 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:02:55 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:04:38 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:04:38 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:05:44 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:05:44 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:08:21 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:08:21 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:10:40 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:10:40 [INFO]: User selected 'Book Event' option.
+2024-12-30 18:20:14 [INFO]: User selected option 2 from the main menu.
+2024-12-30 18:20:14 [INFO]: User selected 'Book Event' option.
+2024-12-30 19:01:23 [INFO]: User selected option 2 from the main menu.
+2024-12-30 19:01:23 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:13:54 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:13:54 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:17:52 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:17:52 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:19:53 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:19:53 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:20:03 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:20:03 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:21:17 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:21:17 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:22:35 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:22:35 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:24:40 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:24:40 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:25:21 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:25:21 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:30:11 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:30:11 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:32:39 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:32:39 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:33:12 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:33:12 [INFO]: User selected 'Book Event' option.
+2024-12-30 20:40:30 [INFO]: User selected option 2 from the main menu.
+2024-12-30 20:40:30 [INFO]: User selected 'Book Event' option.

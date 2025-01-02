@@ -1,9 +1,0 @@
-id:72
-username:asdasd
-password:hello123
-full_name:tyrone
-email:tyrone@gmail.com
-phone:09123456789
-role:client
-signed_in:1
-date_created:Sat Dec 21 13:21:49 2024

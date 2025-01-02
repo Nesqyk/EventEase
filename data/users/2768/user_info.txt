@@ -1,0 +1,10 @@
+id:2768
+username:Hello2024
+password:Test@123
+full_name:test user
+email:tyrone@gmail.com
+phone:09123456789
+role:client
+signed_in:0
+stay_logged_in:1
+date_created:Sun Dec 29 21:42:36 2024

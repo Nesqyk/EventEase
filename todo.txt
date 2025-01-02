@@ -1,0 +1,16 @@
+TODO for TMR:
+
+Finish Client Features, 
+
+Add another feature/s for clients. 
+A calendar which highlights which day is an event; like it will have a color which day 
+a specific day will commence.
+
+The real question is; what problem do you really want to solve?
+
+
+Additional for the calendar: add a highlight to a 
+specific day for which an event will commence.
+
+For the dashboard: maybe add a section whereby it'll show list
+of upcoming events? -> replace the calendar with it.

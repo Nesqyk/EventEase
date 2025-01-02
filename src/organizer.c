@@ -128,6 +128,8 @@ int create_typeevent(TypeEvent typeevent)
     fprintf(info_file, "description:%s\n", typeevent.description);
     // instead of separating we could use "," as a delimiter
     fprintf(info_file,"venues: %s\n",typeevent.venues);
+    fprintf(info_file, "dp_percentage:%d\n", typeevent.dp_percentage);
+    fprintf(info_file, "payment_deadline_days:%d\n", typeevent.payment_deadline_days);
     fprintf(info_file, "date_created:%s", generated_date);
 
 
@@ -189,7 +191,6 @@ char *read_typevent(int event_id, char key[50])
     // data/events/id/type_info,txt
     
     sprintf(type_dir, "%s%d/%s", TYPE_EVENTS_DIR, event_id, TYPE_INFO_FILE);
-    printf("%s\n", type_dir);
 
     FILE *info_file = fopen(type_dir, "r");
 
@@ -270,14 +271,6 @@ char *preview_event_type()
             }
             
             char *temp = realloc(result, current_length + additional_length);
-            if (temp == NULL) 
-            {
-                perror("[ERROR] Memory reallocation failed");
-                free(result);
-                fclose(info_file);
-                fclose(ids_file);
-                return NULL;
-            }
             result = temp;
 
             Field package_field[] = 
@@ -292,6 +285,7 @@ char *preview_event_type()
             {   
                 if(strcmp(key_buffer, package_field[i].key) == 0 )
                 {
+
                     valid = 1;
                     sprintf(result + current_length, "\n%s: %s", package_field[i].display_name, value_buffer);
                     current_length += strlen(result + current_length);
@@ -300,7 +294,7 @@ char *preview_event_type()
             
             if(valid != 1)
             {
-                sprintf(result + current_length, "\nUnknown Key : %s\n", value_buffer);
+                sprintf(result + current_length, "\nUnknown Key : %s", value_buffer);
             }
 
         }
@@ -452,6 +446,15 @@ Wedding:
     Package B:
 */
 
+#define PAGE_SIZE 10
+
+void display_packages_with_details(const char *packages, char choice[20]) 
+{
+    
+   
+}
+
+
 int add_pkg(int event_id, Package pkg)
 {
     char pkg_dir[256];
@@ -469,7 +472,7 @@ int add_pkg(int event_id, Package pkg)
     fprintf(pkg_file,
     "package_id:%d\n" 
     "package_name:%s\n"
-    "price:%.2f\n"
+    "price:%.2f\n",
     "event_type:%d\n"
     "description:%s\n"
     "availability:%d\n"
@@ -502,26 +505,119 @@ int add_pkg(int event_id, Package pkg)
     return 1;
 }
 
-char *preview_pkgs(int event_id)
-{
+char *preview_single_pkg(int event_id, int pkg_id) {
     char event_dir[50];
+    sprintf(event_dir, "data/events/%d/", event_id);
 
-    sprintf(event_dir,"data/events/%d/", event_id);
+    char info_filename[256];
+    sprintf(info_filename, "%spackages/%d.txt", event_dir, pkg_id);
+
+    FILE *info_file = fopen(info_filename, "r");
+    if (info_file == NULL) {
+        perror("[ERROR] Unable to open package file");
+        return NULL;
+    }
+
+    char *result = malloc(1);
+    if (result == NULL) {
+        perror("[ERROR] Memory allocation failed");
+        fclose(info_file);
+        return NULL;
+    }
+
+    result[0] = '\0';
+
+    char key_buffer[50];
+    char value_buffer[1000];
+
+    Field package_field[] = {
+        {"package_id", "\033[32mPackage ID\033[0m"},
+        {"package_name", "📛 Package Name"},
+        {"price", "💰 Price"},
+        {"event_type", "🏷️ Event Type"},
+        {"description", "📜 Description"},
+        {"availability", "📅 Availability"},
+        {"max_guest", "🧑‍🤝‍🧑 Max Guest"},
+        {"duration", "⏱️ Duration"},
+        {"inclusions", "🎁 Inclusions"}};
+
+    while (fscanf(info_file, "%49[^:]:%1000[^\n]\n", key_buffer, value_buffer) == 2) {
+        if (strcmp(key_buffer, "created_date") == 0) {
+            continue;
+        }
+
+        if (strcmp(key_buffer, "inclusions") == 0) {
+            // Format inclusions with bullet points
+            char *token = strtok(value_buffer, ",");
+            strcat(result, "🎁 Inclusions:\n");
+            while (token) {
+                size_t additional_length = strlen(token) + 4; // For "  - " and newline
+                char *temp = realloc(result, strlen(result) + additional_length + 1);
+                if (temp == NULL) {
+                    perror("[ERROR] Memory reallocation failed");
+                    free(result);
+                    fclose(info_file);
+                    return NULL;
+                }
+                result = temp;
+                strcat(result, "  - ");
+                strcat(result, token);
+                strcat(result, "\n");
+                token = strtok(NULL, ",");
+            }
+        } else {
+            // Process other fields
+            size_t additional_length = strlen(value_buffer) + strlen(key_buffer) + 20;
+            char *temp = realloc(result, strlen(result) + additional_length + 1);
+            if (temp == NULL) {
+                perror("[ERROR] Memory reallocation failed");
+                free(result);
+                fclose(info_file);
+                return NULL;
+            }
+            result = temp;
+
+            for (size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++) {
+                if (strcmp(key_buffer, package_field[i].key) == 0) {
+                    sprintf(result + strlen(result), "%s: %s\n", package_field[i].display_name, value_buffer);
+                    break;
+                }
+            }
+        }
+    }
+
+    fclose(info_file);
+
+    // Remove trailing newline if present
+    size_t result_length = strlen(result);
+    if (result_length > 0 && result[result_length - 1] == '\n') {
+        result[result_length - 1] = '\0';
+    }
+
+    if (strlen(result) == 0) {
+        free(result);
+        return NULL;
+    }
+
+    return result;
+}
+
+
+char *preview_pkgs(int event_id) {
+    char event_dir[50];
+    sprintf(event_dir, "data/events/%d/", event_id);
 
     char pkg_id_file[50];
-
     sprintf(pkg_id_file, "%s%s", event_dir, TYPE_PKG_ID_FILE);
 
     FILE *ids_file = fopen(pkg_id_file, "r");
-    if (ids_file == NULL) 
-    {
+    if (ids_file == NULL) {
         perror("[ERROR] failed to open ");
         return NULL;
     }
 
-    char *result = malloc(1); 
-    if (result == NULL) 
-    {
+    char *result = malloc(1);
+    if (result == NULL) {
         perror("[ERROR] Memory allocation failed");
         fclose(ids_file);
         return NULL;
@@ -529,100 +625,96 @@ char *preview_pkgs(int event_id)
 
     result[0] = '\0';
     int id;
-    while (fscanf(ids_file, "%d\n", &id) != EOF) 
-    {
-        char info_filename[256];
 
+    while (fscanf(ids_file, "%d\n", &id) != EOF) {
+        char info_filename[256];
         sprintf(info_filename, "%spackages/%d.txt", event_dir, id);
 
         FILE *info_file = fopen(info_filename, "r");
-        if (info_file == NULL) 
-        {
-            perror("[ERROR] Unable to open type_info.txt");
-            continue; 
+        if (info_file == NULL) {
+            perror("[ERROR] Unable to open package file");
+            continue;
         }
 
         char key_buffer[50];
-        char value_buffer[50];
+        char value_buffer[1000];
 
-        // figure out how to allocate more memory for inclusions and description.
-        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
-        {
-            if(strcmp(key_buffer, "date_created") == 0)
-            {
-                continue;
-            }
+        Field package_field[] = {
+            {"package_id", "\033[32mPackage ID\033[0m"},
+            {"package_name", "📛 Package Name"},
+            {"price", "💰 Price"},
+            {"event_type", "🏷️ Event Type"},
+            {"description", "📜 Description"},
+            {"availability", "📅 Availability"},
+            {"max_guest", "🧑‍🤝‍🧑 Max Guest"},
+            {"duration", "⏱️ Duration"},
+            {"inclusions", "🎁 Inclusions"}};
 
-            size_t current_length = strlen(result);
-            size_t additional_length = strlen(value_buffer) + 50; 
-
-            char *temp = realloc(result, current_length + additional_length);
-            if (temp == NULL) 
-            {
-                perror("[ERROR] Memory reallocation failed");
-                free(result);
-                fclose(info_file);
-                fclose(ids_file);
-                return NULL;
-            }
-            result = temp;
-
-            Field package_field[] = 
-            {
-                {"package_id", "Package ID"},
-                {"package_name", "Package Name"},
-                {"price", "Price"},
-                {"event_type", "Event Type"},
-                {"description", "Description"},
-                {"availability", "Availability"},
-                {"created_date", "Date Created"},
-                {"max_guest", "Max Guest"},
-                {"duration", "Duration"},
-                {"inclusions", "Inclusions"}
-            };
-
-            int valid = 0;
-            for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
-            {   
-                if(strcmp(key_buffer, package_field[i].key) == 0 )
-                {
-                    valid = 1;
-                    sprintf(result + current_length, "\n%s: %s", package_field[i].display_name, value_buffer);
-                    current_length += strlen(result + current_length);
-                }
-            }
-            
-            if(valid != 1)
-            {
-                sprintf(result + current_length, "\nUnknown Key : %s\n", value_buffer);
-            }
-
-        }
-        fclose(info_file);
-        
+        // Separate packages with a blank line
         size_t current_length = strlen(result);
-        char *temp = realloc(result, current_length + 2); // Allocate space for '\n' and '\0'
-        if (temp == NULL) 
-        {
+        char *temp = realloc(result, current_length + 2);
+        if (temp == NULL) {
             perror("[ERROR] Memory reallocation failed");
             free(result);
+            fclose(info_file);
             fclose(ids_file);
             return NULL;
         }
         result = temp;
         strcat(result, "\n");
+
+        while (fscanf(info_file, "%49[^:]:%1000[^\n]\n", key_buffer, value_buffer) == 2) {
+            if (strcmp(key_buffer, "created_date") == 0) {
+                continue;
+            }
+
+            if (strcmp(key_buffer, "inclusions") == 0) {
+                // Format inclusions with bullet points
+                char *token = strtok(value_buffer, ",");
+                strcat(result, "🎁 Inclusions:\n");
+                while (token) {
+                    size_t additional_length = strlen(token) + 4; // For "  - " and newline
+                    temp = realloc(result, strlen(result) + additional_length + 1);
+                    result = temp;
+                    strcat(result, "  - ");
+                    strcat(result, token);
+                    strcat(result, "\n");
+                    token = strtok(NULL, ",");
+                }
+            } else {
+                // Process other fields
+                size_t additional_length = strlen(value_buffer) + strlen(key_buffer) + 20;
+                temp = realloc(result, strlen(result) + additional_length + 1);
+                result = temp;
+
+                for (size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++) {
+                    if (strcmp(key_buffer, package_field[i].key) == 0) {
+                        sprintf(result + strlen(result), "%s: %s\n", package_field[i].display_name, value_buffer);
+                        break;
+                    }
+                }
+            }
+        }
+
+        fclose(info_file);
     }
+
     fclose(ids_file);
 
-    // If no matches were found, return NULL
-    if (strlen(result) == 0) 
-    {
+    // Remove trailing newline if present
+    size_t result_length = strlen(result);
+    if (result_length > 0 && result[result_length - 1] == '\n') {
+        result[result_length - 1] = '\0';
+    }
+
+    if (strlen(result) == 0) {
         free(result);
         return NULL;
     }
 
     return result;
 }
+
 
 char *read_all_pkg(int event_id, char key[50])
 {
@@ -710,8 +802,7 @@ char *read_pkg(int event_id, int pkg_id, char key[50])
 
     char type_dir[256];   
     // data/events/id/type_info,txt
-    sprintf(type_dir, "%s%d/%d.txt", TYPE_EVENTS_DIR, event_id, pkg_id);
-
+    sprintf(type_dir, "%s%d/packages/%d.txt", TYPE_EVENTS_DIR, event_id, pkg_id);
     FILE *info_file = fopen(type_dir, "r");
 
     if (info_file == NULL) 

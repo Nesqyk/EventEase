@@ -7,728 +7,861 @@
 #include <windows.h>
 #include "menu.h"
 #include "organizer.h"
+#include <time.h>
+#define MAX_INPUT_SIZE 50
+#define PAGE_SIZE 20
 
+/*
+ * Function: clear_input_buffer
+ * Clears the input buffer to avoid unwanted characters from interfering
+ * with subsequent input operations.
+ */
+void clear_input_buffer() 
+{
+    while (getchar() != '\n');
+}
+
+/*
+ * Function: display_options
+ * Displays a header and a list of options for the user to choose from.
+ * The function dynamically prints the options provided.
+ */
+void display_options(const char *header, const char *paragraph[], const char *options[], const char choice[100]) 
+{
+    system("cls");
+    if (header != NULL) 
+    {
+        printf("-- %s --\n\n", header);
+    }
+
+    if (paragraph != NULL) 
+    {
+        for (size_t i = 0; paragraph[i] != NULL; i++) 
+        {
+            printf("%s\n", paragraph[i]);
+        }
+        printf("\n");
+    }
+
+    if (options != NULL) 
+    {
+        for (size_t i = 0; options[i] != NULL; i++) 
+        {
+            printf("%zu. %s\n", i + 1, options[i]);
+        }
+    }
+
+    printf("\n==================================================\n");
+
+
+    if (choice == NULL)
+    {
+        printf("\n👉 Enter your choice: ");
+    } 
+    else 
+    {
+        printf("\n👉 %s ", choice);
+    }
+}
 
 
 /*
- login
-  login-as
-  
- Sign-Up
- Quit
-
-*/
-int auth_menu()
+ * Function: get_password
+ * Reads a password input from the user and masks all characters
+ * except the last one, which is displayed for visual feedback.
+ */
+void get_password(char *password, size_t max_length) 
 {
-    int hero_choice;
-    char *hero_options[] = {"Login", "Register", "Quit"};
-    int hero_size = sizeof(hero_options) / sizeof(hero_options[0]);
+    size_t index = 0;
+    char ch;
 
-    char password[50];
+    while (index < max_length - 1) {
+        ch = getch(); // Read a single character without echoing
+        if (ch == '\r') { // Enter key pressed
+            break;
+        } else if (ch == '\b' && index > 0) { // Backspace pressed
+            printf("\b \b");
+            index--;
+        } else if (isprint(ch)) { // Add visible characters to password
+            password[index++] = ch;
 
-    char user_input[50];
-
-    int data_filled = 0;
-
-    char user_members[6][50] = {"Username", "Password", "Full Name", "Phone Number", "Email", "Role"};
-    char user_login_members[2][20] = {"Username or ID", "Password"};
-    
-   char *roles_users = read_all_user_by_key("role");
-   char temp_role[1000]; // TODO: dynamically allocate memory size for temp_role 
-
-   int login_filled = 0;
-
-   if(roles_users != NULL)
-   {
-        strcpy(temp_role, roles_users);
-   }
-
-    char *token = strtok(temp_role,"\n");
-
-    free(roles_users);
-    do 
-    {
-        int valid_username = 0;
-        int valid_password = 0;
-        int valid_role = 0;
-        int valid_email = 0;
-        int valid_full_name = 0;
-        int valid_phone = 0;
-        int read_tos = 0;
-        int valid_login_username = 0;
-        int vaid_login_password = 0;
-
-        char *info_login = NULL; 
-
-        char *register_info = NULL;
-
-        int edit_mode = 0;
-        system("cls");
-        for(int i = 0; i < hero_size; i++)
-        {
-            printf("%d. %s\n", i + 1, hero_options[i]);
+            // Mask all characters except the last
+            if (index == 1) {
+                printf("%c", ch);
+            } else {
+                printf("\b*%c", ch);
+            }
         }
-        printf("\nEnter your choice: ");
-        scanf("%d", &hero_choice);                
+    }
+    password[index] = '\0';
+    printf("\n");
+}
 
-        User user = {
-                .username = "", 
-                .password = "", 
-                .full_name = "", 
-                .phone = "", 
-                .email = "", 
-                .role = "", };
 
-        switch(hero_choice)
+/*
+ * Function: auth_menu
+ * Displays the main authentication menu with options to login, register,
+ * or quit the program.
+ */
+int auth_menu() 
+{
+    const char *menu_options[] = {"Login", "Register", "Quit", NULL};
+    const char *paragraph[] = {
+        "==================================================",
+        "            \U00002728 Welcome to EventEase! \U00002728",
+        "==================================================",
+        "Your one-stop solution for seamless event management.",
+        "",
+        "\U0001F44B First time here? Create an account in seconds!",
+        "\U0001F511 Already have an account? Log in to access your dashboard.",
+        "",
+        "Features include:",
+        "\U00002705 Effortless event booking",
+        "\U00002705 Real-time notifications",
+        "\U00002705 Personalized dashboard",
+        "",
+        "What would you like to do today?",
+        "==================================================",
+        NULL
+    };
+
+    int choice;
+
+    // Check last login status
+    char *stay_logged_in = read_last_login("stay_logged_in");
+    char *last_user_role = read_last_login("role");
+    char *last_user_id = read_last_login("id");
+
+    if (stay_logged_in != NULL && strcmp(stay_logged_in, "1") == 0) 
+    {
+        printf("Welcome back! Redirecting to your dashboard...\n");
+        Sleep(2000);
+
+        if (last_user_role != NULL && strcmp(last_user_role, "client") == 0) 
         {
-            // Login
+            client_menu(atoi(last_user_id));
+        } 
+        else if (last_user_role != NULL && strcmp(last_user_role, "organizer") == 0) 
+        {
+            organizer_menu(atoi(last_user_id));
+        }
+
+        free(stay_logged_in);
+        free(last_user_role);
+        free(last_user_id);
+        return 0; // Exit authentication menu
+    }
+
+    // Normal authentication flow
+    while (1) 
+    {
+
+        display_options(NULL, paragraph, menu_options, NULL);
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 3) 
+        {
+            printf("Invalid input. Please enter a number between 1 to 3.\n");
+            Sleep(2000);
+            clear_input_buffer();
+            continue;
+        }
+        clear_input_buffer();
+
+        switch (choice) 
+        {
+            case 1:
+                login_menu();
+                break;
+            case 2:
+                register_menu();
+                break;
+            case 3:
+                printf("Exiting program. Goodbye!\n");
+                return 0;
+        }
+    }
+}
+
+/*
+ * Function: login_menu
+ * Handles user login by prompting for username and password,
+ * and validating credentials.
+ */
+int login_menu() 
+{
+    char username[MAX_INPUT_SIZE] = "", password[MAX_INPUT_SIZE] = "";
+
+    while (1) 
+    {
+        char username_option[256], password_option[256];
+        sprintf(username_option, "Enter Username or ID %s[%s]%s", strlen(username) > 0 ? GREEN : RED, strlen(username) > 0 ? "Filled" : "\U0000274C Empty", RESET);
+        sprintf(password_option, "Enter Password %s[%s]%s", strlen(password) > 0 ? GREEN : RED, strlen(username) > 0 ? "Filled" : "\U0000274C Empty", RESET);
+
+        char *login_options[] = {username_option, password_option, "Login\n", "Forgot Password", "Back", NULL};
+
+        system("cls");
+        const char *paragraph[] = {
+            "==================================================",
+            "                     \U0001F512 Login Menu",
+            "==================================================",
+            "",
+            "\U0001F31F Login Guide:",
+            "- Enter your **Username or ID** to identify your account.",
+            "- Enter your **Password** for authentication.",
+            "- Select **Login** to access your account after filling in the fields.",
+            "- Forgot your password? Choose **Forgot Password** to reset it.",
+            "- To return to the previous menu, select **Back**.",
+            "",
+            "==================================================",
+            "",
+            "\U0001F6E0\U0000FE0F Login Menu Options:",
+            NULL
+        };
+        display_options(NULL, paragraph, login_options, NULL);
+
+        int choice;
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 5) 
+        {
+            printf("Invalid input. Please enter a valid option (1-5).\n");
+            Sleep(2000);
+            clear_input_buffer();
+            continue;
+        }
+
+        
+
+        clear_input_buffer();
+
+        switch (choice) 
+        {
             case 1:
                 while (1) 
                 {
-                    system("cls");
-                    printf("-- Login Menu --\n");
-                    printf("Please select a data field to input (%d/2):\n%s\n\n", login_filled, info_login);
+                    printf("\nEnter Username or ID (Press ESC to cancel): ");
 
-                    // Data fields with their validation status
-                    for (int i = 0; i < 2; i++) 
+                    fgets(username, MAX_INPUT_SIZE, stdin);
+                    username[strcspn(username, "\n")] = 0;
+
+                    if (strlen(username) == 0) 
                     {
-                        char *field = (i == 0) ? user.username : user.password;
-                        if (strlen(field) > 0) 
-                        {
-                            printf("%d. %s %s(/)%s\n", i + 1, user_login_members[i], GREEN, RESET);
-                        } else 
-                        {
-                            printf("%d. %s %s(x)%s\n", i + 1, user_login_members[i], RED, RESET);
-                        }
-                    }
-
-                    printf("3. Login\n\n");
-                    printf("4. Forget Password\n");
-                    printf("5. Back\n");
-                    printf("Enter your choice: ");
-                    int login_choice;
-
-                    if (scanf("%d", &login_choice) != 1) {
-                        printf("Invalid input. Please enter a valid choice.\n");
-                        while (getchar() != '\n'); // Clear the input buffer
+                        printf("\nInput cannot be empty. Please try again.\n");
                         continue;
                     }
-                    getchar(); // Clear the newline left by `scanf`
 
-                    int valid_username = 0;
-                    int valid_password = 0;
-                    int convert_id = 0;
-
-                    switch (login_choice) {
-                        case 1: // Username Input
-                            while (!valid_username) 
-                            {
-                                printf("Enter Username or ID: ");
-                                char user_input[50];
-                                fgets(user_input, sizeof(user_input), stdin);
-                                user_input[strcspn(user_input, "\n")] = 0;
-                                
-                                // press ESC TO go back? <- Implement this one.
-                                // i have to somehow stop scanning first before reading getch()
-
-                                if (is_numeric(user_input)) { // Check if input is numeric
-                                    convert_id = atoi(user_input);
-                                    if (valid_user_id(convert_id)) 
-                                    {
-                                        valid_username = 1;
-                                        strcpy(user.username, user_input); // Store user ID as username
-                                        login_filled++;
-                                    } else {
-                                        printf("Invalid ID. Please try again.\n");
-                                    }
-                                } else {
-                                    if (strlen(user_input) < 4 || strlen(user_input) > 12) 
-                                    {
-                                        printf("Username must be 4-12 characters long.\n");
-                                        continue;
-                                    }
-
-                                    if (username_exist(user_input) == 0) 
-                                    {
-                                        valid_username--;
-                                        valid_username = 1;
-                                        strcpy(user.username, user_input); // Store the username
-                                        login_filled++;
-                                    } else 
-                                    {
-                                        printf("[INFO]: Username not found.\n");
-                                    }
-                                }
-                            }
-                            break;
-
-                        case 2: // Password Input
-                            while (!valid_password) 
-                            {
-                                char temp[50];
-                                printf("Enter Password: ");
-                                fgets(temp, sizeof(temp), stdin);
-                                temp[strcspn(temp, "\n")] = 0;
-
-                                if (strlen(temp) < 6) 
-                                {
-                                    printf("Password must be at least 6 characters long.\n");
-                                    continue;
-                                }
-
-                                printf("Confirm Password: ");
-                                fgets(user.password, sizeof(user.password), stdin);
-                                user.password[strcspn(user.password, "\n")] = 0;
-
-                                if (strcmp(temp, user.password) == 0) 
-                                {
-                                    valid_password = 1;
-                                    login_filled++;
-                                    printf("Password successfully set.\n");
-                                } else 
-                                {
-                                    printf("Passwords do not match. Please try again.\n");
-                                }
-                            }
-                            break;
-
-                        case 3: // Login
-                            if (login_filled != 2) 
-                            {
-                                info_login = "Please ensure both fields are filled before logging in.\n";
-                            }
-
-                            if (login_user(user.username, user.password)) 
-                            {
-                                char stay_logged_in[2];
-                                while (1) 
-                                {
-                                    printf("\nDo you want to stay logged in? (Y/N): ");
-                                    fgets(stay_logged_in, sizeof(stay_logged_in), stdin);
-                                    
-                                    if(strcasecmp(stay_logged_in, "y") == 0)
-                                    {
-                                        int convert_id = 0;
-                                        
-                                        if(strlen(user.username) > 3)
-                                        {
-                                            convert_id = get_id_username(user.username);
-                                        }
-
-                                        convert_id = atoi(user.username);
-
-                                        update_user(convert_id, "signed_in", strcasecmp(stay_logged_in, "y") == 0 ? "1" : "0");
-                                        
-                                        if (strcmp(read_user(convert_id, "role"), "client") == 0) 
-                                        {
-                                            client_menu(convert_id);
-                                            break;
-                                        } else 
-                                        {
-                                            printf("Organizer Dashboard\n");
-                                        }
-                                        break;
-                                    }
-                                }
-                            } else 
-                            {
-                                valid_password = 0;
-                                valid_username = 0;
-
-
-                                info_login = "Please make sure your credentials are correct.";
-                            }
-                            break;
-                        case 4:
-                            break;
-                        case 5:
-                            auth_menu();
-                            break;
-                        default:
-                            info_login = "Invalid choice. Please try again.\n";
-                    }
-                }
-
-                
-            // register
-            case 2:
-                // but if it's equal to 6 then continue?
-                while(1) // hmmm if it's equal to 6
-                {
-                    system("cls");
-                    
-                    printf("-- Register Menu --\n");
-                    printf("Please enter the remaining information (%d of 6 fields completed).\n%s\n\n", data_filled, register_info);    
-
-                    for (int i = 0; i < 6; i++)  
+                    if (is_numeric(username)) 
                     {
-                        char *field = NULL;
-                        switch (i) 
+                        if (!valid_user_id(atoi(username))) 
                         {
-                            case 0: field = user.username; break;
-                            case 1: field = user.password; break;
-                            case 2: field = user.full_name; break;
-                            case 3: field = user.phone; break;
-                            case 4: field = user.email; break;
-                            case 5: field = user.role; break;
+                            printf("\nInvalid ID. Please enter a valid user ID.\n");
+                            continue;
                         }
-
-                        if (field && strlen(field) > 0) 
-                        {
-                            printf("%d. %s %s(/)%s\n", i + 1, user_members[i], GREEN, RESET);
-                        } else 
-                        {
-                            printf("%d. %s %s(x)%s\n", i + 1, user_members[i], RED, RESET);
-                        }
-                    }
-
-                    printf("7. Cancel Registration\n");
-                    if(edit_mode == 1)
+                        break; // Valid ID
+                    } 
+                    else 
                     {
-                        printf("8. Finish Editing\n");
-                    }
-                    int register_choice;
-                    printf("\nEnter Option: ");
-                    scanf("%d", &register_choice);
-                    getchar();
-
-
-                    int count_organizer = 0;
-                    char cancel_confirm[4];
-                    
-                    printf("%d\n", valid_password);
-                    
-                    if(edit_mode == 1 || data_filled <= 6)
-                    {
-                        switch (register_choice) 
+                        if (!username_exist(username)) 
                         {
-                            case 1: 
-                                // Username]
-
-                                // mo run ang block of code inside this while loop if valid_username != 1
-                                while (!valid_username || edit_mode == 1) 
-                                {
-                                    printf("\nEnter Username: ");
-                                    fgets(user.username, sizeof(user.username), stdin);
-                                    user.username[strcspn(user.username, "\n")] = 0;  // Remove trailing newline
-
-                                    size_t len = strlen(user.username);
-                                    if (len < 4 || len > 12) 
-                                    {
-                                        printf("Invalid length! Username must be 4-12 characters.\n");
-                                        continue;
-                                    }
-
-                                    int has_space = 0, has_special_char = 0;
-                                    for (size_t i = 0; i < len; i++) 
-                                    {
-                                        if (isspace(user.username[i])) 
-                                        {
-                                            has_space = 1;
-                                        }
-                                        if (!isalnum(user.username[i])) 
-                                        {
-                                            has_special_char = 1;
-                                        }
-                                    }
-
-                                    if (has_space) 
-                                    {
-                                        printf("Username cannot contain spaces.\n");
-                                    } else if (has_special_char) 
-                                    {
-                                        printf("Username cannot contain special characters.\n");
-                                    } else if (username_exist(user.username) == 0)
-                                    {
-                                    }
-                                    else 
-                                    {
-                                        if(valid_username == 1)
-                                        {
-                                            register_info = "\nUsername Successfully  Updated.";
-                                            edit_mode = 0;
-                                        } else {
-                                            valid_username = 1;
-                                            data_filled += 1;
-                                            register_info = "\nUsername Succesffully set.";
-                                        }
-                                    }
-                                }
-                                break;                        
-                            case 2: 
-                                // Password
-                                // Implement Confirmation
-                                while (!valid_password || edit_mode == 1) 
-                                {
-                                    char temp[50];
-
-                                    printf("Enter Password: ");
-                                    fgets(temp, sizeof(temp), stdin);
-                                    temp[strcspn(temp, "\n")] = 0;  // Remove trailing newline
-
-                                    if (strlen(temp) < 6) 
-                                    {
-                                        printf("\nPassword must be at least 6 characters long.\n");
-                                        continue;
-                                    }
-
-                                    // printf("Temp: %s\n", temp);
-
-                                    printf("Confirm Password: ");
-                                    fgets(user.password, sizeof(user.password), stdin);
-                                    user.password[strcspn(user.password, "\n")] = 0;  // Remove trailing newline
-
-                                    // printf("New: %s\n", user.password);
-
-                                    // printf("%d\n", strcmp(temp, user.username));
-                                    if (strcmp(temp, user.password) == 0) 
-                                    { // Compare the passwords
-
-                                         // Mark the password as valid
-                                        if(valid_password == 1)
-                                        {
-                                            register_info = "\nPassword Succesffully Updated.";
-                                            edit_mode = 0;
-                                        } else {
-                                            valid_password = 1;
-                                            data_filled += 1;
-                                            register_info = "\nPassword Succesffully set.";
-                                        }
-                                                                    
-                                    } else 
-                                    {
-                                        printf("\nPasswords do not match. Please try again.\n");
-                                        continue;
-                                    }                           
-                                }
-                                break;
-                            
-                            case 3: 
-                                // Full Name
-
-                                while (!valid_full_name || edit_mode == 1) 
-                                {
-                                    printf("Enter Full Name (First Middle Last): ");
-                                    fgets(user.full_name, sizeof(user.full_name), stdin);
-                                    user.full_name[strcspn(user.full_name, "\n")] = 0;  // Remove trailing newline
-
-                                    int word_count = 0;
-                                    // Left value of the delimiter " "
-                                    char *token = strtok(user.full_name, " ");
-                                    while (token) 
-                                    {
-                                        word_count++;
-                                        // right value of the delimiter " "
-                                        token = strtok(NULL, " ");
-                                    }
-
-                                    if (word_count < 3) 
-                                    {
-                                        printf("\nFull name must include first, middle, and last names.\n");
-                                    } else {
-                                        if(valid_full_name == 1)
-                                        {
-                                            edit_mode = 0;
-                                            printf("\n Full Name Succesffully Updated\n");
-                                            Sleep(500);
-                                        } else {
-                                            valid_full_name = 1;
-                                            data_filled += 1;
-                                            
-                                            printf("\nFull Name Succesffully set.\n");
-                                            Sleep(500);
-                                    
-                                        }
-                                    }
-                                }
-                                break;
-                            
-                            case 4: 
-                                // Phone Number
-                                
-                                while (!valid_phone || edit_mode == 1) 
-                                {
-                                    printf("Enter Phone Number (e.g., 09123456789): ");
-                                    fgets(user.phone, sizeof(user.phone), stdin);
-                                    user.phone[strcspn(user.phone, "\n")] = 0;  
-
-                                    if (strlen(user.phone) == 11 && user.phone[0] == '0' && user.phone[1] == '9') 
-                                    {
-                                        if(valid_phone == 1)
-                                        {
-                                            register_info = "\nPhone Succesffully Updated.";
-                                            edit_mode = 0;
-                                        } else 
-                                        {
-                                            valid_phone = 1;
-                                            data_filled += 1;
-                                            register_info = "\nPhone Name Succesffully set.";
-                                        }
-                                    } else 
-                                    {
-                                        printf("\nInvalid phone number. Must be 11 digits starting with '09'.\n");
-                                    }
-                                }
-                                break;
-                            
-                            case 5: 
-                                // Email
-                                
-                                while (!valid_email || edit_mode == 1) 
-                                {
-                                    printf("Enter Email: ");
-                                    fgets(user.email, sizeof(user.email), stdin);
-                                    user.email[strcspn(user.email, "\n")] = 0;  
-
-                                    if(strcmp(user.email, "@") != 0)
-                                    {
-                                        if (strchr(user.email, '@') != NULL) 
-                                        {
-                                            if(valid_email == 1)
-                                            {
-                                                register_info = "\nEmail Succesffully Updated.";
-                                                edit_mode = 0;
-                                            } else 
-                                            {
-                                                valid_email = 1;
-                                                data_filled += 1;
-                                                register_info = "\nEmail Name Succesffully set.";
-                                            }
-                                        } else 
-                                        {
-                                            printf("\nInvalid email! Must contain '@'.\n");
-                                        }
-                                    }
-                                }
-                                break;
-                            
-                            case 6:
-                                // role 
-                                while(token)
-                                {
-                                    if(strcmp(token, "organizer") == 0 && count_organizer != 1)
-                                    {
-                                        count_organizer += 1;
-                                    }
-                                    token = strtok(NULL ,"\n");
-                                    break;
-                                }
-
-                                while (!valid_role || edit_mode == 1) 
-                                {
-                                    printf("Enter Role (client/organizer): ");
-                                    fgets(user.role, sizeof(user.role), stdin);
-                                    user.role[strcspn(user.role, "\n")] = 0;  
-
-                                    // check for count of organ
-
-                                    // check if the count is == 1.
-                                    if (strcmp(user.role, "client") == 0 || strcmp(user.role, "organizer") == 0) 
-                                    {
-                                        if(strcmp(user.role, "organizer") == 0 && count_organizer == 1)
-                                        {
-                                            // usa ra pwede organizer.
-                                            printf("\nYou can't create more user with this role: Organizer\n");
-                                            continue;
-                                        }
-                                        if(valid_role == 1)
-                                        {
-                                            register_info = "\nRole Succesffully Updated.";
-                                            edit_mode = 0;
-                                        } else 
-                                        {
-                                            valid_role = 1;
-                                            data_filled += 1;
-                                            register_info = "\nRole Name Succesffully set.";
-                                        }
-                                    } else 
-                                    {
-                                        printf("\nInvalid role! Please enter 'client' or 'organizer'.\n");
-                                    }
-                                }
-                                break;
-                            case 7:
-                                if(data_filled > 1)
-                                {
-                                    printf("\nDo you wish to cancel your registration? Y / N: ");
-                                    scanf("%s", cancel_confirm);
-
-                                    if(strcasecmp(cancel_confirm, "y") == 0)
-                                    {
-                                        if(sizeof(user) > 0)
-                                        {
-                                            memset(&user, 0, sizeof(user));
-                                            auth_menu();
-                                            break;
-                                        }
-                                    } else if (strcasecmp(cancel_confirm, "n") == 0)
-                                    {
-                                        continue;
-                                    } 
-                                } else {
-                                    continue;
-                                }
-                                
-                                return -1;
-                            case 8:
-                                if(edit_mode == 1)
-                                {
-                                    edit_mode = 0;
-                                } else 
-                                {
-                                    printf("\nInvalid choice. Please select a valid option.\n");
-                                    Sleep(500);
-                                }
-                                break;
-                            default:
-                                printf("\nInvalid choice. Please select a valid option.\n");
-                                Sleep(500);
-                                break;
+                            printf("\nUsername does not exist. Please try again.\n");
+                            continue;
                         }
-                    }
-                                    
-                    if(data_filled == 6 && edit_mode == 0)
-                    {
-                        system("cls");
-                        int registration_confirmation;
-                        
-                        printf("-- Review Registration Information --\n\n");
-                        printf("Username: %s\n", user.username);
-                        printf("Full Name: %s\n", user.full_name);
-                        printf("Phone Number: %s\n", user.phone);
-                        printf("Role: %s\n\n", user.role);
-
-                        printf("1. Confirm Registration\n");
-                        printf("2. Edit Information \n");
-                        scanf("%d", &registration_confirmation);
-
-                        switch(registration_confirmation)
-                        {
-                            case 1:
-                                user.id = generate_user_id();
-
-                                char registration_confirm[4];
-
-                                printf("\nDo you wish to confirm your registration? %sY%s / %sN%s?: ", UNDERLINE, RESET, UNDERLINE, RESET);
-                                scanf("%s", registration_confirm);
-
-                                if(strcasecmp(registration_confirm, "y") == 0 || strcasecmp(registration_confirm, "n") == 0)
-                                {
-                                    if(strcasecmp(registration_confirm, "y") == 0)
-                                    {
-                                        register_user(user);
-
-                                        char stay_logged_in[4];
-                                        printf("Do you want to stay Logged In? (Y / N:) ");
-                                        scanf("%s", stay_logged_in);
-                                        
-                                        char *stay_log_in = "";
-
-                                        stay_log_in = strcasecmp(stay_logged_in, "y")  == 0 ? "1" : "0";
-
-                                        
-                                        if(strcasecmp(stay_logged_in, "y") == 0)
-                                        {
-                                            
-                                            update_user(user.id, "signed_in", stay_log_in);
-                                            
-                                            // do not forget to empty user struct kay if ever mo balik si user para ma register.
-                                            data_filled = 0;
-                                            if(strcmp(user.role, "client") == 0)
-                                            {
-                                                // client_menu(int client_id);
-                                                client_menu(user.id);
-                                                memset(&user, 0, sizeof(user));
-                                                return 0;
-                                                // proceed client dashboard
-                                            } else if(strcmp(user.role, "organizer") == 0)
-                                            {
-                                                
-                                                printf("ORGANIZER");
-                                                memset(&user, 0, sizeof(user));
-
-                                                break;
-                                                // proceed organizer dashboard
-                                            }
-
-                                            break;
-                                        }
-                                        else 
-                                        {
-                                            printf("\nDo you want to stay Logged In? \n(Y / N:)\n ");
-                                            continue;
-                                        }
-                                        
-                                    } else 
-                                    {
-                                        continue;
-                                    }
-                                } else 
-                                {
-                                    printf("Do you wish to confirm your registration? Y / N?:\n ");
-                                    continue;
-                                }
-                                break;
-                            case 2:
-                                edit_mode += 1;
-                                break;
-                            default:
-                                continue;
-                        }
+                        break; // Valid username
                     }
                 }
                 break;
-              
+
+            case 2:
+                printf("\nEnter Password: ");
+                get_password(password, MAX_INPUT_SIZE);
+                break;
+
             case 3:
-                return -1;    
+                if (strlen(username) == 0 || strlen(password) == 0) 
+                {
+                    printf("\nBoth username and password are required. Please try again.\n");
+                    Sleep(2000);
+                    continue;
+                }
+
+                if (login_user(username, password)) 
+                {
+                    printf("\nLogin successful!\n");
+                    Sleep(1000);
+
+                    int user_id = is_numeric(username) ? atoi(username) : get_id_username(username);
+                    if (user_id <= 0) 
+                    {
+                        printf("\nError: Invalid user ID. Please contact support.\n");
+                        return;
+                    }
+
+                    char *stay_logged_in = read_user(user_id, "stay_logged_in");
+                    if (stay_logged_in) 
+                    {
+                        if (strcmp(stay_logged_in, "0") == 0) 
+                        {
+                            while (1) 
+                            {
+                                char confirmation[4];
+                                printf("\nDo you want to stay logged in? (Y/N): ");
+                                fgets(confirmation, sizeof(confirmation), stdin);
+                                confirmation[strcspn(confirmation, "\n")] = 0;
+
+                                if (strcasecmp(confirmation, "Y") == 0) 
+                                {
+                                    update_user(user_id, "stay_logged_in", "1");
+                                    printf("\nYou will now stay logged in.\n");
+                                    Sleep(1000);
+                                    break;
+                                } 
+                                else if (strcasecmp(confirmation, "N") == 0) 
+                                {
+                                    update_user(user_id, "stay_logged_in", "0");
+                                    printf("\nYou chose not to stay logged in.\n");
+                                    Sleep(1000);
+                                    break;
+                                } 
+                                else 
+                                {
+                                    printf("\nInvalid option. Please enter 'Y' or 'N'.\n");
+                                    Sleep(2000);
+                                }
+                            }
+                        }
+                        free(stay_logged_in);
+                    } 
+                    else 
+                    {
+                        printf("\nError: Unable to determine stay logged-in preference.\n");
+                    }
+
+                    const char *role = read_user(user_id, "role");
+                    if (role) 
+                    {
+                        if (strcmp(role, "client") == 0) 
+                        {
+                            client_menu(user_id);
+                        } 
+                        else if (strcmp(role, "organizer") == 0) 
+                        {
+                            organizer_menu(user_id);
+                        } 
+                        else 
+                        {
+                            printf("\nInvalid role detected. Please contact support.\n");
+                        }
+                    } 
+                    else 
+                    {
+                        printf("\nError: Unable to determine user role. Please contact support.\n");
+                    }
+                    return;
+                } 
+                else 
+                {
+                    printf("\nInvalid credentials. Please try again.\n");
+                    Sleep(2000);
+                }
+                
+                break;
+
+            case 4:
+                if (strlen(username) == 0) 
+                {
+                    printf("\nlease enter your username or ID first.\n");
+                    Sleep(2000);
+                } 
+                else 
+                {
+                    reset_password(username);
+                }
+                break;
+
+            case 5:
+                printf("\nReturning to the previous menu...\n");
+                if(strlen(password) > 0 || strlen(username) > 0)
+                {
+                    memset(&password, 0, sizeof(password));
+                    memset(&username, 0, sizeof(username));
+
+                }
+                Sleep(1000);
+                return;
+        }
+    }
+}
+
+
+/*
+ * Function: reset_password
+ * Allows users to reset their password after providing a username.
+ * The password is updated only if the new and confirmation passwords match.
+ */
+void reset_password(const char *username) 
+{
+    if (strlen(username) == 0) 
+    {
+        printf("No username provided. Please enter your username first in the login menu.\n");
+        Sleep(2000);
+        return;
+    }
+
+    char new_password[MAX_INPUT_SIZE], confirm_password[MAX_INPUT_SIZE];
+    printf("-- Reset Password --\n\n");
+    printf("Enter new password: ");
+    get_password(new_password, MAX_INPUT_SIZE);
+
+    printf("Confirm new password: ");
+    get_password(confirm_password, MAX_INPUT_SIZE);
+
+    if (strcmp(new_password, confirm_password) == 0) 
+    {
+        int user_id = is_numeric(username) ? atoi(username) : get_id_username(username);
+        if (update_user(user_id, "password", new_password)) 
+        {
+            printf("Password successfully updated.\n");
+        } else 
+        {
+            printf("Failed to update password. Please try again later.\n");
+        }
+    } else 
+    {
+        printf("Passwords do not match. Please try again.\n");
+    }
+    Sleep(2000);
+}
+
+/*
+ * Function: register_menu
+ * Handles user registration by collecting user details such as username,
+ * password, and role. Ensures only one organizer account is allowed.
+ */
+void register_menu() 
+{
+    const char *fields[] = {"Username", "Password", "Full Name", "Phone Number", "Email", "Select Role"};
+    char input[6][MAX_INPUT_SIZE] = {""}; // Array to store user inputs
+    User new_user = {0};
+
+    while (1) 
+    {
+        system("cls");
+
+        int filled_fields = 0;
+        for (int i = 0; i < 6; i++) 
+        {
+            if (strlen(input[i]) > 0) 
+                filled_fields++;
         }
 
+        char progress[50];
 
-    } while (1);
+        sprintf(progress, "Registration Progress: [%.*s%.*s] (%d / 100%%)", filled_fields, "#######", 7 - filled_fields, "        ", (filled_fields * 100) / 6);
+
+        const char *paragraph[] = {
+            "==================================================",
+            "              \U0001F4DD Registration Menu",
+            "==================================================",
+            "",
+            "\U0001F31F Join EventEase - Simplify Your Events!",
+            "- Create an account to start managing events effortlessly.",
+            "- Fill out all required fields to complete your registration.",
+            "",
+            "==================================================",
+            "",
+            progress,
+            "",
+            "\U0001F6E0 Registration Fields:",
+            NULL 
+        };
+
+        // Progress Indicator
+        
+
+        char *options[10];
+        char masked_password[50]; // meaning this is unedfined
+
+        if (strlen(input[1]) > 0) 
+        {
+            for (int i = 0; i < strlen(input[1]); i++) 
+            {
+                masked_password[i] = '*';
+            }
+            masked_password[strlen(input[1])] = '\0'; // Null-terminate
+        }
+        
+        // Display Form
+        for (int i = 0; i < 6; i++) 
+        {
+            options[i] = malloc(100);
+            if(options[i] != NULL)
+                sprintf(options[i],"%s\t[%s%s%s] : %s", fields[i], strlen(input[i]) > 0 ? GREEN : RED, strlen(input[i]) > 0 ? "Filled" : "Empty", RESET, i == 1 ? masked_password: input[i]);
+            if(i == 5)
+            {
+                strcat(options[i] , "\n");
+            }
+        }
+        options[6] = "Submit";
+        options[7] = "Cancel";
+        options[8] = NULL;
+        
+        display_options(NULL, paragraph, options,NULL);
+
+        int choice;
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 8) 
+        {
+            printf("\nInvalid input. Please enter a valid option (1-8).\n");
+            Sleep(2000);
+            clear_input_buffer();
+            continue;
+        }
+        clear_input_buffer();
+
+        if (choice == 8) // Cancel
+        {
+            memset(&new_user, 0, sizeof(new_user));
+            memset(input, 0, sizeof(input));
+            printf("\nRegistration canceled. All fields have been reset.\n");
+            Sleep(2000);
+            return;
+        }
+
+        if (choice == 1) // Username
+        {
+            printf("\nEnter Username: ");
+            fgets(input[0], MAX_INPUT_SIZE, stdin);
+            input[0][strcspn(input[0], "\n")] = 0; // Remove trailing newline
+
+            if (strlen(input[0]) == 0) 
+            {
+                printf("\nUsername cannot be empty. Please try again.\n");
+                Sleep(2000);
+                memset(input[0], 0, MAX_INPUT_SIZE);
+                continue;
+            } 
+            else if (username_exist(input[0])) 
+            {
+                printf("\nUsername already exists. Please try a different one.\n");
+                Sleep(2000);
+                memset(input[0], 0, MAX_INPUT_SIZE);
+                continue;
+            }
+        }
+
+        else if (choice == 2) // Password
+        {
+            while (1)
+            {
+                printf("\nEnter Password: ");
+                get_password(input[1], MAX_INPUT_SIZE);
+
+                // Password strength checks
+                int has_upper = 0, has_digit = 0, has_special = 0;
+                for (size_t i = 0; i < strlen(input[1]); i++) 
+                {
+                    if (isupper(input[1][i]))
+                        has_upper = 1;
+                    else if (isdigit(input[1][i]))
+                        has_digit = 1;
+                    else if (ispunct(input[1][i]))
+                        has_special = 1;
+                }
+
+                if (strlen(input[1]) < 6 || !has_upper || !has_digit || !has_special) 
+                {
+                    printf("\nError: Password must be at least 6 characters long, contain an uppercase letter, a digit, and a special character.\n");
+                    Sleep(2000);
+                    memset(input[1], 0, MAX_INPUT_SIZE);
+                    continue;
+                }
+
+                // Confirm password
+                char confirm_password[MAX_INPUT_SIZE];
+                printf("Confirm Password: ");
+                get_password(confirm_password, MAX_INPUT_SIZE);
+
+                if (strcmp(input[1], confirm_password) != 0) 
+                {
+                    printf("\nError: Passwords do not match. Please try again.\n");
+                    Sleep(2000);
+                    memset(input[1], 0, MAX_INPUT_SIZE);
+                } 
+                else 
+                {
+                    printf("\nPassword set successfully.\n");
+                    break;
+                }
+            }
+        }
+
+        else if (choice == 3) // Full Name
+        {
+            while (1)
+            {
+                printf("\nEnter Full Name: ");
+                fgets(input[2], MAX_INPUT_SIZE, stdin);
+                input[2][strcspn(input[2], "\n")] = 0;
+
+                if (strlen(input[2]) == 0) 
+                {
+                    printf("\nError: Full Name cannot be empty.\n");
+                    Sleep(2000);
+                    memset(input[2], 0, MAX_INPUT_SIZE);
+                } 
+                else 
+                {
+                    break;
+                }
+            }
+        }
+
+        else if (choice == 4) // Phone Number
+        {
+            while (1)
+            {
+                printf("\nEnter Phone Number: ");
+                fgets(input[3], MAX_INPUT_SIZE, stdin);
+                input[3][strcspn(input[3], "\n")] = 0;
+
+                if (strlen(input[3]) != 11 || strncmp(input[3], "09", 2) != 0 || !isdigit(input[3][2])) 
+                {
+                    printf("\nError: Invalid phone number. Must start with '09' and be 11 digits long.\n");
+                    Sleep(2000);
+                    memset(input[3], 0, MAX_INPUT_SIZE);
+                } 
+                else 
+                {
+                    break;
+                }
+            }
+        }
+
+        else if (choice == 5) // Email
+        {
+            while (1)
+            {
+                printf("\nEnter Email: ");
+                fgets(input[4], MAX_INPUT_SIZE, stdin);
+                input[4][strcspn(input[4], "\n")] = 0; // Remove trailing newline
+
+                // Ensure email contains '@' and '.'
+                char *at_symbol = strchr(input[4], '@');
+                char *dot_symbol = strrchr(input[4], '.');
+
+                if (!at_symbol || !dot_symbol || at_symbol == input[4] || strlen(dot_symbol + 1) < 2 || dot_symbol < at_symbol + 2) 
+                {
+                    printf("\nError: Invalid email format. Please ensure it contains '@' and a valid domain.\n");
+                    Sleep(2000);
+                    memset(input[4], 0, MAX_INPUT_SIZE);
+                } 
+                else 
+                {
+                    break;
+                }
+            }
+        }
+
+        else if (choice == 6) // Role
+        {
+            while (1)
+            {
+                printf("\nEnter Role (client/organizer): ");
+                fgets(input[5], MAX_INPUT_SIZE, stdin);
+                input[5][strcspn(input[5], "\n")] = 0;
+
+                if (strcmp(input[5], "client") != 0 && strcmp(input[5], "organizer") != 0) 
+                {
+                    printf("\nError: Invalid role. Please choose 'client' or 'organizer'.\n");
+                    Sleep(2000);
+                    memset(input[5], 0, MAX_INPUT_SIZE);
+                    continue;
+                } 
+                else if (strcmp(input[5], "organizer") == 0) 
+                {
+                    char *roles_users = read_all_user_by_key("role");
+                    if (roles_users && strstr(roles_users, "organizer")) 
+                    {
+                        printf("\nError: An organizer account already exists. Please choose a different role.\n");
+                        Sleep(2000);
+                        memset(input[5], 0, MAX_INPUT_SIZE);
+                        free(roles_users);
+                        continue;
+                    }
+                    free(roles_users);
+                }
+                break;
+            }
+        }
+        else if (choice == 7) // Submit
+        {
+            if (strlen(input[0]) == 0 || strlen(input[1]) == 0 || strlen(input[2]) == 0) 
+            {
+                printf("\nError: Please complete all required fields before submitting.\n");
+                Sleep(2000);
+                continue;
+            }
+
+            new_user.id = generate_user_id();
+            strcpy(new_user.username, input[0]);
+            strcpy(new_user.password, input[1]);
+            strcpy(new_user.full_name, input[2]);
+            strcpy(new_user.phone, input[3]);
+            strcpy(new_user.email, input[4]);
+            strcpy(new_user.role, input[5]);
+
+            if (register_user(new_user)) 
+            {
+                printf("\nRegistration successful! Welcome to EventEase.\n");
+                Sleep(2000);
+
+                while (1) 
+                {
+                    char confirmation[4];
+                    printf("\nDo you want to stay logged in? (Y/N): ");
+                    fgets(confirmation, sizeof(confirmation), stdin);
+                    confirmation[strcspn(confirmation, "\n")] = 0;
+
+                    if (strcasecmp(confirmation, "Y") == 0) 
+                    {
+                        update_user(new_user.id, "stay_logged_in", "1");
+                        printf("\nYou will now stay logged in.\n");
+                        Sleep(1000);
+                    } 
+                    else if (strcasecmp(confirmation, "N") == 0) 
+                    {
+                        update_user(new_user.id, "stay_logged_in", "0");
+                        printf("\nYou chose not to stay logged in.\n");
+                        Sleep(1000);
+                    } 
+                    else 
+                    {
+                        printf("\nInvalid option. Please enter 'Y' or 'N'.\n");
+                        Sleep(2000);
+                    }
+
+                    printf("\nRedirecting to Dashboard...\n");
+                    Sleep(1000);
+                    
+
+                    const char *role = read_user(new_user.id, "role");
+                    if (strcmp(role, "client") == 0) 
+                    {
+                        client_menu(new_user.id);
+                    } 
+                    else if (strcmp(role, "organizer") == 0) 
+                    {
+                        organizer_menu(new_user.id);
+                    } 
+                    else 
+                    {
+                        printf("\nInvalid role detected. Please contact support.\n");
+                    }
+                }
+            } 
+            else 
+            {
+                printf("\nError: Registration failed. Please try again later.\n");
+                Sleep(2000);
+            }
+        }
+    }
 }
+
+
+/*
+ * Function: review_registration
+ * Displays the user's entered details and allows them to edit fields,
+ * submit their registration, or go back to the previous menu.
+ * 
+ */
+/* void review_registration(char input[6][MAX_INPUT_SIZE], const char *fields[]) {
+    while (1) {
+        system("cls");
+        printf("-- Review Registration Details --\n\n");
+        for (int i = 0; i < 6; i++) {
+            printf("%d. %s: %s\n", i + 1, fields[i], strlen(input[i]) > 0 ? input[i] : "[Empty]");
+        }
+        printf("7. Edit\n8. Submit\n9. Back\n\nEnter your choice: ");
+
+        int choice;
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 9) {
+            printf("Invalid input. Please enter a valid option.\n");
+            clear_input_buffer();
+            continue;
+        }
+        clear_input_buffer();
+
+        if (choice >= 1 && choice <= 6) {
+            printf("Enter new value for %s: ", fields[choice - 1]);
+            fgets(input[choice - 1], MAX_INPUT_SIZE, stdin);
+            input[choice - 1][strcspn(input[choice - 1], "\n")] = 0;
+        } else if (choice == 8) {
+            printf("Registration successful!\n");
+            return;
+        } else if (choice == 9) {
+            return;
+        }
+    }
+} */
+
 
 int client_menu(int client_id)
 {
     int client_choice;
     // initiate log here
 
-    char client_options[7][50] = {"Profile", "Book Event", "My Events", "View Packages", "Feedback & Support", "Notifications", "Logout"};
+    char *client_options[] = {
+        "Profile            👤 - Manage your account details.",
+        "Book Event         📅 - Plan and schedule new events.",
+        "My Events          📚 - View and edit your booked events.",
+        "View Packages      📦 - Explore our event packages.",
+        "Feedback & Support 💬 - Get assistance or leave feedback.",
+        "Notifications      🔔 - Check recent updates and alerts.",
+        "Payment History    🧾 - Review all your past and pending payments.",
+        "Logout             🔑 - Exit the system securely.",
+        NULL // Terminator for iteration
+    };
+
 
     BookEvent bk_event = {
         .name = "",
         .venue = "",
         .event_date = "",
+        .start_time = "",
         .event_type_id = -1,
         .package_id = -1
     };
+
+    char book_input[5][MAX_INPUT_SIZE] = {""}; // Array to store user inputs
 
     while(1)
     {
 
         int book_event_filled = 0;
+        char *calendar = display_current_month_with_highlight();
+        char *prev_reminders = view_reminders(client_id);
 
-        system("cls");
-        printf("%s", EVENT_EASE_HEAD);
-        printf("Welcome, %s! Here's a quick overview of your events and options.\n\n", read_user(client_id, "username"));
+        const char *dashboard_paragraph[] = {
+            "==================================================",
+            "              🌟 EventEase Dashboard 🌟",
+            "==================================================",
+            "",
+            "👋 Welcome back, Hello2024!", // Welcome only after register.
+            "Here's your personalized dashboard to manage events effortlessly.",
+            "",
+            calendar,
+            prev_reminders,
+            "                  📋 Main Menu                   ",
+            "==================================================", NULL
+        };
+
+        display_options(NULL, dashboard_paragraph, client_options, NULL);
         
-
-        /* printf("%s---------------\nUpcoming Events\n---------------%s\n\n", BOLD_WHITE, RESET);
-
-        printf("%s---------------\nNotification\n---------------%s\n\n", BOLD_WHITE, RESET); */
-        printf("%s---------------\nOptions\n---------------%s\n\n", BOLD_WHITE, RESET);
-        // Log the event (Info)
-        log_event(client_id, 0, "User accessed the main menu.");
-
-        // Upcoming events, notifications, options 
-
-        // -- Options --
-        for (int i = 0; i < 7; i++) 
+        if(scanf("%d", &client_choice) != 1 || client_choice < 1 || client_choice > 12)
         {
-            printf("%d. %s\n", i + 1, client_options[i]);
+            printf("\nInvalid choice. Please enter a number between 1 and 12.\n");
+            Sleep(2000);
+            clear_input_buffer();
+            continue;
         }
-
-        printf("\nEnter your choice: ");
-        scanf("%d", &client_choice);
+        clear_input_buffer();
 
         // Log user choice (Info)
         char choice_message[100];
@@ -745,14 +878,35 @@ int client_menu(int client_id)
                 {
                     system("cls");
 
+                    char *profile_menu[] = {
+                        "==================================================",
+                        "                🔍 Profile Menu                  ",
+                        "==================================================",
+                        "📍 Home > Dashboard > Profile",
+                        "",
+                        "==================================================",
+                        NULL // Null terminator for the array
+                    };
+
+                    char *profile_choices[] = {
+                        "View Profile         \U0001F464 - See your personal details.",
+                        "Update Profile       \U0001F4DD - Modify your account information.",
+                        "Back to Main Menu    \U0001F519 - Return to the dashboard.",
+                        "Delete Account       \U0001F5D1 - Permanently remove your account and data.",
+                        NULL
+                    };
                     int choice_profile;
-                    printf("\n-- Profile Menu --\n\n");
-                    printf("1. View Profile\n");
-                    printf("2. Update Profile\n");
-                    printf("3. Back to Main Menu\n\n");
-                    printf("Enter your choice: ");
-                    scanf("%d", &choice_profile);
-                    
+                    display_options(NULL,profile_menu, profile_choices, NULL);
+
+                    if(scanf("%d", &choice_profile) != 1 || choice_profile < 1 || choice_profile > 4)
+                    {
+                        printf("\nInvalid choice. Please enter a number between 1 to 4.\n");
+                        Sleep(2000);
+                        clear_input_buffer();
+                        continue;
+                    }
+                    clear_input_buffer();
+                                
                     // Log profile menu choice (Info)
                     char profile_choice_message[100];
                     sprintf(profile_choice_message, "User selected option %d from the profile menu.", choice_profile);
@@ -772,22 +926,38 @@ int client_menu(int client_id)
                             {"date_created", "Date Created"}
                         };
 
-                        printf("\n-- User Profile --\n");
-                        size_t field_count = sizeof(fields) / sizeof(fields[0]);
+                        char *view_profile[] = {
+                            "==================================================",
+                            "                👤 User Profile                   ",
+                            "==================================================",
+                            "📍 Home > Dashboard > Profile > View",
+                            "",
+                            "==================================================",
+                            NULL
+                        };
 
-                        for (size_t i = 0; i < field_count; i++) 
+
+                        size_t field_count = sizeof(fields) / sizeof(fields[0]);
+                        char *buffer_view[field_count + 1];
+                        for (size_t i = 0; i < 6; i++) 
                         {
+                            buffer_view[i] = malloc(100);
                             const char *value = read_user(client_id, fields[i].key);
                             if (value) 
                             {
-                                printf("%-15s: %s\n", fields[i].display_name, value);
+                                sprintf(buffer_view[i], "✨ %-15s: \t%s", fields[i].display_name, value);
                             } else 
                             {
-                                printf("%-15s: %s\n", fields[i].display_name, "N/A");
+                                sprintf(buffer_view[i], "✨ %-15s: \t%s", fields[i].display_name, "N/A");
                             }
                         }
-
-                        Sleep(2000);
+                        buffer_view[field_count] = NULL;
+                        display_options(NULL, view_profile, buffer_view,"Press [Any KEY] to stop viewing.");
+                        
+                        if(getch() == '\r')
+                        {
+                            continue;
+                        }
                     } 
                     else if(choice_profile == 2)
                     {
@@ -796,18 +966,36 @@ int client_menu(int client_id)
                         const char *updatable_keys[] = {"username", "full_name", "password", "email", "phone"};
                         const char *updatable_labels[] = {"Username", "Full Name", "Password", "Email", "Phone"};
                         size_t key_count = sizeof(updatable_keys) / sizeof(updatable_keys[0]);
+                        char *update_profile[] = {
+                            "==================================================",
+                            "               📝 Update Profile                  ",
+                            "==================================================",
+                            "📍 Home > Dashboard > Profile > Update",
+                            "",
+                            "==================================================",
+                            NULL
+                        };
 
-                        printf("\n-- Update Profile --\n");
-                        for (size_t i = 0; i < key_count; i++) 
-                        {
-                            printf("%zu. %s\n", i + 1, updatable_labels[i]);
-                        }
-                        printf("%zu. Cancel\n\n", key_count + 1);
+                        char *update_field[] = {
+                            "Username          \U0001F4DD - Change your username.",
+                            "Full Name         \U0001F4DD - Update your full name.",
+                            "Password          \U0001F511 - Set a new password.",
+                            "Email             \U0001F4E7 - Update your email address.",
+                            "Phone             \U0001F4F1 - Change your contact number.",
+                            "Cancel            \U0001F519 - Return to Profile Menu.",NULL
+                        };
+
+                        display_options(NULL, update_profile, update_field, "Enter the number of the field you'd like to update:");
 
                         int field_choice;
-                        printf("\nEnter the number of the field you'd like to update: ");
-                        scanf("%d", &field_choice);
-                        getchar();
+                        if(scanf("%d", &field_choice) != 1 || field_choice < 1 || field_choice > 6)
+                        {
+                            printf("\nInvalid choice. Please enter a number between 1 to 6.\n");
+                            Sleep(2000);
+                            clear_input_buffer();
+                            continue;
+                        }
+                        clear_input_buffer();
 
                         if (field_choice < 1 || field_choice > (int)key_count + 1) 
                         {
@@ -879,6 +1067,39 @@ int client_menu(int client_id)
                         log_event(client_id, 0, "User returned to main menu from profile.");
                         client_menu(client_id);
                     }
+                    else if(choice_profile == 4)
+                    {
+                        while(1)
+                        {
+                            char confirmation[4];
+                            system("cls");
+                            printf("==================================================\n");
+                            printf("               ❌ Delete Account                  \n");
+                            printf("==================================================\n\n");
+                            printf("⚠️ WARNING: Deleting your account is permanent.\n");
+                            printf("   All your data, including events and history,\n");
+                            printf("   will be permanently removed and cannot be\n");
+                            printf("   recovered.\n");
+                            printf("\n");
+                            printf("==================================================\n\n");
+                            printf("Type 'Y' to confirm or 'N' to cancel: ");
+                            scanf("%s", confirmation);
+
+                            if(strcasecmp(confirmation, "y") == 0)
+                            {
+                                delete_user(client_id);
+                                auth_menu();
+                            } else if(strcasecmp(confirmation, "n") == 0)
+                            {
+
+                            } else 
+                            {
+                                printf("\nPlease enter a valid option\n");
+                                continue;
+                            }
+                        // print here
+                        }
+                    }
                     else 
                     {
                         log_event(client_id, 1, "Invalid profile menu choice.");
@@ -900,126 +1121,160 @@ int client_menu(int client_id)
                 */
                 while(1)
                 {
-                    system("cls");
-                    int valid_event_type = 0; 
-                    int valid_package = 0;
-                    int valid_event_name = 0;
-                    int valid_balance = 0;
+                    char progress[50];
 
-                    int book_event_choice;
-                    char book_event_options[5][30] = {"Event Name", "Select Event Type", "View Available Packages", "Venue", "Set Date"};
-                    printf("\n-- Book Event Submenu --\n\n");
-                    printf("Please select a data field to input\n\n");
+                    int steps_completed = 0;
 
+                    for (int i = 0; i < 5; i++) {
+                        if (strlen(book_input[i]) > 0) 
+                        {
+                            steps_completed++;
+                        }
+                    }
 
-                    // shud show preview here. 
+                    if (steps_completed < 5) {
+                        sprintf(progress, "Booking Process: [%.*s%.*s] %d%%",
+                            (steps_completed * 20) / 5, "####################",
+                            20 - (steps_completed * 20) / 5, "--------------------",
+                            (steps_completed * 100) / 5);
+                    } else {
+                        sprintf(progress, "Booking Process: [%s####################%s] 100%%", GREEN, RESET);
+                    }
+                                        
+                    const char *book_event_menu[] = {
+                        "==================================================",
+                        "               📆 Book Event Submenu              ",
+                        "==================================================",
+                        "",
+                        "🔧 Please fill in the required fields to book your event.",
+                        "",
+                        "==================================================",
+                        "",
+                        progress,
+                        "",
+                        "==================================================",
+                        NULL
+                    };
+
+                    char book_event_options[5][30] = {"Event Name", "Select Event", "Package", "Select Venue", "Set Date"};
+
+                    size_t input_size = sizeof(book_event_options) / sizeof(book_event_options[0]); // Get the size of event options
+
+                    char *book_options[input_size + 3]; // +2 for "Book Event" and "Cancel", +1 for NULL termination
+
                     for (int i = 0; i < 5; i++) 
                     {
-                        char *field = NULL;
-                        int is_valid = 0;
+                        // Allocate sufficient memory for each option
+                        book_options[i] = malloc(100); 
 
-                        switch (i) 
+                        if (book_options[i] != NULL) 
                         {
-                            case 0: field = bk_event.name; break;
-                            case 1: is_valid = (bk_event.event_type_id != -1); break;
-                            case 2: is_valid = (bk_event.package_id != -1); break;
-                            case 3: field = bk_event.venue; break;
-                            case 4: field = bk_event.event_date; break;
-                        }
-
-                        // Check field or is_valid to decide status
-                        if (field) 
-                        {
-                            if (strlen(field) > 0) 
-                            {
-                                printf("%d. %s %s(/)%s\n", i + 1, book_event_options[i], GREEN, RESET);
-                            } 
-                            else 
-                            {
-                                printf("%d. %s %s(x)%s\n", i + 1, book_event_options[i], RED, RESET);
-                            }
+                            snprintf(book_options[i], 100, "%s\t\t[%s%s%s]", 
+                                    book_event_options[i], 
+                                    strlen(book_input[i]) > 0 ? GREEN : RED, 
+                                    strlen(book_input[i]) > 0 ? "Filled" : "Empty", 
+                                    RESET);
                         } 
-                        else if (i == 1 || i == 2) 
+                        else 
                         {
-                            if (is_valid) 
-                            {
-                                printf("%d. %s %s(/)%s\n", i + 1, book_event_options[i], GREEN, RESET);
-                            } 
-                            else 
-                            {
-                                printf("%d. %s %s(x)%s\n", i + 1, book_event_options[i], RED, RESET);
-                            }
+                            perror("Memory allocation failed");
+                            exit(EXIT_FAILURE);
+                        }
+
+                        if(i == 4)
+                        {
+                            strcat(book_options[i], "\n");
                         }
                     }
 
-                    if(book_event_filled >= 5)
-                    {
-                        printf("%s6. Confirm%s\n", GREEN, RESET);
-                    } else {
-                        printf("6. Confirm\n");                          
-                    }
-                    printf("7. Cancel / Back\n");
-                    printf("\nEnter Choice: ");
-                    scanf("%d", &book_event_choice);
-                    getchar();
-                    if(book_event_choice == 1)
-                    {
-                        while(!valid_event_name)
-                        {
-                            printf("\n\nPlease enter event name (or type '-1' to cancel): ");
-                            fgets(bk_event.name, sizeof(bk_event.name), stdin);
-                            bk_event.name[strcspn(bk_event.name, "\n")] = 0;
+                    // let's not forget to free book_options to avoid memory leakage.
+                    book_options[input_size] = strdup("Book Event");
+                    book_options[input_size + 1] = strdup("Cancel");
+                    book_options[input_size + 2] = NULL;
 
-                            if(strcmp(bk_event.name, "-1") == 0)
+                    int book_event_choice;
+
+                    display_options(NULL, book_event_menu, book_options, "Enter the corresponding number of the field: ");
+
+                    if(scanf("%d", &book_event_choice) != 1 || book_event_choice < 1 || book_event_choice > 7 )
+                    {
+                        printf("\nPlease select a valid choice from 1 to 7\n");
+                        Sleep(2000);
+                        clear_input_buffer();
+                        continue;
+                    }
+                    clear_input_buffer();
+                    // shud show preview here. 
+                
+                    if(book_event_choice == 1) // event name
+                    {
+                        while(1)
+                        {
+                            printf("\nPlease enter event name (or type '-1' to cancel): ");
+                            fgets(book_input[0], sizeof(book_input[0]), stdin);
+                            book_input[0][strcspn(book_input[0], "\n")] = 0;
+
+
+                            if(strcmp(book_input[0], "-1") == 0)
                             {
+                                memset(book_input[0], 0, sizeof(book_input[0]));
                                 break;
                             }
 
-                            size_t len = strlen(bk_event.name);
+                            size_t len = strlen(book_input[0]);
 
                             if(len < 4 || len > 40)
                             {
                                 printf("Invalid length! Event Name must be 4-40 characters.\n");
+                                continue;
                             } else 
                             {
-                                valid_event_name = 1;
-                                book_event_filled++;
+                                if(book_input[0] == NULL)
+                                {
+                                    book_event_filled++;
+                                }
+                                break;
                             }
                         }
                     }
-                    else if(book_event_choice == 2)
+                    else if(book_event_choice == 2) // event type
                     {
-                        while(!valid_event_type)
+                        while(1)
                         {
-
                             char *preview_event = preview_event_type();
+                            const char *event_selection_menu[] = 
+                            {
+                                "==================================================",
+                                "           🛠️ EventEase Dashboard > Book Event     ",
+                                "==================================================",
+                                "📍 Home > Dashboard > Book Event > Select Event",
+                                "",
+                                "==================================================",
+                                "        📝 Select the Kind of Event to Book       ",
+                                "==================================================",
+                                preview_event,
+                                NULL
+                            };
 
                             if(preview_event != NULL)
                             {
-                                system("cls");
-                                printf("-- Please Select the Kind of Event You're Booking -- \n");
-                                printf("%s",preview_event);
-                                printf("\n\nEnter the ID of your choice (or type '-1' to cancel): ");
-                                scanf("%d", &bk_event.event_type_id);
+                                display_options(NULL, event_selection_menu, NULL, "Enter the Event ID of your choice");
 
-                                if(bk_event.event_type_id == -1) 
+                                if(scanf("%s", book_input[1]) != 1 || valid_typeevent_id(atoi(book_input[1])) != 1)
                                 {
-                                    break;
+                                    printf("\nPlease enter a valid event id\n");
+                                    Sleep(2000);
+                                    clear_input_buffer();
+                                    continue;
                                 }
-
-                                if(valid_typeevent_id(bk_event.event_type_id) != 1)
-                                {
-                                    printf("\nPlease Enter a Valid ID.\n");
-                                    Sleep(1000);
-                                } else
-                                {
-                                    valid_event_type = 1;
-                                    book_event_filled++;
-                                }
+                                
+                                clear_input_buffer();
+                                book_event_filled++;
+                                break;
                             } else 
                             {
                                 printf("\n-- No Events are available for booking. --\n");
-                                Sleep(1000);
+                                Sleep(2000);
                                 break;
                             }  
                         }               
@@ -1027,147 +1282,1026 @@ int client_menu(int client_id)
 
                         // read_eventtype_all will read all event_name. i.e Birthday\nWedding\n and so on.
 
-                    } else if (book_event_choice == 3)
+                    } else if (book_event_choice == 3) // set package
                     {
-                        
-                        while(!valid_package)
+                        while (1) 
                         {
-                            system("cls");
-                            if(bk_event.event_type_id == -1)
-                            {
+                            if (book_input[1] == NULL || strlen(book_input[1]) == 0) {
                                 printf("\nPlease select a type of event first (choose Option 2 from the menu).\n");
                                 Sleep(1000);
                                 break;
                             }
 
-                            printf("\n-- Please select Package for the Event --\n");
-                            char *preview_pkg = preview_pkgs(bk_event.event_type_id);
-                            if(preview_pkg == NULL)
-                            {
-                                printf("No Available Packages for this Event.\n");
-                                Sleep(1000);
+                            char *packages = preview_pkgs(atoi(book_input[1]));
+                            if (packages == NULL) {
+                                printf("\n-- No Available Packages for this Event. --\n");
+                                Sleep(2000);
                                 break;
-                            } else 
+                            }
+
+                            char *package_blocks[100]; // Assuming a maximum of 100 packages
+                            int total_packages = 0;
+
+                            char *packages_copy = strdup(packages); // Create a modifiable copy of the input
+                            if (!packages_copy) {
+                                perror("Failed to allocate memory for packages copy.");
+                                free(packages); // Free original memory
+                                return;
+                            }
+
+                            char *block = strtok(packages_copy, "\n\n"); // Each package block is separated by double newlines
+                            while (block) {
+                                if (total_packages < 100) { // Prevent out-of-bounds write
+                                    package_blocks[total_packages++] = block;
+                                }
+                                block = strtok(NULL, "\n\n");
+                            }
+
+                            int current_page = 0;
+                            int total_pages = (total_packages + PAGE_SIZE - 1) / PAGE_SIZE;
+
+                            while (1) 
                             {
-                                printf("%s", preview_pkg);
-                                printf("\nPlease select Package for Event: ");
+                                system("cls");
+                                printf("=========================================\n");
+                                printf("           📦 Event Packages\n");
+                                printf("=========================================\n");
+                                printf("📍 Home > Dashboard > Book Event > Select Package\n\n");
 
-                                scanf("%d", &bk_event.package_id);
+                                // Calculate start and end indices for the current page
+                                int start_index = current_page * PAGE_SIZE;
+                                int end_index = start_index + PAGE_SIZE;
+                                if (end_index > total_packages) {
+                                    end_index = total_packages;
+                                }
 
-                                if(valid_pkg_id(bk_event.event_type_id, bk_event.package_id) != 1)
-                                {
-                                    
-                                    printf("\nPlease enter a valid pakage id.\n");
-                                    Sleep(1000);
-                                } else
-                                {
-                                    
-                                    printf("\nYou've selected Package %s\n", read_pkg(bk_event.event_type_id, bk_event.package_id, "package_name"));
+                                // Display packages for the current page
+                                for (int i = start_index; i < end_index; i++) {
+                                    printf("%s\n", package_blocks[i]);
+                                }
+                                printf("\n=========================================\n");
+                                printf("Page %d of %d\n", current_page + 1, total_pages);
+                                printf("=========================================\n");
+                                printf("[N] Next Page | [P] Previous Page | [E] Exit\n");
+                                printf("=========================================\n");
+                                printf("Enter Package ID to Select: ");
 
-                                    printf("Before Proceeding, you need to pay 50% of the package's price.\n");
+                                char choice[50];
+                                scanf(" %49s", choice);
 
-                                    while(1)
-                                    {
-                                        char agree_balance[5];
-                                        printf("For Confirmation Enter (Y or N): ");
-                                        scanf("%s", agree_balance);
-                                    
-                                        if(strcasecmp(agree_balance, "y") == 0 || strcasecmp(agree_balance, "n") == 0)
-                                        {
-                                            if(strcasecmp(agree_balance, "y") == 0)
-                                            {
-                                                bk_event.balance = atoi(read_pkg(bk_event.id, bk_event.package_id, "price")) / 0.5;
-
-                                                printf("Opening your receipt...");
-                                            } else
-                                            {
-                                                printf("Cancelling Book Creation Session\n");
-                                                break;
-                                            }
-                                        } else 
-                                        {
-                                            printf("Please pick a valid input.");
-                                            continue;
-                                        }
+                                if (strcasecmp(choice, "n") == 0) {
+                                    if (current_page < total_pages - 1) {
+                                        current_page++;
+                                    } else {
+                                        printf("\nYou are on the last page.\n");
+                                        Sleep(2000);
                                     }
-
-                                    // while(!valid_balance)
-                                    // {
-                                    //     printf("Please Enter Payment (10000 FORMAT): ");
-                                        
-                                    //     scanf("%d", &bk_event.balance);
-
-                                    //     if(bk_event.balance != atoi(read_pkg(bk_event.id, bk_event.package_id, "price")) / 0.5)
-                                    //     {
-                                    //         printf("")
-                                    //     }
+                                } else if (strcasecmp(choice, "p") == 0) {
+                                    if (current_page > 0) {
+                                        current_page--;
+                                    } else {
+                                        printf("\nYou are on the first page.\n");
+                                        Sleep(2000);
+                                    }
+                                } else if (strcasecmp(choice, "e") == 0) {
                                     
-                                    
-                
-                                    // confirmation
-                                    // then show agreement.
-                                    // inform that a cvs file is upload to this folder...
-                                    
-
-                                    // ask for the if they're willing to pay 50%
-                                    // 50% payment.
-                                    // then balance.
-                                    valid_package = 1;
-                                    book_event_filled++;
+                                    free(packages_copy); // Free packages_copy memory
+                                    free(packages);   
+                                    printf("\nExiting package selection...\n");
+                                    Sleep(2000);
+                                    memset(book_input[2], 0, sizeof(book_input[2]));
+                                    break;
+                                } else if (isdigit(choice[0])) {
+                                    int pkg_id = atoi(choice);
+                                    if (valid_pkg_id(atoi(book_input[1]), pkg_id) == 1) {
+                                        snprintf(book_input[2], sizeof(book_input[2]), "%d", pkg_id);
+                                        printf("\nPackage ID %d selected successfully!\n", pkg_id);
+                                        Sleep(2000);
+                                        book_event_filled++;
+                                        break;
+                                    } else {
+                                        printf("\nInvalid Package ID. Please try again.\n");
+                                        Sleep(2000);
+                                        memset(book_input[2], 0, sizeof(book_input[2]));
+                                    }
+                                } else {
+                                    printf("\nInvalid choice. Please try again.\n");
+                                    Sleep(2000);
                                 }
                             }
+                               // Free original packages memory
+                            break;               // Exit the outer loop
                         }
+
                         
-                    } else if (book_event_choice == 4)
+                    } else if (book_event_choice == 4) // venue
                     {
-                        
-                        // will depend on the package or event?
-                        // venue 
-                        /* code */
-                    } else if (book_event_choice == 5)
-                    {
-                        // format of coruse Y:M:D TIME HERE.
-                        // set date
-                        return;
-                    } else if(book_event_choice == 6)
-                    {
-                        if(book_event_filled >= 5)
+                        while (1) 
                         {
+                            if (strlen(book_input[1]) == 0) 
+                            {
+                                printf("\nPlease select a type of event first (choose Option 2 from the menu).\n");
+                                Sleep(2000);
+                                break;
+                            }
+
+                            char *venues = read_typevent(atoi(book_input[1]), "venues");
+                            if (venues == NULL) 
+                            {
+                                printf("\n-- No venues available for this event type. --\n");
+                                Sleep(2000);
+                                continue;
+                            }
+
+                            char *temp_venues = strdup(venues);
+                            if (temp_venues == NULL) 
+                            {
+                                perror("[ERROR] Memory allocation failed.");
+                                free(venues);
+                                continue;
+                            }
+
+                            int venue_count = 0;
+                            char *temp_token = temp_venues;
+                            while ((temp_token = strtok(temp_token, ",")) != NULL) 
+                            {
+                                venue_count++;
+                                temp_token = NULL; // Continue parsing
+                            }
+
+                            char **venue_options = malloc((venue_count + 1) * sizeof(char *)); // +1 for NULL termination
+                            if (venue_options == NULL) // hoping this would == NULL; because havent really experienced faulty mem allocation. :<
+                            {
+                                perror("[ERROR] Memory allocation failed for venue options.");
+                                free(temp_venues);
+                                free(venues);
+                                continue;
+                            }
+
+                            strcpy(temp_venues, venues); 
+                            int index = 0;
+                            char *token = strtok(temp_venues, ",");
+                            while (token) 
+                            {
+                                venue_options[index] = malloc(strlen(token) + 1);
+                                if (venue_options[index] == NULL) 
+                                {
+                                    perror("[ERROR] Memory allocation failed.");
+                                    for (int i = 0; i < index; i++) 
+                                        free(venue_options[i]);
+                                    free(venue_options);
+                                    free(temp_venues);
+                                    free(venues);
+                                    return;
+                                }
+                                strcpy(venue_options[index], token);
+                                index++;
+                                token = strtok(NULL, ",");
+                            }
+
+                            // NULL terminate the array
+                            venue_options[index] = NULL;
+
+                            // Free temporary string copy
+                            free(temp_venues);
+
+                            const char *available_venues_menu[] = {
+                                "==================================================",
+                                "                 🌟 Available Venues 🌟            ",
+                                "==================================================",
+                                "",
+                                "📍 Please select a venue for your event from the list below:",
+                                NULL
+                            };
+
+                            display_options(NULL, available_venues_menu, venue_options, "👉 Enter your choice (-1 to cancel):");
+
+                            int venue_choice;
+                            printf("\nEnter your choice: ");
+                            if (scanf("%d", &venue_choice) != 1 || (venue_choice < 1 || venue_choice > venue_count)) 
+                            {   
+                                printf("\nInvalid choice. Please try again.\n");
+                                Sleep(2000);
+                                for (int i = 0; i < venue_count; i++)
+                                    free(venue_options[i]);
+                                free(venue_options);
+                                free(venues);
+                                clear_input_buffer();
+                                continue;
+                            }
+                            clear_input_buffer();
+
+                            if (venue_choice == -1) 
+                            {
+                                printf("\nVenue selection canceled.\n");
+                                for (int i = 0; i < venue_count; i++) 
+                                    free(venue_options[i]);
+                                free(venue_options);
+                                free(venues);
+                                break;
+                            }
+
+                            // Find and store the selected venue
+                            token = strtok(venues, ",");
+                            index = 1;
+                            while (token) 
+                            {
+                                if (index == venue_choice) 
+                                {
+                                    strncpy(book_input[3], token, sizeof(book_input[3]) - 1);
+                                    book_input[3][sizeof(book_input[3]) - 1] = '\0'; // Ensure null termination
+                                    book_event_filled++;
+                                    break;
+                                }
+                                index++;
+                                token = strtok(NULL, ",");
+                            }
+
+                            printf("\nYou have selected the venue: %s\n", book_input[3]);
+                            book_event_filled++;
+                            Sleep(2000);
+
+                            // dont forget to free the one you allocated.
+                            for (int i = 0; i < venue_count; i++) 
+                                free(venue_options[i]);
+                            free(venue_options);
+                            free(venues);
+
+                            break; // rahhh
+                        }
+
+                        
+                    } else if (book_event_choice == 5) // set-date
+                    {
+                        while (1) 
+                        {
+                            char date_str[50];
+                            char formatted_date[20];
+                            char formatted_time[10];
+                            system("cls");
+                            printf("\n==================================================\n");
+                            printf("               \U0001F4C5 Set Event Date\n");
+                            printf("==================================================\n");
+                            printf("\n📝 Instructions:\n");
+                            printf("- Please enter the date and time in the format 'DD Mon YYYY HH:MM:SS'.\n");
+                            printf("- Example: 29 Dec 2024 21:42:36\n");
+                            printf("- To cancel, type '-1'.\n");
+                            printf("\n==================================================\n");
+                            printf("\U0001F4C6 Enter the date and time: ");
+
+                            fgets(date_str, sizeof(date_str), stdin);
+                            date_str[strcspn(date_str, "\n")] = 0; // Remove trailing newline
+
+                            if (strcmp(date_str, "-1") == 0) {
+                                printf("\n\U0000274C Date entry canceled.\n");
+                                break;
+                            }
+
+                            if(parse_date_manual(date_str, formatted_date, formatted_time) == 1)
+                            {
+                                strcpy(book_input[4], formatted_date);
+                                strcpy(bk_event.start_time, formatted_time);
+                                book_event_filled++;
+                            } else 
+                            {
+                                Sleep(2000);
+                                continue;
+                            }
+                            break;
+                        }
+                    } else if(book_event_choice == 6) // confirm
+                    {
+                        if(book_event_filled >= 5 && book_input[0] != NULL && book_input[1] != NULL && book_input[2] != NULL && book_input[3] != NULL && book_input[4] != NULL)
+                        {
+                            while(1)
+                            {
+                                strcpy(bk_event.name, book_input[0]);
+                                bk_event.event_type_id = atoi(book_input[1]);
+                                bk_event.package_id = atoi(book_input[2]);
+                                strcpy(bk_event.venue, book_input[3]);
+                                strcpy(bk_event.event_date, book_input[4]);
+
+                                char event_type[50], venue_choice[50], date_time[50], selected_package[50], display_cost[50], display_percentage[50], amount_due[50];
+
+                                sprintf(event_type, "📅 Event Type         : %s", read_typevent(bk_event.event_type_id, "event_name"));
+                                sprintf(venue_choice, "📍 Venue of Choice    : %s", bk_event.venue);
+                                sprintf(date_time,"🕒 Date & Time        : %s %s", bk_event.event_date, bk_event.start_time);
+                                sprintf(selected_package, "🎁 Selected Package   : %s", read_pkg(bk_event.event_type_id, bk_event.package_id, "package_name"));
+
+                                int total_cost = atoi(read_pkg(bk_event.event_type_id, bk_event.package_id, "price"));
+                                int percentage = atoi(read_typevent(bk_event.event_type_id, "dp_percentage"));
+                                sprintf(display_cost, "💰 Total Cost         : %s", format_number(total_cost));
+
+                                float percentage_due = (float)percentage / 100.0;
+                                int amount_due_now = (int)(total_cost * percentage_due);
+
+                                sprintf(amount_due, "💳 Down Payment       : %d%% of Total Cost (%s)\n    ➡️  Amount Due Now : %s\n", 
+                                    percentage, 
+                                    format_number(total_cost), 
+                                    format_number(amount_due_now));
+
+                                const char *booking_confirmation_menu[] = {
+                                    "==================================================",
+                                    "         ✅ Booking Confirmation Submenu          ",
+                                    "==================================================",
+                                    "",
+                                    "📋 Please review the details of your booking.",
+                                    "",
+                                    "==================================================",
+                                    "               📄 Booking Details                 ",
+                                    "==================================================",
+                                    "",
+                                    event_type,
+                                    venue_choice,
+                                    date_time,
+                                    selected_package,
+                                    "",
+                                    display_cost,
+                                    amount_due,
+                                    NULL
+                                };
+
+                                display_options(NULL, booking_confirmation_menu, NULL, "For Confirmation Enter (Y) and (N) for cancellation:");
+                                
+                                char agree_balance[5];
+
+                                if(scanf("%s", agree_balance) != 1 || strcasecmp(agree_balance, "y") == 0)
+                                {
+                                    bk_event.balance = total_cost - amount_due_now;
+
+                                    char file_path[200];
+
+                                    // payment deadline.
+                                    time_t current_time = time(NULL);  // Get the current time
+                                    if (current_time == -1) 
+                                    {
+                                        perror("Failed to get the current time");
+                                        return 1;
+                                    }
+
+                                    // Add 3 days in seconds
+
+                                    // deadlline.
+                                    time_t future_time = current_time + (atoi(read_typevent(bk_event.event_type_id, "payment_deadline_days")) * 24 * 60 * 60);
+
+                                    // Convert to a human-readable format
+                                    struct tm *future_date = localtime(&future_time);
+
+                                    char formatted_deadline[50];
+                                    sprintf(formatted_deadline, "%02d %s %04d %02d:%02d:%02d",
+                                            future_date->tm_mday,
+                                            (char *[]){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}[future_date->tm_mon],
+                                            future_date->tm_year + 1900,
+                                            future_date->tm_hour,
+                                            future_date->tm_min,
+                                            future_date->tm_sec);
+
+                                    strcpy(bk_event.payment_deadline, future_date);
+
+                                    //
+                                    if (future_date == NULL) {
+                                        perror("Failed to convert time please contact support.");
+                                        break;
+                                    }
+                                    
+                                    bk_event.id = generate_event_id();
+
+                                    char reminder_message[50];
+                                    sprintf(reminder_message, "Payment for Event ID: %d", bk_event.id);
+                                    set_reminder(client_id, reminder_message, formatted_deadline);
+                                    bk_event.status = 3; // Incomplete Payment.
+                                    book_event(client_id, bk_event);
+
+                                    system("cls");
+                                    printf("\n==================================================\n");
+                                    printf("      \U0001F4E6 Down Payment Submission Required\n");
+                                    printf("==================================================\n");
+                                    printf("📋 Please send proof of payment for the down payment to the organizer.\n");
+                                    printf("🕒 Confirmation will be processed within 1-3 business days.\n");
+                                    printf("✅ Once confirmed, you will receive a notification to proceed further.\n");
+                                    printf("\nThank you for booking with us! We look forward to making your event special.\n");
+                                    printf("\n==================================================\n");
+                                    
+                                    printf("\nPlease press [ANY KEY] to Return to Menu\n");
+                                    if(getch() == '\r')
+                                    {
+                                        client_menu(client_id); // 
+                                    }
+                                    
+                                    /* snprintf(file_path, sizeof(file_path), "%s%s%s.txt", path, read_user(client_id,"full_name"), bk_event.id);
+
+                                    FILE *file_receipt = fopen(path, "w"); */
+
+
+                                } else if(strcasecmp(agree_balance, "n") == 0)
+                                {
+
+                                    printf("\nCancelling Book Creation Session\n");
+                                    Sleep(2000);
+                                    break;
+                                } else 
+                                {
+                                    printf("\nPlease pick a valid input.\n");
+                                    Sleep(2000);
+                                    continue;
+                                }
+                                
+                            }
+
+                            // confirmation
+                            // then show agreement.
+                            // inform that a cvs file is upload to this folder...
                             
-                        } else {
-                            printf("\nPlease make sure you've filled-up the data fields.\n");
-                            Sleep(1000);
-                        }
-                    } else if(book_event_choice == 7)
-                    {
-                        if(book_event_filled > 1)
+
+                            // ask for the if they're willing to pay 50%
+                            // 50% payment.
+                            // then balance.
+                        } else 
                         {
-                            memset(&bk_event, 0, sizeof(bk_event));
-                            book_event_filled = 0;
+                            printf("\nPlease make sure you've filled-up the data fields.\n");
+                            Sleep(2000);
                         }
+                    } else if(book_event_choice == 7) // cancel
+                    {
+                        
+                        printf("Cancelling Booking Session...");
+                        Sleep(2000);
+                    
+                        memset(&bk_event, 0, sizeof(bk_event));
+                        memset(&book_input, 0, sizeof(book_input));
+                        book_event_filled = 0;
                         break;
                     }
                 }
-                
                 break;
-            case 3:
-                // My Events
+            case 3: // my events
+                while(1)
+                {
+                    // TODO THIS ONE 2:48 A.M
+                    int book_event_id;
+                    int *book_id = NULL;
+                    int event_count = 0;
+
+                    char **events = preview_events(client_id, &event_count, &book_id);
+                    if(events == NULL || event_count == 0)
+                    {
+                        system("cls");
+                        printf("==================================================\n");
+                        printf("                  📅 Booked Events               \n");
+                        printf("==================================================\n\n");
+                        printf("It looks like you haven't booked any events yet! 🎉\n");
+                        printf("Why not plan something special today?\n");
+                        printf("✨ Browse our event packages and create unforgettable memories.\n");
+                        printf("Start by selecting 'Book Event' from the menu! 🛠️\n");
+                        printf("We can't wait to make your event extraordinary! 🌟\n");
+                        printf("\n==================================================\n\n");
+                        printf("Press [ANY KEY] to return to Dashboard");
+
+                        if(getch() == '\r')
+                        {
+                            client_menu(client_id);
+                        }
+                    }
+
+                    char *booked_events_menu[] = {
+                        "==================================================",
+                        "                  📅 Booked Events",
+                        "==================================================",
+                        "",
+                        "📍 Home > Dashboard > My Events > View Booked Events",
+                        "",
+                        "🔧 Select an event to manage its details:",
+                        "",
+                        "==================================================",
+                        NULL // NULL-terminated to mark the end of the array
+                    };
+                    
+                    display_options(NULL, booked_events_menu, events, "Enter event id to manage (-1 to cancel):");
+                    scanf("%d", &book_event_id);
+
+                    if(book_event_id == -1)
+                    {
+                        printf("Exiting Managing Booked Events...");
+                        Sleep(2000);
+                        break;
+                    }
+                    if(valid_event_id(client_id, book_event_id) != 1)
+                    {
+                        printf("\nPlease enter a valid choice/id\n");
+                        Sleep(2000);
+                        clear_input_buffer();
+                        continue;
+                    }
+
+                    clear_input_buffer();
+
+                    while(1)
+                    {
+                        int submenu_choice;
+
+                        char *event_name = read_event(client_id, book_event_id, "name");
+
+
+
+                        char manage_event[50], crumbs_event[50];
+                        sprintf(manage_event, "     📝 Manage Event: %s", event_name);
+                        sprintf(crumbs_event, "📍 Home > Dashboard > My Events > Manage Event > %s ", event_name);
+
+                        char *event_submenu[] = {
+                            "==================================================",
+                            manage_event,
+                            "==================================================",
+                            crumbs_event,
+                            "",
+                            "==================================================",
+                            NULL
+                        };
+
+                        char *options_submenu[] = { "View Full Details         - 🧐 Display the event’s complete information.",
+                            "Generate Receipt             - 🧾 Download a printable receipt for this event.",
+                            "Generate Itinerary           - 📋 Download a printable a detailed event itinerary.",
+                            "Update Details            - ✏️ Modify specific details of the event.",
+                            "Cancel Booking            - ❌ Request to cancel this booking.",
+                            "Back to Booked Events      - 🔙 Return to the list of booked events.",
+                            NULL
+                        };
+
+                        display_options(NULL, event_submenu, options_submenu, "Please enter a valid option:");
+
+                        if(scanf("%d", &submenu_choice) != 1 || submenu_choice < 1 || submenu_choice > 6)
+                        {
+                            printf("\nPlease enter a valid option.\n");
+                            Sleep(2000);
+                            clear_input_buffer();
+                            continue;
+                        }
+                        clear_input_buffer();
+
+                        char *venue = read_event(client_id, book_event_id, "venue");
+                        char *event_date = read_event(client_id, book_event_id, "event_date");
+                        char *start_time = read_event(client_id, book_event_id, "start_time");
+                        char *payment_deadline = read_event(client_id, book_event_id, "payment_deadline");
+                        char *balance = read_event(client_id, book_event_id, "balance");
+                        
+                        if(submenu_choice == 1) // view full details
+                        {
+                            while(1)
+                            {
+                                
+
+                                system("cls");
+
+                                printf("==================================================\n");
+                                printf("               📄 Event Details\n");
+                                printf("==================================================\n\n");
+
+                                if (event_name) {
+                                    printf("📍 Event: %s\n", event_name);
+                                } else {
+                                    printf("📍 Event: [Unable to fetch event name]\n");
+                                }
+
+                                if (event_date) {
+                                    printf("📅 Date: %s\n", event_date);
+                                } else {
+                                    printf("📅 Date: [Unable to fetch event date]\n");
+                                }
+
+                                if (start_time) {
+                                    printf("⏰ Time: %s\n", start_time);
+                                } else {
+                                    printf("⏰ Time: [Unable to fetch start time]\n");
+                                }
+
+                                if (venue) {
+                                    printf("🏨 Venue: %s\n", venue);
+                                } else {
+                                    printf("🏨 Venue: [Unable to fetch venue]\n");
+                                }
+
+                                char *event_type_str = read_event(client_id, book_event_id, "event_type_id");
+                                int type_event_id = event_type_str ? atoi(event_type_str) : 0;
+                                if (event_type_str) free(event_type_str);
+
+                                char *pkg_id_str = read_event(client_id, book_event_id, "package_id");
+                                int pkg_event_id = pkg_id_str ? atoi(pkg_id_str) : 0;
+                                if (pkg_id_str) free(pkg_id_str);
+
+                                char *package_name = read_pkg(type_event_id, pkg_event_id, "package_name");
+                                if (package_name) 
+                                {
+                                    printf("🎁 Package: %s\n", package_name);
+                                    free(package_name);
+                                } else 
+                                {
+                                    printf("🎁 Package: [Unable to fetch package name]\n");
+                                }
+
+                                char *price_str = read_pkg(type_event_id, pkg_event_id, "price");
+                                if (price_str) 
+                                {
+                                    printf("💰 Total Cost: PHP %s\n", format_number(atoi(price_str)));
+                                    free(price_str);
+                                } else
+                                {
+                                    printf("💰 Total Cost: [Unable to fetch price]\n");
+                                }
+
+                                if (balance) 
+                                {
+                                    printf("⚠️ Balance Due: PHP %s\n", balance);
+                                } else {
+                                    printf("⚠️ Balance Due: [Unable to fetch balance]\n");
+                                }
+
+                                if (payment_deadline) 
+                                {
+                                    printf("🔔 Payment Deadline: %s\n\n", payment_deadline);
+                                } else 
+                                {
+                                    printf("🔔 Payment Deadline: [Unable to fetch payment deadline]\n\n");
+                                }
+
+                                printf("==================================================\n");
+                                printf("Press Enter to return to the submenu.\n");
+
+                                if(getch() == '\r')
+                                {
+                                    break;
+                                }
+
+                            }
+                        } else if(submenu_choice == 2) // print receipt
+                        {
+                            // generate_receipe
+                            int event_type_id = atoi(read_event(client_id, book_event_id, "event_type_id"));
+                            generate_receipt(client_id, event_type_id, atoi(read_event(client_id, book_event_id, "package_id")), book_event_id);
+
+
+                            while(1)
+                            {
+                                system("cls");
+                                print_receipt(client_id, event_type_id, atoi(read_event(client_id, book_event_id, "package_id")), book_event_id);
+                                if(getchar() != '\r')
+                                {
+                                    break;
+                                }
+                            }
+
+                        } else if(submenu_choice == 3) // print itinerary
+                        {
+
+                        }
+                        else if (submenu_choice == 4) // update details
+                        {
+                            while(1)
+                            {
+                                log_event(client_id, 0, "User selected to update an event.");
+                                const char *updatable_keys[] = {"name", "event_date", "venue"};
+                                const char *updatable_labels[] = {"Event Name", "Event Date", "Venue"};
+                                size_t key_count = sizeof(updatable_keys) / sizeof(updatable_keys[0]);
+
+                                char *update_event_menu[] = {
+                                    "==================================================",
+                                    "               📝 Update Booked Event             ",
+                                    "==================================================",
+                                    "📍 Home > Dashboard > My Events > Update Event",
+                                    "",
+                                    "==================================================",
+                                    NULL
+                                };
+
+                                char *update_field[] = {
+                                    "Event Name       \U0001F4C3 - Update the name of your event.",
+                                    "Event Date       \U0001F4C5 - Change the date and time of your event.",
+                                    "Venue            \U0001F3E2 - Update the venue of the event.",
+                                    "Cancel           \U0001F519 - Return to My Events Menu.", NULL
+                                };
+
+                                display_options(NULL, update_event_menu, update_field, "Enter the number of the field you'd like to update:");
+
+                                int field_choice;
+                                if (scanf("%d", &field_choice) != 1 || field_choice < 1 || field_choice > 4) {
+                                    printf("\nInvalid choice. Please enter a number between 1 to 5.\n");
+                                    Sleep(2000);
+                                    clear_input_buffer();
+                                    continue;
+                                }
+                                clear_input_buffer();
+
+                                if (field_choice < 1 || field_choice > (int)key_count + 1) {
+                                    log_event(client_id, 1, "Invalid event update choice. Returning to events menu.");
+                                    printf("Invalid choice. Returning to events menu.\n");
+                                    Sleep(500);
+                                    continue;
+                                }
+
+                                if (field_choice == (int)key_count + 1) {
+                                    log_event(client_id, 1, "Event update canceled. Returning to events menu.");
+                                    printf("Update canceled. Returning to events menu.\n");
+                                    Sleep(500);
+                                    break;
+                                }
+
+                                const char *selected_key = updatable_keys[field_choice - 1];
+                                const char *selected_label = updatable_labels[field_choice - 1];
+                                char new_value[100];
+
+                                if(field_choice == 2)
+                                {
+                                    printf("\n==================================================\n");
+                                    printf("               \U0001F4C5 Set Event Date\n");
+                                    printf("==================================================\n");
+                                    printf("\n📝 Instructions:\n");
+                                    printf("- Please enter the date and time in the format 'DD Mon YYYY HH:MM:SS'.\n");
+                                    printf("- Example: 29 Dec 2024 21:42:36\n");
+                                    printf("- To cancel, type '-1'.\n");
+                                    printf("\n==================================================\n");
+                                }
+
+                                printf("\nEnter new %s (type 'cancel' to cancel): ", selected_label);
+                                fgets(new_value, sizeof(new_value), stdin);
+                                new_value[strcspn(new_value, "\n")] = 0;
+
+                                if (strcmp(new_value, "cancel") == 0) {
+                                    log_event(client_id, 1, "Event update canceled by the user.");
+                                    printf("Update canceled. Returning to events menu.\n");
+                                    memset(new_value, 0, sizeof(new_value));
+                                    continue;
+                                }
+
+                                // Validate input for specific fields
+                                if (strcmp(selected_key, "event_date") == 0) 
+                                {
+
+                                    char formatted_date[20];
+                                    char formatted_time[10];
+
+                                    if(parse_date_manual(new_value, formatted_date, formatted_time) == 1)
+                                    {
+                                        if(update_event(client_id, book_event_id, selected_key, new_value) == 1)
+                                        {
+                                            printf("\n %s updated successfully! \n", selected_label);
+                                            Sleep(3000);
+                                            break;
+                                        }
+                                    } else 
+                                    {
+                                        printf("\n❌ Invalid date format. Please try again.\n");
+                                        Sleep(2000);
+                                        continue;
+                                    }
+                                }
+
+                                if (update_event(client_id, book_event_id, selected_key, new_value) == 1) 
+                                {
+                                    log_event(client_id, 0, "Event updated successfully.");
+                                    printf("%s updated successfully!\n", selected_label);
+                                } else {
+                                    log_event(client_id, 2, "Failed to update event.");
+                                    printf("Failed to update %s. Please try again.\n", selected_label);
+                                }
+
+                            }                        
+                            
+                        } else if(submenu_choice == 5) // cancel booking
+                        {
+                            while(1)
+                            {
+                                system("cls");
+                                printf("==================================================\n");
+                                printf("             ❌ Cancel Booking                   \n");
+                                printf("==================================================\n\n");
+                                printf("⚠️ Are you sure you want to cancel \"%s\" (%s)?\n", event_name, event_date);
+                                printf("This action may incur cancellation charges.\n\n");
+                                printf("==================================================\n\n");
+                                printf("Type 'Y' to confirm or 'N' to cancel: ");
+
+                                char confirmation[4];
+
+                                if(scanf("%s", confirmation) != 1 || (strcasecmp(confirmation, "y") != 0 && strcasecmp(confirmation, "n") != 0))
+                                {
+                                    printf("\n Please select a valid Input.\n");
+                                    Sleep(2000);
+                                    clear_input_buffer();
+                                    continue;
+                                }
+                                
+                                if(strcasecmp(confirmation, "y") == 0)
+                                {
+                                    system("cls");
+                                    printf("\n==================================================\n");
+                                    printf("             ✅ Cancellation Requested           \n");
+                                    printf("==================================================\n\n");
+                                    printf("Your cancellation request for \"%s\" has been submitted.\n", event_name);
+                                    printf("The organizer will process this within 1-3 business days.\n\n");
+                                    printf("==================================================\n");
+                                    printf("Press Enter to return to the submenu.\n");
+
+                                    cancel_event(client_id, book_event_id);
+                                    if(getch() == '\r')
+                                    {
+                                        client_menu(client_id);
+                                    }
+
+                                } else if(strcasecmp(confirmation, "n") == 0)
+                                {
+                                    break;
+                                }
+
+                            }
+                            // ask for confirmation
+                            
+                        } else if(submenu_choice == 6) // back.
+                        {
+                            printf("Going back now...");
+                            Sleep(2000);
+                            break;
+                        } else 
+                        {
+                            printf("\nPlease enter a valid choice.\n");
+                            Sleep(2000);
+                            continue;
+                        }
+                    }
+                }
+                // view booked events
+                // update event details
+                // delete event
+                // 
                 break;
-            case 4:
-                // View Packages
+            case 4: // view packages
+                while (1) 
+                {
+                    char preview[20];
+                    int choice_preview;
+                    char *preview_event = preview_event_type();
+
+                    if (preview_event != NULL) {
+                        const char *paragraph[] = {
+                            "==================================================",
+                            "           🎯 Event Type Selection Menu           ",
+                            "==================================================",
+                            "",
+                            "📍 Navigation: Home > Dashboard > Preview Packages",
+                            "",
+                            "🔍 Please select the event type to view its available packages.",
+                            "   Use the Event ID to make your selection.",
+                            "",
+                            "==================================================",
+                            "🌟 Available Event Types:",
+                            preview_event,
+                            "==================================================",
+                            "",
+                            "📌 Instructions:",
+                            "- Enter the Event ID to proceed.",
+                            "- Type '-1' to go back or cancel.",
+                            NULL
+                        };
+
+                        display_options(NULL, paragraph, NULL, NULL);
+                        scanf("%s", preview);
+
+                        if(strcmp(preview, "-1") == 0)
+                        {
+                            client_menu(client_id);
+                        }
+
+                        if (valid_typeevent_id(atoi(preview)) != 1 ) 
+                        {
+                            printf("\n❌ Please enter a valid Event ID.\n");
+                            Sleep(2000);
+                            clear_input_buffer();
+                            continue;
+                        } 
+                        clear_input_buffer();
+                        choice_preview = atoi(preview);
+
+                        char *preview_pkg = preview_pkgs(choice_preview);
+
+                        if (preview_pkg == NULL) 
+                        {
+                            printf("==================================================\n");
+                            printf("               ⚠️ No Packages Available\n");
+                            printf("==================================================\n");
+                            printf("\n   Sorry, there are currently no packages available\n");
+                            printf("         for this event. Please check back later.\n\n");
+                            printf("==================================================\n");
+                            Sleep(3000);
+                            break;
+                        } else {
+                            while (1) 
+                            {
+                                char *package_blocks[100];
+                                int total_packages = 0;
+
+                                char *packages_copy = strdup(preview_pkg);
+                                if (packages_copy == NULL) {
+                                    perror("[ERROR] Memory allocation failed");
+                                    free(preview_pkg);
+                                    free(preview_event);
+                                    return;
+                                }
+
+                                char *block = strtok(packages_copy, "\n\n");
+                                while (block) {
+                                    package_blocks[total_packages++] = block;
+                                    block = strtok(NULL, "\n\n");
+                                }
+
+                                int current_page = 0;
+                                int total_pages = (total_packages + PAGE_SIZE - 1) / PAGE_SIZE;
+
+                                while (1) {
+                                    system("cls");
+                                    printf("=========================================\n");
+                                    printf("           📦 Event Packages\n");
+                                    printf("=========================================\n");
+                                    printf("📍 Home > Dashboard > Book Event > Select Package\n\n");
+
+                                    int start_index = current_page * PAGE_SIZE;
+                                    int end_index = start_index + PAGE_SIZE;
+                                    if (end_index > total_packages) {
+                                        end_index = total_packages;
+                                    }
+
+                                    for (int i = start_index; i < end_index; i++) {
+                                        printf("%s\n", package_blocks[i]);
+                                    }
+
+                                    printf("\n=========================================\n");
+                                    printf("Page %d of %d\n", current_page + 1, total_pages);
+                                    printf("=========================================\n");
+                                    printf("[N] Next Page | [P] Previous Page | [E] Exit\n");
+                                    printf("=========================================\n");
+                                    printf("Enter Package ID to Select: ");
+
+                                    char choice[50];
+                                    scanf(" %49s", choice);
+
+                                    if (strcasecmp(choice, "n") == 0) {
+                                        if (current_page < total_pages - 1) {
+                                            current_page++;
+                                        } else {
+                                            printf("\n❗ You are on the last page.\n");
+                                            Sleep(2000);
+                                        }
+                                    } else if (strcasecmp(choice, "p") == 0) {
+                                        if (current_page > 0) {
+                                            current_page--;
+                                        } else {
+                                            printf("\n❗ You are on the first page.\n");
+                                            Sleep(2000);
+                                        }
+                                    } else if (strcasecmp(choice, "e") == 0) {
+                                        printf("\nExiting package selection...\n");
+                                        Sleep(2000);
+                                        break;
+                                    } else if (valid_pkg_id(choice_preview, atoi(choice)) == 1) {
+                                        printf("\n✅ Package ID %s selected successfully!\n", choice);
+                                        Sleep(2000);
+                                        break;
+                                    } else {
+                                        printf("\n❌ Invalid choice. Please try again.\n");
+                                        Sleep(2000);
+                                    }
+                                }
+
+                                free(packages_copy);
+                                break;
+                            }
+                            free(preview_pkg);
+                        }
+                    } else {
+                        printf("==================================================\n");
+                        printf("               ⚠️ No Events Available\n");
+                        printf("==================================================\n");
+                        printf("\n   Sorry, there are currently no events available\n");
+                        printf("         for booking. Please check back later.\n\n");
+                        printf("==================================================\n");
+                        Sleep(2000);
+                        break;
+                    }
+                }
                 break;
-            case 5:
+            case 5: // feedback & support
                 // Feedback & Support
                 break;
-            case 6:
+            case 6: // notifcations
                 // Notifications
                 break;
-            case 7:
+            case 7: // payment history
                 // Logout
                 break;
-            default:
-                printf("\nInvalid choice. Please enter a number between 1 and 8.\n");
-                Sleep(500);
+            case 8:
+                break;
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
                 break;
         }
     }
@@ -1177,7 +2311,6 @@ int organizer_menu(int organizer_id)
 {
     int organizer_choice;
 
-    
     while(1)
     {
         system("cls");

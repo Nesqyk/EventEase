@@ -1,0 +1,46 @@
+2024-12-29 21:08:19 [INFO]: User accessed the main menu.
+2024-12-29 21:09:40 [INFO]: User accessed the main menu.
+2024-12-29 21:10:44 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:10:44 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:52 [INFO]: User accessed the main menu.
+2024-12-29 21:11:52 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:53 [INFO]: User accessed the main menu.
+2024-12-29 21:11:53 [INFO]: User selected option 7 from the main menu.
+2024-12-29 21:11:58 [INFO]: User accessed the main menu.
+2024-12-29 21:41:34 [INFO]: User accessed the main menu.
+2024-12-29 21:41:44 [INFO]: User selected option 0 from the main menu.

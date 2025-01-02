@@ -2,7 +2,6 @@
 #define USERS_H
 
 #define MAX_LINE 256
-#define MAX_ID_RANGE 100
 
 #define USERID_FILE "data/users_id.txt"
 #define USERS_DIR "data/users/"
@@ -52,5 +51,20 @@ int update_user(int id, char *key, char *value);
 int valid_user_id(int id);
 
 int username_exist(char username[50]);
+
+
+void generate_receipt(int client_id, int event_type_id, int pkg_id, int book_event_id);
+
+void print_receipt(int client_id, int event_type_id, int pkg_id, int book_event_id);
+
+// reminders
+int delete_reminder(int user_id, int reminder_id);
+
+int update_reminder_status(int user_id, int reminder_id, const char *new_status); 
+
+char *view_reminders(int user_id);
+
+int set_reminder(int user_id, const char *message, const char *due_date);
+
 
 #endif //USERS_H

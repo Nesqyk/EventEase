@@ -46,11 +46,15 @@ typedef struct
     char type[50];
     char name[50];
     char description[100];
+    int dp_percentage;
     char venues[300];
+    int payment_deadline_days;
 } TypeEvent;
 
 
 // typeevent prototypes
+
+void display_packages_with_details(const char *packages, char choice[20]);
 
 char *read_eventtype_all(const char key[50]);
 int create_typeevent(TypeEvent typeevent);

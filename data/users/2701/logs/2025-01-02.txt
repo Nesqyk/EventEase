@@ -1,0 +1,6 @@
+2025-01-02 13:53:11 [INFO]: User selected option 1 from the main menu.
+2025-01-02 13:53:11 [INFO]: User selected 'Profile' option.
+2025-01-02 13:53:14 [INFO]: User selected option 3 from the profile menu.
+2025-01-02 13:53:14 [INFO]: User returned to main menu from profile.
+2025-01-02 13:55:40 [INFO]: User selected option 2 from the main menu.
+2025-01-02 13:55:40 [INFO]: User selected 'Book Event' option.

@@ -1,0 +1,11 @@
+id:4627
+username:testuser1
+password:Hello@123
+full_name:Tyrone Tabornal
+email:tyrone@gmail.com
+phone:09123456789
+role:client
+signed_in:0
+stay_logged_in:0
+date_created:Sun Dec 29 21:01:03 2024
+

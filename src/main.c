@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
+#include <windows.h>
 
 #include "menu.h"
 #include "organizer.h"
+
+
 
 int main()
 {
@@ -40,5 +44,29 @@ int main()
     //     printf("%s", pkg_prev);
     // }
     // printf("%s", preview_pkgs(1));
-    client_menu(75);
+
+    SetConsoleOutputCP(CP_UTF8); // for emojis. 
+    // client_menu(3156);
+
+    auth_menu();
+
+    // printf("%s\n", preview_events(3156));
+
+    // int client_id = 3156;  // Example client ID
+    // int event_count = 0;
+    // int book_id = 0;
+
+    // char **events = preview_events(client_id, &event_count, &book_id);
+
+    // if (events == NULL || event_count == 0) {
+    //     printf("No events found for client ID %d.\n", client_id);
+    // } else {
+    //     printf("Found %d events:\n", event_count);
+    //     for (int i = 0; i < event_count; i++) {
+    //         printf("%s\n", events[i]);
+    //         free(events[i]);  // Free each event string
+    //     }
+    //     free(events);  // Free the array of pointers
+    // }
+
 }

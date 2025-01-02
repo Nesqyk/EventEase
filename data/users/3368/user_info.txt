@@ -1,0 +1,10 @@
+id:3368
+username:test@123
+password:Hello@123
+full_name:tyrone@gmail.com
+email:tyronetabornal@gmail.com
+phone:09123456789
+role:client
+signed_in:0
+stay_logged_in:1
+date_created:Thu Jan 02 14:06:17 2025

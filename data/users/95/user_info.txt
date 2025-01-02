@@ -1,9 +1,0 @@
-id:95
-username:hello01
-password:tyrone123
-full_name:tabornal
-email:tyrone@gmail.com
-phone:09123456789
-role:client
-signed_in:1
-date_created:Sat Dec 21 13:30:06 2024

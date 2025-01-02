@@ -1,0 +1,7 @@
+id:2701
+username:hello
+signed_in:1
+stay_logged_in:0
+role:client
+date_logged_on:Thu Jan 02 14:05:00 2025
+
