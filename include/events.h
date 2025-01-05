@@ -32,6 +32,8 @@ int generate_event_id();
 
 char **preview_events(int client_id, int *event_count, int **book_id);
 
+char *prev_events(int client_id);
+
 
 
 #endif // EVENTS_H

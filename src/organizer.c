@@ -7,7 +7,8 @@
 
 #include "organizer.h"
 #include "utils.h"
-
+#include "users.h"
+#include "events.h"
 
 
 /*
@@ -265,7 +266,7 @@ char *preview_event_type()
             size_t current_length = strlen(result);
             size_t additional_length = strlen(value_buffer) + 50; 
 
-            if (strcmp(key_buffer, "date_created") == 0) 
+            if (strcmp(key_buffer, "date_created") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0) 
             {
                 continue;
             }
@@ -275,10 +276,10 @@ char *preview_event_type()
 
             Field package_field[] = 
             {
-                {"event_id", "\033[32mEvent ID\033[0m"},
-                {"event_name", "Event Name"},
-                {"description", "Description"},
-                {"venues", "Venues"},
+                {"event_id", "🆔 Event ID         "},
+                {"event_name", "    📛 Event Name   "},
+                {"description", "    📝 Description  "},
+                {"venues", "    📍 Venues       "},
             };
             int valid = 0;
             for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
@@ -966,7 +967,7 @@ int delete_pkg(int event_id, int pkg_id)
     }
 
     // Delete package information file
-    sprintf(type_dir, "%s%d/%d.txt", TYPE_EVENTS_DIR, event_id, pkg_id);
+    sprintf(type_dir, "%s%d/packages/%d.txt", TYPE_EVENTS_DIR, event_id, pkg_id);
     if (remove(type_dir) != 0) 
     {
         perror("[ERROR] Failed to remove package info file");
@@ -1031,4 +1032,362 @@ int valid_pkg_id(int event_id, int pkg_id)
     }
     fclose(file);
     return 0;
+}
+
+
+// dashboard overview
+
+// total events booked functions
+
+// will print the counts for each event_type.
+
+void total_bookings_by_event_type() {
+
+    FILE *event_types_file = fopen("data/type_event_ids.txt", "r");
+    if (event_types_file == NULL) {
+        perror("[ERROR] Unable to open type_event_ids.txt");
+        return;
+    }
+
+    // Dynamically store event types and their counts
+    char event_names[100][50]; // Maximum 100 event types, each up to 50 characters
+    int event_counts[100] = {0};
+    int total_event_types = 0;
+
+    int event_type_id;
+    while (fscanf(event_types_file, "%d\n", &event_type_id) != EOF) {
+        char *event_name = read_typevent(event_type_id, "event_name");
+        if (event_name) {
+            if (total_event_types < 100) {
+                strncpy(event_names[total_event_types], event_name, sizeof(event_names[total_event_types]) - 1);
+                event_names[total_event_types][sizeof(event_names[total_event_types]) - 1] = '\0'; // Ensure null-termination
+                total_event_types++;
+            } else {
+                printf("[WARNING] Maximum event types reached. Some types will not be counted.\n");
+            }
+            free(event_name);
+        }
+    }
+    fclose(event_types_file);
+
+    // Open the user IDs file to read bookings
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return;
+    }
+
+    int user_id;
+    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) {
+        char user_events_file[256];
+        sprintf(user_events_file, "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(user_events_file, "r");
+        if (events_file == NULL) continue;
+
+        int event_id;
+        while (fscanf(events_file, "%d\n", &event_id) != EOF) {
+            char *type_event_id_str = read_event(user_id, event_id, "event_type_id");
+            if (type_event_id_str) {
+                int type_event_id = atoi(type_event_id_str);
+                free(type_event_id_str);
+
+                for (int i = 0; i < total_event_types; i++) {
+                    char *event_id_str = read_typevent(type_event_id, "event_id");
+                    if (event_id_str) {
+                        int stored_event_id = atoi(event_id_str);
+                        free(event_id_str);
+
+                        if (type_event_id == stored_event_id) {
+                            event_counts[i]++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        fclose(events_file);
+    }
+    fclose(user_ids_file);
+
+    // Print the report
+    printf("==================================================\n");
+    printf("           📊 Total Bookings by Event Type       \n");
+    printf("==================================================\n");
+    for (int i = 0; i < total_event_types; i++) {
+        printf("%-20s: %d bookings\n", event_names[i], event_counts[i]);
+    }
+    printf("==================================================\n");
+    printf("\nPlease enter [ANY KEY] to stop viewing.");
+}
+
+
+// total_bookings by venue will print how many booked events per venue.
+
+
+
+void total_bookings_by_venue() {
+    struct VenueCount {
+        char venue[100];
+        int count;
+    } venue_counts[100];
+    int venue_count_size = 0;
+
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return;
+    }
+
+    int user_id;
+    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) {
+        char user_events_file[256];
+        sprintf(user_events_file, "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(user_events_file, "r");
+        if (events_file == NULL) continue;
+
+        int event_id;
+        while (fscanf(events_file, "%d\n", &event_id) != EOF) {
+            char *venue = read_event(user_id, event_id, "venue");
+
+            int found = 0;
+            for (int i = 0; i < venue_count_size; i++) {
+                if (strcmp(venue_counts[i].venue, venue) == 0) {
+                    venue_counts[i].count++;
+                    found = 1;
+                    break;
+                }
+            }
+            if (!found && venue_count_size < 100) {
+                strncpy(venue_counts[venue_count_size].venue, venue, sizeof(venue_counts[venue_count_size].venue));
+                venue_counts[venue_count_size].count = 1;
+                venue_count_size++;
+            }
+            free(venue);
+        }
+        fclose(events_file);
+    }
+    fclose(user_ids_file);
+
+    printf("==================================================\n");
+    printf("             🏢 Bookings by Venue                \n");
+    printf("==================================================\n");
+    for (int i = 0; i < venue_count_size; i++) {
+        printf("%-30s: %d bookings\n", venue_counts[i].venue, venue_counts[i].count);
+    }
+    printf("==================================================\n");
+        printf("\nPlease enter [ANY KEY] to stop viewing.");
+
+}
+
+// will count based on months.
+void total_bookings_by_month() {
+    const char *months[] = {"January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"};
+    int bookings_per_month[12] = {0}; // Array to store booking counts for each month
+
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return;
+    }
+
+    int user_id;
+    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) {
+        char user_events_file[256];
+        sprintf(user_events_file, "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(user_events_file, "r");
+        if (events_file == NULL) continue;
+
+        int event_id;
+        while (fscanf(events_file, "%d\n", &event_id) != EOF) {
+            char *booking_date = read_event(user_id, event_id, "booking_date");
+            if (booking_date) {
+                char month_str[4];
+                int month_index = -1;
+
+                // Extract the abbreviated month (e.g., "Jan", "Feb") from the booking date
+                if (sscanf(booking_date, "%*s %3s", month_str) == 1) {
+                    // Match the abbreviated month to find the index
+                    for (int i = 0; i < 12; i++) {
+                        if (strncmp(month_str, months[i], 3) == 0) {
+                            month_index = i;
+                            break;
+                        }
+                    }
+                    if (month_index != -1) {
+                        bookings_per_month[month_index]++; // Increment the count for the month
+                    }
+                }
+                free(booking_date);
+            }
+        }
+        fclose(events_file);
+    }
+    fclose(user_ids_file);
+
+    // Print the report
+    printf("==================================================\n");
+    printf("              📅 Total Bookings by Month          \n");
+    printf("==================================================\n");
+    for (int i = 0; i < 12; i++) {
+        printf("%-10s: %d bookings\n", months[i], bookings_per_month[i]);
+    }
+    printf("==================================================\n");
+    printf("\nPlease enter [ANY KEY] to stop viewing.\n");
+}
+
+
+// exports report.
+
+void generate_event_report(int organizer_id) 
+{
+    // Locate the HOME directory
+    #ifdef _WIN32
+    const char *home = getenv("USERPROFILE"); // Primary for Windows
+        if (home == NULL) {
+            const char *drive = getenv("HOMEDRIVE");
+            const char *path = getenv("HOMEPATH");
+            static char fallback[512];
+            if (drive && path) {
+                snprintf(fallback, sizeof(fallback), "%s%s", drive, path);
+                home = fallback;
+            }
+        }
+    #else
+        const char *home = getenv("HOME"); // Primary for Linux/MacOS
+    #endif
+
+    printf("%s\n", home);
+    if (home == NULL) {
+        perror("[ERROR] Unable to locate the home directory");
+        return;
+    }
+
+    // Construct the path for the reports folder
+    char reports_folder[512];
+    snprintf(reports_folder, sizeof(reports_folder), "%s/Downloads/event-ease/reports", home);
+
+    // Create the directory if it doesn't exist
+#ifdef _WIN32
+    _mkdir(reports_folder);
+#else
+    mkdir(reports_folder, 0777);
+#endif
+
+    // Generate the filename with the current timestamp
+    char report_filename[512];
+    time_t now = time(NULL);
+    struct tm *local_time = localtime(&now);
+    snprintf(report_filename, sizeof(report_filename), "%s/events_report_%04d%02d%02d_%02d%02d%02d.csv",
+             reports_folder,
+             local_time->tm_year + 1900,
+             local_time->tm_mon + 1,
+             local_time->tm_mday,
+             local_time->tm_hour,
+             local_time->tm_min,
+             local_time->tm_sec);
+
+    FILE *report_file = fopen(report_filename, "w");
+    if (report_file == NULL) {
+        perror("[ERROR] Failed to create report file");
+        return;
+    }
+
+    fprintf(report_file, "EventEase Report\n");
+    fprintf(report_file, "Generated on: %04d-%02d-%02d %02d:%02d:%02d\n\n",
+            local_time->tm_year + 1900,
+            local_time->tm_mon + 1,
+            local_time->tm_mday,
+            local_time->tm_hour,
+            local_time->tm_min,
+            local_time->tm_sec);
+
+    // Read event types dynamically
+    FILE *event_types_file = fopen("data/type_event_ids.txt", "r");
+    if (event_types_file == NULL) {
+        perror("[ERROR] Unable to read event types");
+        fclose(report_file);
+        return;
+    }
+
+    fprintf(report_file, "Events by Type\n");
+    fprintf(report_file, "Event Type, Total Booked\n");
+
+    char type_line[256];
+    while (fgets(type_line, sizeof(type_line), event_types_file)) {
+        int type_id;
+        char type_name[100] = "Unknown Type";
+        sscanf(type_line, "%d\n", &type_id);
+
+        // Read the event type name
+        char *type_name_read = read_typevent(type_id, "event_name");
+        if (type_name_read != NULL) {
+            strncpy(type_name, type_name_read, sizeof(type_name));
+            free(type_name_read);
+        }
+
+        // Count events of this type
+        int count = 0;
+        FILE *users_file = fopen("data/users_id.txt", "r");
+        if (users_file != NULL) {
+            int user_id;
+            while (fscanf(users_file, "%d:%*s\n", &user_id) != EOF) {
+                char events_path[256];
+                snprintf(events_path, sizeof(events_path), "data/users/%d/book_event_id.txt", user_id);
+                FILE *events_file = fopen(events_path, "r");
+                if (events_file != NULL) {
+                    int event_id;
+                    while (fscanf(events_file, "%d\n", &event_id) != EOF) {
+                        char *type_id_read = read_event(user_id, event_id, "event_type_id");
+                        if (type_id_read != NULL && atoi(type_id_read) == type_id) {
+                            count++;
+                            free(type_id_read);
+                        }
+                    }
+                    fclose(events_file);
+                }
+            }
+            fclose(users_file);
+        }
+
+        fprintf(report_file, "%s, %d\n", type_name, count);
+    }
+    fclose(event_types_file);
+
+    fprintf(report_file, "\nEvents by Venue\n");
+    fprintf(report_file, "Venue, Total Booked\n");
+
+    // Read venues dynamically
+    FILE *venues_file = fopen("data/type_event_ids.txt", "r");
+    if (venues_file != NULL) 
+    {
+        char venue_line[256];
+        while (fgets(venue_line, sizeof(venue_line), venues_file)) 
+        {
+            int venue_id;
+            char venue_name[100] = "Unknown Venue";
+            sscanf(venue_line, "%d\n", &venue_id);
+
+            char *venue_name_read = read_typevent(venue_id, "venues");
+            if (venue_name_read != NULL) {
+                strncpy(venue_name, venue_name_read, sizeof(venue_name));
+                free(venue_name_read);
+            }
+
+            fprintf(report_file, "%s, %d\n", venue_name, 0); // Add counting logic here if required
+        }
+        fclose(venues_file);
+    }
+
+    fclose(report_file);
+
+    printf("==================================================\n");
+    printf("         📤 Event Report Generated Successfully\n");
+    printf("==================================================\n");
+    printf("📁 Report Location: %s\n", report_filename);
+    printf("==================================================\n");
+    printf("Please enter [ANY KEY] to go back...");
 }

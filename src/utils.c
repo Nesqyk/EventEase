@@ -441,7 +441,8 @@ int validate_time_manual(int hour, int minute, int second) {
 int parse_date_manual(const char *date_str, char *formatted_date, char *formatted_time) {
     char day_str[3], month_str[4], year_str[5], hour_str[3], min_str[3], sec_str[3];
     const char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
-    
+
+    // Adjusted to match the input format: "29 Dec 2024 21:42:36"
     if (sscanf(date_str, "%2s %3s %4s %2s:%2s:%2s", day_str, month_str, year_str, hour_str, min_str, sec_str) != 6) {
         printf("\nError: Invalid date format. Please use 'DD Mon YYYY HH:MM:SS'.\n");
         return 0;
@@ -449,11 +450,8 @@ int parse_date_manual(const char *date_str, char *formatted_date, char *formatte
 
     int day = atoi(day_str);
     int year = atoi(year_str);
-    int hour = atoi(hour_str);
-    int minute = atoi(min_str);
-    int second = atoi(sec_str);
 
-    // Find month as an index (0-11)
+    // Validate the month name
     const char *month_ptr = strstr(months, month_str);
     if (month_ptr == NULL) {
         printf("\nError: Invalid month name.\n");
@@ -461,18 +459,18 @@ int parse_date_manual(const char *date_str, char *formatted_date, char *formatte
     }
     int month = (month_ptr - months) / 3 + 1;
 
+    // Validate the parsed date
     if (!validate_date_manual(day, month, year)) {
         printf("\nError: Invalid date entered. Please check the values.\n");
         return 0;
     }
 
-    if (!validate_time_manual(hour, minute, second)) {
-        printf("\nError: Invalid time entered. Please check the values.\n");
-        return 0;
-    }
+    // Format the parsed date as "11 Jan 2025"
+    snprintf(formatted_date, 20, "%02d %s %04d", day, month_str, year);
 
-    snprintf(formatted_date, 20, "%04d-%02d-%02d", year, month, day);
-    snprintf(formatted_time, 10, "%02d:%02d:%02d", hour, minute, second);
+    // Format the time as "HH:MM:SS"
+    snprintf(formatted_time, 10, "%02d:%02d:%02d", atoi(hour_str), atoi(min_str), atoi(sec_str));
+
     return 1;
 }
 
@@ -557,4 +555,29 @@ char *display_current_month_with_highlight()
     strcat(result, buffer);
 
     return result;
+}
+
+char *get_current_date_time() 
+{
+
+    char *formatted_date_time = malloc(100);
+    if (formatted_date_time == NULL) {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
+    // Get the current time
+    time_t now = time(NULL);
+    struct tm *current_time = localtime(&now);
+
+    // Format the date and time
+    snprintf(formatted_date_time, 100, "⏰ Time: %02d:%02d:%02d\t\t📅 Date: %02d/%02d/%04d",
+             current_time->tm_hour,
+             current_time->tm_min,
+             current_time->tm_sec,
+             current_time->tm_mday,
+             current_time->tm_mon + 1,
+             current_time->tm_year + 1900);
+
+    return formatted_date_time;
 }

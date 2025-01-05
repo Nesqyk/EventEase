@@ -79,4 +79,7 @@ int validate_date_manual(int day, int month, int year);
 
 char *display_current_month_with_highlight();
 
+char *get_current_date_time();
+
+
 #endif // UTILS_H

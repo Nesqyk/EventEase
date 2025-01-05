@@ -1,0 +1,7 @@
+event_id:300
+event_name:asdasd
+description:asdasdasd
+venues: School,Manila
+dp_percentage:50
+payment_deadline_days:10
+date_created:Thu Jan 02 20:51:52 2025

@@ -88,4 +88,13 @@ int valid_pkg_id(int event_id, int pkg_id);
 char *read_all_pkg(int event_id, char key[50]);
 
 
+// total events submenu
+void total_bookings_by_month();
+
+void total_bookings_by_venue();
+
+void total_bookings_by_event_type();
+
+void generate_event_report(int organizer_id);
+
 #endif //ORGANIZER_H

@@ -62,3 +62,4 @@
 2025-01-02 13:44:03 [INFO]: User selected option 1 from the main menu.
 2025-01-02 13:44:03 [INFO]: User selected 'Profile' option.
 2025-01-02 13:44:04 [INFO]: User selected option 4 from the profile menu.
+2025-01-02 19:22:42 [INFO]: User selected option 3 from the main menu.

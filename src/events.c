@@ -60,34 +60,147 @@ int book_event(int client_id, BookEvent event)
 
 }
 
-char **preview_events(int client_id, int *event_count, int **book_ids) {
-    char path[50];
-    sprintf(path, "data/users/%d/book_event_id.txt", client_id);
+char *prev_events(int client_id)
+{
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/book_event_id.txt", client_id);
 
     FILE *ids_file = fopen(path, "r");
-    if (ids_file == NULL) {
+    if (ids_file == NULL)
+    {
+        perror("[ERROR] Unable to open book_event_id.txt");
+        return strdup(
+            "==================================================\n"
+            "               📭 No Upcoming Events Found       \n"
+            "==================================================\n\n"
+            "      You currently have no upcoming events.\n        Start planning your first event now!\n"
+            "\n==================================================\n");
+    }
+
+    // Allocate memory for concatenated results
+    char *result = malloc(8192); // Adjust size based on expected data
+    if (!result)
+    {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return strdup("An error occurred while loading your upcoming events.");
+    }
+
+    snprintf(result, 8192, 
+        "==================================================\n"
+        "               📅 Upcoming Events                \n"
+        "==================================================\n");
+
+    char line[256];
+    int events_found = 0;
+
+    while (fgets(line, sizeof(line), ids_file))
+    {
+        int id = atoi(line);
+
+        char info_filename[256];
+        snprintf(info_filename, sizeof(info_filename), "data/users/%d/events/%d.txt", client_id, id);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL)
+        {
+            perror("[ERROR] Unable to open event details file");
+            continue;
+        }
+
+        char key_buffer[50];
+        char value_buffer[1000];
+
+        char event_name[100] = "Unknown Event";
+        char status[50] = "Unknown Status";
+        char event_date[50] = "Unknown Date";
+        char venue[100] = "Unknown Venue";
+
+        while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2)
+        {
+            if (strcmp(key_buffer, "name") == 0)
+                strncpy(event_name, value_buffer, sizeof(event_name));
+            else if (strcmp(key_buffer, "status") == 0)
+            {
+                int int_status = atoi(value_buffer);
+                switch (int_status)
+                {
+                    case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
+                    case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
+                    case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
+                    default: strncpy(status, "Unknown Status", sizeof(status)); break;
+                }
+            }
+            else if (strcmp(key_buffer, "event_date") == 0)
+                strncpy(event_date, value_buffer, sizeof(event_date));
+            else if (strcmp(key_buffer, "venue") == 0)
+                strncpy(venue, value_buffer, sizeof(venue));
+        }
+        fclose(info_file);
+
+        char formatted_event[512];
+        snprintf(formatted_event, sizeof(formatted_event),
+                 "\n📌 %s\n"
+                 "   📅 Date       : %s\n"
+                 "   📍 Venue      : %s\n"
+                 "   🆔 Book ID    : %d\n"
+                 "   🔖 Status     : %s\n",
+                 event_name, event_date, venue, id, status);
+
+        strcat(result, formatted_event);
+        events_found++;
+    }
+    fclose(ids_file);
+
+    if (events_found == 0)
+    {
+        free(result);
+        return strdup(
+            "==================================================\n"
+            "            📭 No Upcoming Events Found       \n"
+            "==================================================\n\n"
+            "      You currently have no upcoming events.\n        Start planning your first event now!\n"
+            );
+    }
+
+    return result;
+}
+
+
+// get all client id if I want to preview all client.
+char **preview_events(int client_id, int *event_count, int **book_ids)
+{
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/book_event_id.txt", client_id);
+
+    FILE *ids_file = fopen(path, "r");
+    if (ids_file == NULL)
+    {
         perror("[ERROR] Unable to open book_event_id.txt");
         *event_count = 0;
         *book_ids = NULL;
         return NULL;
     }
 
-    char *events[101];  // Fixed-size array of pointers for events
-    int temp_book_ids[101];  // Temporary array to store book IDs
+    char *events[101]; // Fixed-size array of pointers for events
+    int temp_book_ids[101]; // Temporary array to store book IDs
     *event_count = 0;
     int id;
 
-    while (fscanf(ids_file, "%d\n", &id) != EOF) {
-        if (*event_count >= 100) {
+    while (fscanf(ids_file, "%d\n", &id) != EOF)
+    {
+        if (*event_count >= 100)
+        {
             printf("[WARNING] Maximum number of events reached. Some events will not be loaded.\n");
             break;
         }
 
         char info_filename[256];
-        sprintf(info_filename, "data/users/%d/events/%d.txt", client_id, id);
+        snprintf(info_filename, sizeof(info_filename), "data/users/%d/events/%d.txt", client_id, id);
 
         FILE *info_file = fopen(info_filename, "r");
-        if (info_file == NULL) {
+        if (info_file == NULL)
+        {
             perror("[ERROR] Unable to open event details file");
             continue;
         }
@@ -102,23 +215,25 @@ char **preview_events(int client_id, int *event_count, int **book_ids) {
         char package_name[100] = "Unknown Package";
         char status[50] = "Unknown Status";
 
-        while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2) {
-            if (strcmp(key_buffer, "name") == 0) {
+        while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2)
+        {
+            if (strcmp(key_buffer, "name") == 0)
                 strncpy(event_name, value_buffer, sizeof(event_name));
-            } else if (strcmp(key_buffer, "event_date") == 0) {
+            else if (strcmp(key_buffer, "event_date") == 0)
                 strncpy(event_date, value_buffer, sizeof(event_date));
-            } else if (strcmp(key_buffer, "id") == 0) {
+            else if (strcmp(key_buffer, "id") == 0)
                 temp_book_ids[*event_count] = atoi(value_buffer);
-            } else if (strcmp(key_buffer, "start_time") == 0) {
+            else if (strcmp(key_buffer, "start_time") == 0)
                 strncpy(start_time, value_buffer, sizeof(start_time));
-            } else if (strcmp(key_buffer, "venue") == 0) {
+            else if (strcmp(key_buffer, "venue") == 0)
                 strncpy(venue, value_buffer, sizeof(venue));
-            } else if (strcmp(key_buffer, "package_id") == 0) {
-                // Resolve package ID to a name if necessary
-                sprintf(package_name, "%s", read_pkg(atoi(value_buffer), atoi(value_buffer), "package_name"));
-            } else if (strcmp(key_buffer, "status") == 0) {
+            else if (strcmp(key_buffer, "package_id") == 0)
+                snprintf(package_name, sizeof(package_name), "%s", read_pkg(atoi(value_buffer), atoi(value_buffer), "package_name"));
+            else if (strcmp(key_buffer, "status") == 0)
+            {
                 int int_status = atoi(value_buffer);
-                switch (int_status) {
+                switch (int_status)
+                {
                     case 1: strncpy(status, "\033[32mConfirmed\033[0m", sizeof(status)); break;
                     case 2: strncpy(status, "In Progress", sizeof(status)); break;
                     case 3: strncpy(status, "Incomplete Payment", sizeof(status)); break;
@@ -130,17 +245,19 @@ char **preview_events(int client_id, int *event_count, int **book_ids) {
 
         char formatted_event[512];
         snprintf(formatted_event, sizeof(formatted_event),
-                 "Event: %s\n"
-                 "   Book ID: %d\n"
-                 "   Date: %s | Time: %s\n"
-                 "   Venue: %s\n"
-                 "   Package: %s\n"
-                 "   Status: %s\n"
-                 "\n--------------------------------------------------\n",
+                 "\n🎉 Event Name  : %s\n"
+                "🆔 Book ID     : %d\n"
+                "📅 Date        : %s\n"
+                "⏰ Time        : %s\n"
+                "📍 Venue       : %s\n"
+                "📦 Package     : %s\n"
+                "🔖 Status      : %s\n\n"
+                 "--------------------------------------------------",
                  event_name, temp_book_ids[*event_count], event_date, start_time, venue, package_name, status);
 
         events[*event_count] = strdup(formatted_event);
-        if (events[*event_count] == NULL) {
+        if (events[*event_count] == NULL)
+        {
             perror("[ERROR] Memory allocation failed");
             break;
         }
@@ -148,43 +265,47 @@ char **preview_events(int client_id, int *event_count, int **book_ids) {
     }
     fclose(ids_file);
 
-    if (*event_count == 0) {
+    if (*event_count == 0)
+    {
+        printf("==================================================\n");
+        printf("               📭 No Booked Events Found         \n");
+        printf("==================================================\n");
+        printf("You currently have no booked events. Start planning your first event now!\n");
+        printf("==================================================\n");
         *book_ids = NULL;
         return NULL;
     }
 
     // Allocate memory for book_ids
     *book_ids = malloc(sizeof(int) * (*event_count));
-    if (*book_ids == NULL) {
+    if (*book_ids == NULL)
+    {
         perror("[ERROR] Memory allocation failed for book IDs");
-        for (int i = 0; i < *event_count; i++) {
+        for (int i = 0; i < *event_count; i++)
             free(events[i]);
-        }
         *event_count = 0;
         return NULL;
     }
 
     // Copy book IDs to the dynamically allocated array
-    for (int i = 0; i < *event_count; i++) {
+    for (int i = 0; i < *event_count; i++)
         (*book_ids)[i] = temp_book_ids[i];
-    }
 
     // Allocate memory for event strings
     char **result = malloc(sizeof(char *) * (*event_count + 1)); // +1 for NULL terminator
-    if (result == NULL) {
+    if (result == NULL)
+    {
         perror("[ERROR] Memory allocation failed for events array");
-        for (int i = 0; i < *event_count; i++) {
+        for (int i = 0; i < *event_count; i++)
             free(events[i]);
-        }
         free(*book_ids);
         *book_ids = NULL;
         *event_count = 0;
         return NULL;
     }
 
-    for (int i = 0; i < *event_count; i++) {
+    for (int i = 0; i < *event_count; i++)
         result[i] = events[i];
-    }
     result[*event_count] = NULL; // Add NULL terminator
 
     return result;
@@ -292,7 +413,6 @@ char *read_event(int client_id, int event_id, char *key)
     return NULL;
 }
 
-
 int cancel_event(int client_id, int event_id) 
 {
     if (valid_user_id(client_id) != 1) 
@@ -362,15 +482,8 @@ int cancel_event(int client_id, int event_id)
     char cancelled_event_dir[256];
     sprintf(cancelled_event_dir, "data/events/cancelled_events/%d/", event_id);
 
+    _mkdir(cancelled_event_dir);
     struct stat st = {0};
-    if (stat("data/events/cancelled_events/", &st) == -1) 
-    {
-        if (mkdir("data/events/cancelled_events/") != 1) 
-        {
-            perror("[ERROR] Failed to create cancelled events directory");
-            return -1;
-        }
-    }
 
     // Rename the event directory to move it
     if (rename(booked_event_dir, cancelled_event_dir) != 0) 
