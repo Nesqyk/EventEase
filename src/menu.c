@@ -4771,7 +4771,6 @@ int organizer_menu(int organizer_id)
             {
                 "Add User               ➕ - Create a new user account.",
                 "Edit User              ✏️ - Modify existing user details.",
-                "Deactivate User        🛑 - Disable user accounts temporarily.",
                 "Manage Booked Event        - ",
                 "View User Details      🔍 - Review specific user information.",
                 "Back to Dashboard      🔙 - Return to the main dashboard.",
