@@ -1,7 +1,7 @@
 id:1564
 username:test@admin
 signed_in:1
-stay_logged_in:0
+stay_logged_in:1
 role:organizer
-date_logged_on:Mon Jan 06 14:07:16 2025
+date_logged_on:Tue Jan 07 00:13:34 2025
 
