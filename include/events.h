@@ -15,7 +15,7 @@ typedef struct {
     int balance; // package balance or down payment
     char start_time[50]; // input
     char payment_deadline[50];
-    int status; // 1 -> Confirmed  2 - > In Progress 3 - > Incomplete Payment!
+    int status; // 1 -> Confirmed  2 - > In Progress 3 - > Incomplete Payment! -> 4 done already -> 5 On Going
 } BookEvent;
 
 int book_event(int client_id, BookEvent event);
@@ -34,6 +34,20 @@ char **preview_events(int client_id, int *event_count, int **book_id);
 
 char *prev_events(int client_id);
 
+char *preview_all_events(int client_id);
 
+
+char *get_most_booked_event_type();
+
+char* read_event_field(int user_id, int event_id, const char *field);
+
+
+double calculate_total_revenue();
+
+int count_active_events();
+
+int count_total_events();
+
+char* generate_statistics_summary();
 
 #endif // EVENTS_H

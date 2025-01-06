@@ -1175,26 +1175,32 @@ char *view_reminders(int user_id)
 }
 
 
-void reveal_all_users_except_organizers() {
+void reveal_all_users_except_organizers() 
+{
     const char *users_file = "data/users_id.txt";
 
     FILE *user_ids_file = fopen(users_file, "r");
-    if (user_ids_file == NULL) {
+    if (user_ids_file == NULL) 
+    {
         perror("[ERROR] Unable to open users_id.txt");
         return;
     }
 
     printf("==================================================\n");
-    printf("              📋 User Information Report          \n");
-    printf("==================================================\n");
+    printf("              📋 User Information Reports          \n");
+    printf("==================================================\n\n");
 
     int user_id;
-    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) {
+    int user_found = 0;
+
+    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) 
+    {
         char user_info_file[256];
         sprintf(user_info_file, "data/users/%d/user_info.txt", user_id);
 
         FILE *info_file = fopen(user_info_file, "r");
-        if (info_file == NULL) {
+        if (info_file == NULL) 
+        {
             perror("[ERROR] Unable to open user_info.txt");
             continue;
         }
@@ -1202,47 +1208,37 @@ void reveal_all_users_except_organizers() {
         char key_buffer[50];
         char value_buffer[256];
 
-        printf("User ID: %d\n", user_id);
+        printf("==================================================\n");
+        printf("🆔 User ID: %d\n", user_id);
+        printf("==================================================\n");
 
-        while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) {
-            if (strcmp(key_buffer, "role") == 0 && strcmp(value_buffer, "organizer") == 0) 
+        while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            if (strcmp(key_buffer, "password") == 0 || strcmp(key_buffer, "signed_in") == 0 || 
+                strcmp(key_buffer, "stay_logged_in") == 0 || strcmp(key_buffer, "id") == 0) 
             {
-                printf("\n🔒 User is an organizer. Skipping details.\n");
-                break;
-            }
-
-            if (strcmp(key_buffer, "password") == 0) 
-            {
-                // Skip displaying passwords for privacy reasons
+                // Skip displaying sensitive or irrelevant information
                 continue;
             }
 
-            if (strcmp(key_buffer, "signed_in") == 0) 
-            {
-                continue;
-            }
-
-            if (strcmp(key_buffer, "stay_logged_in") == 0) 
-            {
-                continue;
-            }
-
-            if (strcmp(key_buffer, "id") == 0) 
-            {
-                continue;
-            }
             printf("✨ %-15s: %s\n", key_buffer, value_buffer);
         }
 
         fclose(info_file);
-
-        printf("--------------------------------------------------\n");
+        user_found = 1;
     }
 
     fclose(user_ids_file);
+
+    if (!user_found) 
+    {
+        printf("\n🚫 No users found or accessible.\n");
+    }
+
     printf("==================================================\n");
-    printf("\nPlease enter the user id to preview (-1 to go back): ");
+    printf("\n👉 Please enter the User ID to continue  (-1 to go back): ");
 }
+
 
 /* 
 void check_due_reminders(int user_id, int alert_minutes) 
@@ -1718,7 +1714,7 @@ char *preview_feedback()
     snprintf(result, 4096,
              "==================================================\n"
              "                  📝 Feedback Preview             \n"
-             "==================================================\n");
+             "==================================================\n\n");
 
     char line[512];
     int feedback_found = 0;
@@ -1737,7 +1733,7 @@ char *preview_feedback()
                      "⭐ Rating: %d\n"
                      "📋 Comments: %s\n"
                      "📅 Submitted On: %s\n"
-                     "--------------------------------------------------\n",
+                     "--------------------------------------------------\n\n",
                      user_id, star, comments, timestamp);
             strcat(result, formatted_feedback);
             feedback_found = 1;
@@ -1820,7 +1816,7 @@ char *preview_payment_history(int user_id)
 
     // Initialize the result string with a header
     snprintf(result, 2048,
-        "==================================================\n"
+        "\n==================================================\n"
         "               💵 Payment History                \n"
         "==================================================\n\n");
 
@@ -1830,7 +1826,7 @@ char *preview_payment_history(int user_id)
     // Read and format each payment entry
     while (fgets(line, sizeof(line), file)) {
         int payment_id;
-        char event_name[100], payment_method[30], date_time[30];
+        char event_name[100], payment_method[100], date_time[30];
         double amount;
 
         // Parse the line

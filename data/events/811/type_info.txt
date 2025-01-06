@@ -1,0 +1,7 @@
+event_id:811
+event_name:Wedding
+description:Wedding Event Type
+venues: Parokya Ni Edgar,Santo Nino Parish,Chosen Church
+dp_percentage:20
+payment_deadline_days:3
+date_created:Sun Jan 05 20:16:21 2025

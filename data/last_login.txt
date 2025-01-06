@@ -1,7 +1,7 @@
-id:3156
-username:gal@123
+id:1564
+username:test@admin
 signed_in:1
-stay_logged_in:1
-role:client
-date_logged_on:Sun Jan 05 16:12:25 2025
+stay_logged_in:0
+role:organizer
+date_logged_on:Mon Jan 06 14:07:16 2025
 

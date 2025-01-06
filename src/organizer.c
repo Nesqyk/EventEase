@@ -99,6 +99,88 @@ char *read_eventtype_all(const char key[50])
     return result;
 }
 
+int delete_typeevent(int event_id, int pkg_id) 
+{
+    if (valid_pkg_id(event_id, pkg_id) != 1) 
+    {
+        perror("[ERROR] Invalid package ID");
+        return -1;
+    }
+
+    if (valid_typeevent_id(event_id) != 1) 
+    {
+        perror("[ERROR] Invalid event type ID");
+        return -1;
+    }
+
+    char type_dir[256];
+    char path[256];
+
+    // Construct path to the package info file
+    sprintf(path, "data/events/%d/%s", event_id, TYPE_PKG_ID_FILE);
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) 
+    {
+        perror("[ERROR] Error opening package ID file");
+        return -1;
+    }
+
+    // Temporary file for writing updated data
+    char temp_path[256];
+    sprintf(temp_path, "data/events/%d/%s_temp", event_id, TYPE_PKG_ID_FILE);
+
+    FILE *temp_file = fopen(temp_path, "w");
+    if (temp_file == NULL) 
+    {
+        perror("[ERROR] Error opening temporary file for writing");
+        fclose(file);
+        return -1;
+    }
+
+    int buffer_id;
+    int is_found = 0;
+
+    // Read from original file and write to temp file, excluding `pkg_id`
+    while (fscanf(file, "%d\n", &buffer_id) == 1) 
+    {
+        if (buffer_id != pkg_id) 
+        {
+            fprintf(temp_file, "%d\n", buffer_id);
+        } 
+        else 
+        {
+            is_found = 1;
+        }
+    }
+
+    fclose(file);
+    fclose(temp_file);
+
+    if (!is_found) 
+    {
+        perror("[ERROR] Package ID not found");
+        remove(temp_path); // Clean up temp file
+        return -1;
+    }
+
+    // Replace original file with the updated temp file
+    if (remove(path) != 0 || rename(temp_path, path) != 0) 
+    {
+        perror("[ERROR] Failed to update package ID file");
+        return -1;
+    }
+
+    // Delete package information file
+    sprintf(type_dir, "%s%d/packages/%d.txt", TYPE_EVENTS_DIR, event_id, pkg_id);
+    if (remove(type_dir) != 0) 
+    {
+        perror("[ERROR] Failed to remove package info file");
+        return -1;
+    }
+    return 1;
+}
+
 
 int create_typeevent(TypeEvent typeevent) 
 {
@@ -241,15 +323,13 @@ char *preview_event_type()
         return NULL;
     }
 
-    result[0] = '\0';
+    result[0] = '\0'; // Initialize as an empty string
     int id;
-
 
     while (fscanf(ids_file, "%d\n", &id) != EOF) 
     {
         char info_filename[256];
-
-        sprintf(info_filename, "%s%d/%s", TYPE_EVENTS_DIR, id, TYPE_INFO_FILE);
+        sprintf(info_filename, "data/events/%d/type_info.txt", id);
 
         FILE *info_file = fopen(info_filename, "r");
         if (info_file == NULL) 
@@ -259,67 +339,110 @@ char *preview_event_type()
         }
 
         char key_buffer[50];
-        char value_buffer[50];
-        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
-        {
-            
-            size_t current_length = strlen(result);
-            size_t additional_length = strlen(value_buffer) + 50; 
+        char value_buffer[256];
 
-            if (strcmp(key_buffer, "date_created") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0) 
+        size_t current_length = strlen(result);
+
+        // Add header for each event
+        char header[256];
+        snprintf(header, sizeof(header),
+                 "🆔 Event ID: %d\n"
+                 "==================================================\n", id);
+
+        char *temp = realloc(result, current_length + strlen(header) + 1);
+        result = temp;
+        strcat(result, header);
+
+        // Process event fields
+        Field event_fields[] = 
+        {
+            {"event_name", "\n✨ Event Name       "},
+            {"description", "✨ Description      "},
+            {"venues", "✨ Venues           "},
+            {"date_created", "✨ Date Created     "}
+        };
+
+        while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            int valid = 0;
+            if(strcmp(key_buffer, "event_id") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0 )
             {
                 continue;
             }
-            
-            char *temp = realloc(result, current_length + additional_length);
-            result = temp;
 
-            Field package_field[] = 
+            for (size_t i = 0; i < sizeof(event_fields) / sizeof(event_fields[0]); i++) 
             {
-                {"event_id", "🆔 Event ID         "},
-                {"event_name", "    📛 Event Name   "},
-                {"description", "    📝 Description  "},
-                {"venues", "    📍 Venues       "},
-            };
-            int valid = 0;
-            for(size_t i = 0; i < sizeof(package_field) / sizeof(package_field[0]); i++)
-            {   
-                if(strcmp(key_buffer, package_field[i].key) == 0 )
+                
+                if (strcmp(key_buffer, event_fields[i].key) == 0) 
                 {
+                    current_length = strlen(result);
+                    size_t additional_length = strlen(value_buffer) + 50;
 
+                    temp = realloc(result, current_length + additional_length);
+                    if (temp == NULL) 
+                    {
+                        perror("[ERROR] Memory reallocation failed");
+                        free(result);
+                        fclose(info_file);
+                        fclose(ids_file);
+                        return NULL;
+                    }
+                    result = temp;
+
+                    sprintf(result + current_length, "%s: %s\n", event_fields[i].display_name, value_buffer);
                     valid = 1;
-                    sprintf(result + current_length, "\n%s: %s", package_field[i].display_name, value_buffer);
-                    current_length += strlen(result + current_length);
+                    break;
                 }
             }
-            
-            if(valid != 1)
-            {
-                sprintf(result + current_length, "\nUnknown Key : %s", value_buffer);
-            }
 
+            if (!valid) 
+            {
+                current_length = strlen(result);
+                size_t additional_length = strlen(value_buffer) + 50;
+
+                temp = realloc(result, current_length + additional_length);
+                if (temp == NULL) 
+                {
+                    perror("[ERROR] Memory reallocation failed");
+                    free(result);
+                    fclose(info_file);
+                    fclose(ids_file);
+                    return NULL;
+                }
+                result = temp;
+
+                sprintf(result + current_length, "✨ Unknown Field    : %s\n", value_buffer);
+            }
         }
+
         fclose(info_file);
-        
-        size_t current_length = strlen(result);
-        char *temp = realloc(result, current_length + 2); // Allocate space for '\n' and '\0'
+
+        // Add footer for each event
+        current_length = strlen(result);
+        char footer[] = "\n==================================================\n";
+        temp = realloc(result, current_length + strlen(footer) + 1);
         if (temp == NULL) 
         {
             perror("[ERROR] Memory reallocation failed");
-            free(result);
             fclose(ids_file);
             return NULL;
         }
         result = temp;
-        strcat(result, "\n");
+        strcat(result, footer);
     }
+
     fclose(ids_file);
 
-    // If no matches were found, return NULL
+    // If no events found, return a no-events message
     if (strlen(result) == 0) 
     {
         free(result);
-        return NULL;
+        return strdup(
+            "==================================================\n"
+            "              📭 No Event Types Found            \n"
+            "==================================================\n\n"
+            "      No event types are currently recorded.\n"
+            "==================================================\n");
     }
 
     return result;
@@ -459,51 +582,59 @@ void display_packages_with_details(const char *packages, char choice[20])
 int add_pkg(int event_id, Package pkg)
 {
     char pkg_dir[256];
-    
-    // ../data/events/id/packages/package_name.txt
     sprintf(pkg_dir, "%s%d/packages/", TYPE_EVENTS_DIR, event_id);
 
-    char pkg_path[256];
+    #ifdef _WIN32
+    _mkdir(pkg_dir); // Create directory in Windows
+    #else
+    mkdir(pkg_dir, 0777); // Create directory in Linux/Unix
+    #endif
 
-    // ..data/events/id/packages/A.txt
+    char pkg_path[256];
     sprintf(pkg_path, "%s/%d.txt", pkg_dir, pkg.id);
 
     FILE *pkg_file = create_file(pkg_path);
+    if (pkg_file == NULL) {
+        perror("[ERROR] Failed to create the package file");
+        return -1; // Indicate failure
+    }
 
     fprintf(pkg_file,
-    "package_id:%d\n" 
-    "package_name:%s\n"
-    "price:%.2f\n",
-    "event_type:%d\n"
-    "description:%s\n"
-    "availability:%d\n"
-    "created_date:%s\n"
-    "max_guest:%d\n"
-    "duration:%d\n"
-    "inclusions:%s\n",
-    pkg.id,
-    pkg.package_name,
-    pkg.price,
-    pkg.event_type,
-    pkg.description,
-    pkg.availability,
-    pkg.created_date,
-    pkg.max_guest,
-    pkg.duration,
-    pkg.inclusions
+        "package_id:%d\n"
+        "package_name:%s\n"
+        "price:%.2f\n"
+        "event_type:%d\n"
+        "description:%s\n"
+        "availability:%d\n"
+        "created_date:%s\n"
+        "max_guest:%d\n"
+        "duration:%d\n"
+        "inclusions:%s\n",
+        pkg.id,
+        pkg.package_name,
+        pkg.price,
+        pkg.event_type,
+        pkg.description,
+        pkg.availability, // Ensure this is properly initialized
+        pkg.created_date,
+        pkg.max_guest,
+        pkg.duration,
+        pkg.inclusions
     );
-
     fclose(pkg_file);
 
     char id_path[50];
     sprintf(id_path, "%s%d/%s", TYPE_EVENTS_DIR, event_id, TYPE_PKG_ID_FILE);
-    
-    FILE *id_file = fopen(id_path, "r");
 
+    FILE *id_file = fopen(id_path, "a"); // Open in append mode
+    if (id_file == NULL) {
+        perror("[ERROR] Failed to open ID file");
+        return -1; // Indicate failure
+    }
     fprintf(id_file, "%d\n", pkg.id);
     fclose(id_file);
 
-    return 1;
+    return 1; // Indicate success
 }
 
 char *preview_single_pkg(int event_id, int pkg_id) {

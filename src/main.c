@@ -48,8 +48,7 @@ int main()
     SetConsoleOutputCP(CP_UTF8); // for emojis. 
     // add_notification(3156, "Last christmas", "Unread");
     auth_menu();
-    // client_menu(3156);
-    // printf("%d", login_user("2768", "Hello@123"));
+    printf("%d", login_user("2768", "Hello@123"));
     // printf("%s\n", preview_events(3156));
 
     // int client_id = 3156;  // Example client ID

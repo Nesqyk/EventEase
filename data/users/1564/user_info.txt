@@ -1,0 +1,10 @@
+id:1564
+username:test@admin
+password:Admin@123
+full_name:admin@test
+email:admin@test.com
+phone:09123456789
+role:organizer
+signed_in:0
+stay_logged_in:1
+date_created:Sun Jan 05 16:21:30 2025

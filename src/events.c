@@ -14,6 +14,7 @@
 #include "organizer.h"
 
 #define MAX_ID_RANGE 1000
+#define MAX_PATH 256
 
 int book_event(int client_id, BookEvent event) 
 {
@@ -47,7 +48,6 @@ int book_event(int client_id, BookEvent event)
     fprintf(e_file, "booking_date:%s\n", generated_date);
 
     fclose(e_file);
-    
 
     char dir_name[256];   
     // ../data/users/id
@@ -128,6 +128,8 @@ char *prev_events(int client_id)
                     case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
                     case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
                     case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
+                    case 4: strncpy(status, "Ongoing ", sizeof(status)); break;
+                    case 5: strncpy(status, "Done ", sizeof(status)); break;
                     default: strncpy(status, "Unknown Status", sizeof(status)); break;
                 }
             }
@@ -161,6 +163,130 @@ char *prev_events(int client_id)
             "==================================================\n\n"
             "      You currently have no upcoming events.\n        Start planning your first event now!\n"
             );
+    }
+
+    return result;
+}
+
+char *preview_all_events(int client_id) {
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/book_event_id.txt", client_id);
+
+    FILE *ids_file = fopen(path, "r");
+    if (ids_file == NULL) {
+        perror("[ERROR] Unable to open book_event_id.txt");
+        return strdup(
+            "==================================================\n"
+            "              📭 No Events Found                \n"
+            "==================================================\n\n"
+            "      There are currently no events recorded.\n      Create an event to get started!\n\n"
+            "\n==================================================\n");
+    }
+
+    // Allocate memory for concatenated results
+    char *result = malloc(16384); // Adjust size based on expected data
+    if (!result) {
+        perror("[ERROR] Memory allocation failed");
+        fclose(ids_file);
+        return strdup("An error occurred while loading events.");
+    }
+
+    snprintf(result, 16384,
+             "==================================================\n"
+             "               📅 All Managed Events             \n"
+             "==================================================\n");
+
+    char line[256];
+    int events_found = 0;
+
+    while (fgets(line, sizeof(line), ids_file)) {
+        int id = atoi(line);
+
+        char info_filename[256];
+        snprintf(info_filename, sizeof(info_filename), "data/users/%d/events/%d.txt", client_id, id);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) {
+            perror("[ERROR] Unable to open event details file");
+            continue;
+        }
+
+        char key_buffer[50];
+        char value_buffer[1000];
+
+        char event_name[100] = "Unknown Event";
+        char venue[100] = "Unknown Venue";
+        char event_date[50] = "Unknown Date";
+        char start_time[20] = "Unknown Time";
+        char package_name[100] = "Unknown Package";
+        char balance[20] = "Unknown";
+        char payment_deadline[50] = "Unknown";
+        char booking_date[50] = "Unknown";
+        char status[50] = "Unknown Status";
+        int package_id = -1, event_type_id = -1;
+
+        while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2) {
+            if (strcmp(key_buffer, "name") == 0)
+                strncpy(event_name, value_buffer, sizeof(event_name));
+            else if (strcmp(key_buffer, "venue") == 0)
+                strncpy(venue, value_buffer, sizeof(venue));
+            else if (strcmp(key_buffer, "event_date") == 0)
+                strncpy(event_date, value_buffer, sizeof(event_date));
+            else if (strcmp(key_buffer, "start_time") == 0)
+                strncpy(start_time, value_buffer, sizeof(start_time));
+            else if (strcmp(key_buffer, "package_id") == 0)
+                package_id = atoi(value_buffer);
+            else if (strcmp(key_buffer, "event_type_id") == 0)
+                event_type_id = atoi(value_buffer);
+            else if (strcmp(key_buffer, "balance") == 0)
+                strncpy(balance, value_buffer, sizeof(balance));
+            else if (strcmp(key_buffer, "payment_deadline") == 0)
+                strncpy(payment_deadline, value_buffer, sizeof(payment_deadline));
+            else if (strcmp(key_buffer, "booking_date") == 0)
+                strncpy(booking_date, value_buffer, sizeof(booking_date));
+            else if (strcmp(key_buffer, "status") == 0) {
+                int int_status = atoi(value_buffer);
+                switch (int_status) {
+                    case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
+                    case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
+                    case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
+                    case 4: strncpy(status, "Ongoing 🔵", sizeof(status)); break;
+                    case 5: strncpy(status, "Completed ✔️", sizeof(status)); break;
+                    default: strncpy(status, "Unknown Status", sizeof(status)); break;
+                }
+            }
+        }
+        fclose(info_file);
+
+        char formatted_event[1024];
+        snprintf(formatted_event, sizeof(formatted_event),
+                 "\n🎉 Event Name   : %s\n"
+                 "   📍 Venue      : %s\n"
+                 "   📅 Date       : %s | 🕒 Time: %s\n"
+                 "   💰 Balance    : PHP %s\n"
+                 "   📦 Package ID : %d\n"
+                 "   📋 Type ID    : %d\n"
+                 "   🛠 Status     : %s\n"
+                 "   📆 Deadline   : %s\n"
+                 "   🕒 Booked On  : %s\n",
+                 event_name, venue, event_date, start_time,
+                 balance, package_id, event_type_id, status,
+                 payment_deadline, booking_date);
+
+        strcat(result, formatted_event);
+        strcat(result, "\n--------------------------------------------------\n");
+        events_found++;
+    }
+    fclose(ids_file);
+
+    if (events_found == 0) {
+        free(result);
+        return strdup(
+            "==================================================\n"
+            "              📭 No Events Found                \n"
+            "==================================================\n\n"
+            "      There are currently no events recorded.\n      Create an event to get started!\n"
+            "==================================================\n");
     }
 
     return result;
@@ -543,4 +669,330 @@ int generate_event_id()
     } while (valid_user_id(event_id) == 1);
 
     return event_id;
+}
+
+
+char* generate_statistics_summary() {
+    // Estimate required buffer size
+    size_t buffer_size = 1024; // Adjust as needed for your text size
+    char *result = malloc(buffer_size);
+    if (result == NULL) {
+        perror("[ERROR] Memory allocation failed for statistics summary");
+        return NULL;
+    }
+
+    int total_events = count_total_events();
+    int active_events = count_active_events();
+    double total_revenue = calculate_total_revenue();
+    const char *top_venue = get_most_booked_event_type();  // Replace with actual logic to find the top venue
+
+
+    FILE *feedback_file = fopen("data/feedback.txt", "r");
+    if (feedback_file == NULL) {
+        perror("[ERROR] Unable to open feedback file");
+        return strdup("[ERROR] Failed to retrieve statistics.");
+    }
+
+    int total_ratings = 0;
+    int rating_count = 0;
+
+    char line[256];
+    while (fgets(line, sizeof(line), feedback_file)) {
+        int user_id, stars;
+        char message[100], date[50];
+
+        if (sscanf(line, "%d,%d,\"%99[^\"]\",\"%49[^\"]\"", &user_id, &stars, message, date) == 4) {
+            total_ratings += stars;
+            rating_count++;
+        }
+    }
+    fclose(feedback_file);
+
+    double avg_rating = (rating_count > 0) ? (double)total_ratings / rating_count : 0.0;
+
+
+    // Format the statistics into the allocated buffer
+    snprintf(result, buffer_size,
+        "==================================================\n"
+        "               📊 EventEase Statistics             \n"
+        "==================================================\n\n"
+        "📅 Total Events Managed      : %d\n"
+        "🎉 Active Events             : %d\n"
+        "%s\n"
+        "💵 Total Revenue             : PHP %s\n"
+        "✨ Average Event Rating      : %.1f ⭐",
+        total_events, active_events, top_venue, format_number(total_revenue), avg_rating);
+
+    return result; // Return the formatted statistics as a string
+}
+
+
+int count_total_events() {
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return 0;
+    }
+
+    int total_events = 0;
+    char line[MAX_PATH];
+
+    while (fgets(line, sizeof(line), user_ids_file)) {
+        int user_id;
+        if (sscanf(line, "%d:", &user_id) != 1) {
+            continue;
+        }
+
+        char book_event_ids_path[MAX_PATH];
+        snprintf(book_event_ids_path, sizeof(book_event_ids_path), "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(book_event_ids_path, "r");
+        if (events_file == NULL) {
+            continue;  // Skip users with no booked events
+        }
+
+        while (fgets(line, sizeof(line), events_file)) {
+            total_events++;
+        }
+
+        fclose(events_file);
+    }
+
+    fclose(user_ids_file);
+    return total_events;
+}
+
+
+int count_active_events() {
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return 0;
+    }
+
+    int active_events = 0;
+    char line[MAX_PATH];
+
+    while (fgets(line, sizeof(line), user_ids_file)) {
+        int user_id;
+        if (sscanf(line, "%d:", &user_id) != 1) {
+            continue;
+        }
+
+        char book_event_ids_path[MAX_PATH];
+        snprintf(book_event_ids_path, sizeof(book_event_ids_path), "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(book_event_ids_path, "r");
+        if (events_file == NULL) {
+            continue;  // Skip users with no booked events
+        }
+
+        while (fgets(line, sizeof(line), events_file)) {
+            int event_id = atoi(line);
+
+            char *status = read_event(user_id, event_id, "status");
+            if (status != NULL) {
+                int event_status = atoi(status);
+                free(status);
+                if (event_status == 1 || event_status == 2 || event_status == 3) {
+                    active_events++;
+                }
+            }
+        }
+
+        fclose(events_file);
+    }
+
+    fclose(user_ids_file);
+    return active_events;
+}
+
+
+double calculate_total_revenue() {
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return 0.0;
+    }
+
+    double total_revenue = 0.0;
+    char line[MAX_PATH];
+
+    while (fgets(line, sizeof(line), user_ids_file)) {
+        int user_id;
+        if (sscanf(line, "%d:", &user_id) != 1) {
+            continue;
+        }
+
+        char book_event_ids_path[MAX_PATH];
+        snprintf(book_event_ids_path, sizeof(book_event_ids_path), "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(book_event_ids_path, "r");
+        if (events_file == NULL) {
+            continue;  // Skip users with no booked events
+        }
+
+        while (fgets(line, sizeof(line), events_file)) {
+            int event_id = atoi(line);
+
+            char *balance = read_event(user_id, event_id, "balance");
+            if (balance != NULL && atoi(balance) == 0) {
+                char *event_type_id = read_event(user_id, event_id, "event_type_id");
+                char *package_id = read_event(user_id, event_id, "package_id");
+
+                if (event_type_id != NULL && package_id != NULL) {
+                    total_revenue += atoi(read_pkg(atoi(event_type_id), atoi(package_id), "price"));
+                }
+
+                free(event_type_id);
+                free(package_id);
+            }
+
+            free(balance);
+        }
+
+        fclose(events_file);
+    }
+
+    fclose(user_ids_file);
+    return total_revenue;
+}
+
+char* read_event_field(int user_id, int event_id, const char *field) {
+    char event_path[MAX_PATH];
+    snprintf(event_path, sizeof(event_path), "data/users/%d/events/%d.txt", user_id, event_id);
+
+    FILE *event_file = fopen(event_path, "r");
+    if (event_file == NULL) {
+        return NULL;
+    }
+
+    char key[MAX_PATH];
+    char value[MAX_PATH];
+    while (fscanf(event_file, "%[^:]:%[^\n]\n", key, value) == 2) {
+        if (strcmp(key, field) == 0) {
+            fclose(event_file);
+            return strdup(value);
+        }
+    }
+
+    fclose(event_file);
+    return NULL;
+}
+
+int  read_package_price(int event_type_id, int package_id) {
+    char package_path[MAX_PATH];
+    snprintf(package_path, sizeof(package_path), "data/events/%d/packages/%d.txt", event_type_id, package_id);
+
+    FILE *package_file = fopen(package_path, "r");
+    if (package_file == NULL) {
+        return 0.0;
+    }
+
+    char key[MAX_PATH];
+    char value[MAX_PATH];
+    while (fscanf(package_file, "%[^:]:%[^\n]\n", key, value) == 2) {
+        if (strcmp(key, "price") == 0) {
+            fclose(package_file);
+            return atof(value);
+        }
+    }
+
+    fclose(package_file);
+    return 0;
+}
+
+
+char *get_most_booked_event_type() {
+    FILE *event_types_file = fopen("data/type_event_ids.txt", "r");
+    if (event_types_file == NULL) {
+        perror("[ERROR] Unable to open type_event_ids.txt");
+        return strdup("[ERROR] Unable to generate report.");
+    }
+
+    char event_names[100][50]; // Maximum 100 event types, each up to 50 characters
+    int event_counts[100] = {0};
+    int total_event_types = 0;
+
+    int event_type_id;
+    while (fscanf(event_types_file, "%d\n", &event_type_id) != EOF) {
+        char *event_name = read_typevent(event_type_id, "event_name");
+        if (event_name) {
+            if (total_event_types < 100) {
+                strncpy(event_names[total_event_types], event_name, sizeof(event_names[total_event_types]) - 1);
+                event_names[total_event_types][sizeof(event_names[total_event_types]) - 1] = '\0'; // Ensure null-termination
+                total_event_types++;
+            } else {
+                printf("[WARNING] Maximum event types reached. Some types will not be counted.\n");
+            }
+            free(event_name);
+        }
+    }
+    fclose(event_types_file);
+
+    FILE *user_ids_file = fopen("data/users_id.txt", "r");
+    if (user_ids_file == NULL) {
+        perror("[ERROR] Unable to open users_id.txt");
+        return strdup("[ERROR] Unable to generate report.");
+    }
+
+    int user_id;
+    while (fscanf(user_ids_file, "%d:%*s\n", &user_id) != EOF) {
+        char user_events_file[256];
+        sprintf(user_events_file, "data/users/%d/book_event_id.txt", user_id);
+
+        FILE *events_file = fopen(user_events_file, "r");
+        if (events_file == NULL) continue;
+
+        int event_id;
+        while (fscanf(events_file, "%d\n", &event_id) != EOF) {
+            char *type_event_id_str = read_event(user_id, event_id, "event_type_id");
+            if (type_event_id_str) {
+                int type_event_id = atoi(type_event_id_str);
+                free(type_event_id_str);
+
+                for (int i = 0; i < total_event_types; i++) {
+                    char *event_id_str = read_typevent(type_event_id, "event_id");
+                    if (event_id_str) {
+                        int stored_event_id = atoi(event_id_str);
+                        free(event_id_str);
+
+                        if (type_event_id == stored_event_id) {
+                            event_counts[i]++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        fclose(events_file);
+    }
+    fclose(user_ids_file);
+
+    // Find the most booked event type
+    int max_count = 0;
+    int max_count_index = -1;
+    int tie_count = 0;
+
+    for (int i = 0; i < total_event_types; i++) {
+        if (event_counts[i] > max_count) {
+            max_count = event_counts[i];
+            max_count_index = i;
+            tie_count = 1; // Reset tie count
+        } else if (event_counts[i] == max_count) {
+            tie_count++;
+        }
+    }
+
+    const char *most_booked_event = (tie_count > 1 || max_count_index == -1) ? "None" : event_names[max_count_index];
+
+    // Format the result
+    char *result = malloc(256);
+    if (result == NULL) {
+        perror("[ERROR] Memory allocation failed");
+        return strdup("[ERROR] Unable to generate report.");
+    }
+
+    snprintf(result, 256, "📈 Most Booked Event Type    : %s", most_booked_event);
+    return result;
 }
