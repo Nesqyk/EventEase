@@ -18,6 +18,8 @@ typedef struct {
     int status; // 1 -> Confirmed  2 - > In Progress 3 - > Incomplete Payment! -> 4 done already -> 5 On Going
 } BookEvent;
 
+char *preview_single_event(int client_id, int event_id);
+
 int book_event(int client_id, BookEvent event);
 
 int update_event(int client_id, int event_id, char *key, char *value);

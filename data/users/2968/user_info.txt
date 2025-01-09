@@ -1,0 +1,10 @@
+id:2968
+username:Laurence
+password:Lorina@1
+full_name:Laurence C. Lo
+email:lolaurence02@gmail.com
+phone:09551988012
+role:client
+signed_in:0
+stay_logged_in:0
+date_created:Tue Jan 07 07:30:01 2025

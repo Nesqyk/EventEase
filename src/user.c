@@ -982,6 +982,149 @@ int mark_all_notifications_read(int user_id)
     return 1; // Success
 }
 
+int reveal_organizer_id()
+{
+    FILE *ids_file = fopen("data/users_id.txt", "r");
+    if (ids_file == NULL) 
+    {
+        perror("[ERROR] Unable to open users_id.txt");
+        return -1; // Return an error indicator
+    }
+
+    int organizer_id = -1; // Initialize to -1, indicating no organizer found
+    int id;
+
+    while (fscanf(ids_file, "%d:%*s\n", &id) != EOF) 
+    {
+        char info_filename[256];
+        sprintf(info_filename, "%s%d/%s", USERS_DIR, id, USER_INFO_FILE);
+
+        FILE *info_file = fopen(info_filename, "r");
+        if (info_file == NULL) 
+        {
+            perror("[ERROR] Unable to open user_info.txt");
+            continue; 
+        }
+
+        char key_buffer[50];
+        char value_buffer[50];
+
+        while (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, value_buffer) == 2) 
+        {
+            // Check if role is "organizer"
+            if (strcmp(key_buffer, "role") == 0 && strcmp(value_buffer, "organizer") == 0)
+            {
+                organizer_id = id; // Save the organizer's ID
+                fclose(info_file);
+                fclose(ids_file);
+                return organizer_id; // Return the first organizer ID found
+            }
+        }
+        fclose(info_file);
+    }
+
+    fclose(ids_file);
+
+    // If no organizer found, return -1
+    return organizer_id;
+}
+
+char *view_notification(int user_id) 
+{
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/notifications.txt", user_id);
+
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        return strdup(
+            "==================================================\n"
+            "                 🔔 Notifications                \n"
+            "==================================================\n\n"
+            "🎉 You’re all caught up! No notifications for you today.\n"
+            "                 Enjoy your day!                 \n"
+        );
+    }
+
+    char **notifications = malloc(101 * sizeof(char *)); // Support up to 100 notifications + NULL
+    if (!notifications) {
+        perror("Memory allocation failed");
+        fclose(file);
+        return NULL;
+    }
+
+    int count = 0;
+    char line[256];
+
+    // Read notifications into memory
+    while (fgets(line, sizeof(line), file) && count < 100) {
+        int id;
+        char message[200], status[10], date_added[30];
+
+        if (sscanf(line, "%d,\"%199[^\"]\",\"%9[^\"]\",\"%29[^\"]\"", &id, message, status, date_added) == 4) {
+            char *formatted_notification = malloc(300);
+            if (!formatted_notification) {
+                perror("Memory allocation failed for a notification");
+                break;
+            }
+
+            snprintf(formatted_notification, 300,
+                     "🔔 Notification ID: %d\n"
+                     "   📌 Info         : \"%s\"\n"
+                     "   📅 Added        : %s [%s]\n",
+                     id,
+                     message,
+                     date_added,
+                     strcmp(status, "Unread") == 0 ? "🔴 Unread" : "🟢 Read");
+
+            notifications[count++] = formatted_notification;
+        }
+    }
+    fclose(file);
+
+    // Sort notifications from latest to oldest
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(notifications[j + 1], notifications[j]) > 0) {
+                char *temp = notifications[j];
+                notifications[j] = notifications[j + 1];
+                notifications[j + 1] = temp;
+            }
+        }
+    }
+
+    // Format notifications for display
+    char *result = malloc(8192); // Adjust size based on expected data
+    if (!result) {
+        perror("Memory allocation failed for result");
+        for (int i = 0; i < count; i++) {
+            free(notifications[i]);
+        }
+        free(notifications);
+        return NULL;
+    }
+
+    snprintf(result, 8192,
+             "==================================================\n"
+             "                 🔔 Notifications                \n"
+             "==================================================\n\n");
+
+    if (count == 0) {
+        strcat(result,
+               "🎉 You’re all caught up! No notifications for you today.\n"
+               "                 Enjoy your day!                 \n\n");
+    } else {
+        for (int i = 0; i < count; i++) {
+            strcat(result, notifications[i]);
+            strcat(result, "\n");
+            free(notifications[i]);
+        }
+    }
+
+    free(notifications);
+    return result;
+}
+
+
 char **view_notifications(int user_id) 
 {
     char path[100];
@@ -1187,9 +1330,7 @@ void reveal_all_users_except_organizers()
     }
 
     printf("==================================================\n");
-    printf("              📋 User Information Reports          \n");
-    printf("==================================================\n\n");
-
+    printf("           📋 User Information Reports          \n\n");
     int user_id;
     int user_found = 0;
 
@@ -1209,19 +1350,35 @@ void reveal_all_users_except_organizers()
         char value_buffer[256];
 
         printf("==================================================\n");
-        printf("🆔 User ID: %d\n", user_id);
-        printf("==================================================\n");
+        printf("🆔 User ID: %d\n\n", user_id);
 
+        Field user_field[] = {
+            {"username", "👤 Username"},      
+            {"full_name", "📝 Full Name"},   
+            {"email", "📧 Email"},         
+            {"phone", "📞 Phone Number"}   
+        };
+        
         while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
         {
             if (strcmp(key_buffer, "password") == 0 || strcmp(key_buffer, "signed_in") == 0 || 
-                strcmp(key_buffer, "stay_logged_in") == 0 || strcmp(key_buffer, "id") == 0) 
+                strcmp(key_buffer, "stay_logged_in") == 0 || strcmp(key_buffer, "id") == 0 ||
+                strcmp(key_buffer, "date_created") == 0) 
             {
                 // Skip displaying sensitive or irrelevant information
                 continue;
             }
 
-            printf("✨ %-15s: %s\n", key_buffer, value_buffer);
+            for(int i = 0 ; i < sizeof(user_field) / sizeof(user_field[0]); i++)
+            {
+                if(strcmp(key_buffer, user_field[i].key) == 0)
+                {
+                    printf("%-20s: %s\n", user_field[i].display_name, value_buffer);
+                } else {
+                    continue;
+                }
+            }
+
         }
 
         fclose(info_file);
@@ -1235,7 +1392,7 @@ void reveal_all_users_except_organizers()
         printf("\n🚫 No users found or accessible.\n");
     }
 
-    printf("==================================================\n");
+    printf("\n==================================================\n");
     printf("\n👉 Please enter the User ID to continue  (-1 to go back): ");
 }
 

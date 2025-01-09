@@ -356,16 +356,16 @@ char *preview_event_type()
         // Process event fields
         Field event_fields[] = 
         {
-            {"event_name", "\n✨ Event Name       "},
-            {"description", "✨ Description      "},
-            {"venues", "✨ Venues           "},
-            {"date_created", "✨ Date Created     "}
+            {"event_name", "\n🎉 Event Name       "},
+            {"description", "📜 Description      "},
+            {"venues", "🏟️ Venues           "}
+            // {"date_created", "✨ Date Created     "}
         };
 
         while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
         {
             int valid = 0;
-            if(strcmp(key_buffer, "event_id") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0 )
+            if(strcmp(key_buffer, "event_id") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0  || strcmp(key_buffer, "date_created") == 0)
             {
                 continue;
             }

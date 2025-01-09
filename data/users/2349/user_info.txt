@@ -1,0 +1,10 @@
+id:2349
+username:u1
+password:P12345!
+full_name:f1 l1
+email:tet1@mil.com
+phone:09212626010
+role:client
+signed_in:0
+stay_logged_in:1
+date_created:Wed Jan 08 15:48:34 2025

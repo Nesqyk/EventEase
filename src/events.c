@@ -60,6 +60,96 @@ int book_event(int client_id, BookEvent event)
 
 }
 
+char *preview_single_event(int client_id, int event_id) {
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/events/%d.txt", client_id, event_id);
+
+    FILE *info_file = fopen(path, "r");
+    if (info_file == NULL) {
+        perror("[ERROR] Unable to open event details file");
+        return strdup(
+            "==================================================\n"
+            "              📭 Event Not Found                \n"
+            "==================================================\n\n"
+            "      The specified event could not be found.\n      Please check the event ID and try again.\n"
+            "==================================================\n");
+    }
+
+    char event_name[100] = "Unknown Event";
+    char venue[100] = "Unknown Venue";
+    char event_date[50] = "Unknown Date";
+    char start_time[20] = "Unknown Time";
+    char package_name[100] = "Unknown Package";
+    char balance[20] = "Unknown";
+    char payment_deadline[50] = "Unknown";
+    char booking_date[50] = "Unknown";
+    char status[50] = "Unknown Status";
+    int package_id = -1, event_type_id = -1;
+
+    char key_buffer[50];
+    char value_buffer[1000];
+
+    while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2) {
+        if (strcmp(key_buffer, "name") == 0)
+            strncpy(event_name, value_buffer, sizeof(event_name));
+        else if (strcmp(key_buffer, "venue") == 0)
+            strncpy(venue, value_buffer, sizeof(venue));
+        else if (strcmp(key_buffer, "event_date") == 0)
+            strncpy(event_date, value_buffer, sizeof(event_date));
+        else if (strcmp(key_buffer, "start_time") == 0)
+            strncpy(start_time, value_buffer, sizeof(start_time));
+        else if (strcmp(key_buffer, "package_id") == 0)
+            package_id = atoi(value_buffer);
+        else if (strcmp(key_buffer, "event_type_id") == 0)
+            event_type_id = atoi(value_buffer);
+        else if (strcmp(key_buffer, "balance") == 0)
+            strncpy(balance, value_buffer, sizeof(balance));
+        else if (strcmp(key_buffer, "payment_deadline") == 0)
+            strncpy(payment_deadline, value_buffer, sizeof(payment_deadline));
+        else if (strcmp(key_buffer, "booking_date") == 0)
+            strncpy(booking_date, value_buffer, sizeof(booking_date));
+        else if (strcmp(key_buffer, "status") == 0) {
+            int int_status = atoi(value_buffer);
+            switch (int_status) {
+                case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
+                case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
+                case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
+                case 4: strncpy(status, "Ongoing 🔵", sizeof(status)); break;
+                case 5: strncpy(status, "Completed ✔️", sizeof(status)); break;
+                default: strncpy(status, "Unknown Status", sizeof(status)); break;
+            }
+        }
+    }
+    fclose(info_file);
+
+    char *result = malloc(1024); // Adjust size as needed
+    if (!result) {
+        perror("[ERROR] Memory allocation failed");
+        return strdup("An error occurred while previewing the event.");
+    }
+
+    snprintf(result, 1024,
+             "==================================================\n"
+             "               🎉 Event Details                  \n"
+             "==================================================\n"
+             "\n🎉 Event Name   : %s\n"
+             "   📍 Venue      : %s\n"
+             "   📅 Date       : %s | 🕒 Time: %s\n"
+             "   💰 Balance    : PHP %s\n"
+             "   📦 Package ID : %d\n"
+             "   📋 Type ID    : %d\n"
+             "   🛠 Status     : %s\n"
+             "   📆 Deadline   : %s\n"
+             "   🕒 Booked On  : %s\n\n"
+             "==================================================\n",
+             event_name, venue, event_date, start_time,
+             balance, package_id, event_type_id, status,
+             payment_deadline, booking_date);
+
+    return result;
+}
+
+
 char *prev_events(int client_id)
 {
     char path[100];
@@ -123,14 +213,16 @@ char *prev_events(int client_id)
             else if (strcmp(key_buffer, "status") == 0)
             {
                 int int_status = atoi(value_buffer);
+                size_t status_size = sizeof(status);
                 switch (int_status)
                 {
-                    case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
-                    case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
-                    case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
-                    case 4: strncpy(status, "Ongoing ", sizeof(status)); break;
-                    case 5: strncpy(status, "Done ", sizeof(status)); break;
-                    default: strncpy(status, "Unknown Status", sizeof(status)); break;
+                    case 0: strncpy(status, "Pending ⏳", status_size); break;
+                    case 1: strncpy(status, "Confirmed ✅", status_size); break;
+                    case 2: strncpy(status, "In Progress ⚙️", status_size); break;
+                    case 3: strncpy(status, "Incomplete Payment 💳❌", status_size); break;
+                    case 4: strncpy(status, "Ongoing 🚀", status_size); break;
+                    case 5: strncpy(status, "Done 🎉", status_size); break;
+                    default: strncpy(status, "Unknown Status ❓", status_size); break;
                 }
             }
             else if (strcmp(key_buffer, "event_date") == 0)
@@ -148,7 +240,7 @@ char *prev_events(int client_id)
                  "   🆔 Book ID    : %d\n"
                  "   🔖 Status     : %s\n",
                  event_name, event_date, venue, id, status);
-
+        strcat(formatted_event,  "\n==================================================\n");
         strcat(result, formatted_event);
         events_found++;
     }

@@ -6,7 +6,6 @@ name:Test
 event_date:29 Dec 2024
 balance:5000
 start_time:21:42:36
-status:3
+status:0
 payment_deadline:12 Jan 2025 09:05:00
 booking_date:Mon Jan 06 09:05:00 2025
-

@@ -26,6 +26,9 @@ typedef struct {
     char phone[20];
     char role[20];
 */
+
+char *view_notification(int user_id);
+
 int delete_user(int id);
 
 int force_login(int id, const char username[50]);
@@ -65,6 +68,8 @@ void generate_receipt_singular(int client_id, int event_type_id, int pkg_id, int
 void mark_notification_as_read(int user_id, int notification_id);
 
 char **view_notifications(int user_id);
+
+int reveal_organizer_id();
 
 
 int add_notification(int user_id, const char *message, const char *status);

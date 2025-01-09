@@ -1,0 +1,5 @@
+2025-01-08 15:49:01 [INFO]: User selected option 1 from the main menu.
+2025-01-08 15:49:01 [INFO]: User selected 'Profile' option.
+2025-01-08 15:49:06 [INFO]: User selected option 1 from the profile menu.
+2025-01-08 15:49:06 [INFO]: User viewed their profile.
+2025-01-08 15:49:42 [INFO]: User selected option 3 from the profile menu.

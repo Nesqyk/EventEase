@@ -20,3 +20,25 @@
 2025-01-07 00:58:36 [INFO]: User selected option 2 from the main menu.
 2025-01-07 00:58:36 [INFO]: User selected 'Book Event' option.
 2025-01-07 00:59:47 [INFO]: User selected option 7 from the main menu.
+2025-01-07 05:46:14 [INFO]: User selected option 1 from the main menu.
+2025-01-07 05:46:14 [INFO]: User selected 'Profile' option.
+2025-01-07 05:46:14 [INFO]: User selected option 1 from the profile menu.
+2025-01-07 05:46:14 [INFO]: User viewed their profile.
+2025-01-07 05:46:16 [INFO]: User selected option 2 from the profile menu.
+2025-01-07 05:46:16 [INFO]: User selected to update their profile.
+2025-01-07 05:46:18 [INFO]: Profile update canceled. Returning to profile menu.
+2025-01-07 05:46:19 [INFO]: User selected option 3 from the profile menu.
+2025-01-07 05:46:22 [INFO]: User selected option 4 from the profile menu.
+2025-01-07 05:46:23 [INFO]: User selected option 5 from the profile menu.
+2025-01-07 05:46:23 [INFO]: User returned to main menu from profile.
+2025-01-07 05:46:25 [INFO]: User selected option 2 from the main menu.
+2025-01-07 05:46:25 [INFO]: User selected 'Book Event' option.
+2025-01-07 05:46:31 [INFO]: User selected option 4 from the main menu.
+2025-01-07 05:46:48 [INFO]: User selected option 3 from the main menu.
+2025-01-07 05:46:54 [INFO]: User selected option 4 from the main menu.
+2025-01-07 05:47:05 [INFO]: User selected option 4 from the main menu.
+2025-01-07 05:48:07 [INFO]: User selected option 4 from the main menu.
+2025-01-07 05:48:28 [INFO]: User selected option 5 from the main menu.
+2025-01-07 05:48:34 [INFO]: User selected option 6 from the main menu.
+2025-01-07 07:20:33 [INFO]: User selected option 3 from the main menu.
+2025-01-07 07:27:31 [INFO]: User selected option 7 from the main menu.

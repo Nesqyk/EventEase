@@ -1,0 +1,12 @@
+id:852
+package_id:1
+event_type_id:1
+venue:Mcdo
+name:Birthday
+event_date:15 Jan 2025
+balance:5000
+start_time:17:30:30
+status:3
+payment_deadline:13 Jan 2025 07:44:44
+booking_date:Tue Jan 07 07:44:44 2025
+

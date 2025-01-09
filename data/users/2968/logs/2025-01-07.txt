@@ -1,0 +1,12 @@
+2025-01-07 07:30:41 [INFO]: User selected option 2 from the main menu.
+2025-01-07 07:30:41 [INFO]: User selected 'Book Event' option.
+2025-01-07 07:31:12 [INFO]: User selected option 2 from the main menu.
+2025-01-07 07:31:12 [INFO]: User selected 'Book Event' option.
+2025-01-07 07:35:14 [INFO]: User selected option 2 from the main menu.
+2025-01-07 07:35:14 [INFO]: User selected 'Book Event' option.
+2025-01-07 07:40:29 [INFO]: User selected option 2 from the main menu.
+2025-01-07 07:40:29 [INFO]: User selected 'Book Event' option.
+2025-01-07 07:41:18 [INFO]: User selected option 2 from the main menu.
+2025-01-07 07:41:18 [INFO]: User selected 'Book Event' option.
+2025-01-07 07:45:40 [INFO]: User selected option 7 from the main menu.
+2025-01-07 08:23:11 [INFO]: User selected to update an event.
