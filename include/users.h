@@ -71,6 +71,8 @@ char **view_notifications(int user_id);
 
 int reveal_organizer_id();
 
+int count_unread_notifications(int user_id);
+
 
 int add_notification(int user_id, const char *message, const char *status);
 

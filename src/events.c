@@ -41,8 +41,9 @@ int book_event(int client_id, BookEvent event)
     fprintf(e_file, "venue:%s\n", event.venue);
     fprintf(e_file, "name:%s\n", event.name);
     fprintf(e_file, "event_date:%s\n", event.event_date);
-    fprintf(e_file, "balance:%d\n",event.balance);
+    fprintf(e_file, "end_time:%s\n", event.end_time);
     fprintf(e_file, "start_time:%s\n", event.start_time);
+    fprintf(e_file, "balance:%d\n",event.balance);
     fprintf(e_file, "status:%d\n", event.status);
     fprintf(e_file ,"payment_deadline:%s\n", event.payment_deadline);
     fprintf(e_file, "booking_date:%s\n", generated_date);
@@ -111,12 +112,13 @@ char *preview_single_event(int client_id, int event_id) {
         else if (strcmp(key_buffer, "status") == 0) {
             int int_status = atoi(value_buffer);
             switch (int_status) {
-                case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
-                case 2: strncpy(status, "In Progress 🔄", sizeof(status)); break;
-                case 3: strncpy(status, "Incomplete Payment ❌", sizeof(status)); break;
-                case 4: strncpy(status, "Ongoing 🔵", sizeof(status)); break;
-                case 5: strncpy(status, "Completed ✔️", sizeof(status)); break;
-                default: strncpy(status, "Unknown Status", sizeof(status)); break;
+                    case 0: strncpy(status, "Pending ⏳", sizeof(status)); break;
+                    case 1: strncpy(status, "Confirmed ✅", sizeof(status)); break;
+                    case 2: strncpy(status, "In Progress ⚙️", sizeof(status)); break;
+                    case 3: strncpy(status, "Incomplete Payment 💳❌", sizeof(status)); break;
+                    case 4: strncpy(status, "Ongoing 🚀", sizeof(status)); break;
+                    case 5: strncpy(status, "Done 🎉", sizeof(status)); break;
+                    default: strncpy(status, "Unknown Status ❓", sizeof(status)); break;
             }
         }
     }
@@ -132,14 +134,14 @@ char *preview_single_event(int client_id, int event_id) {
              "==================================================\n"
              "               🎉 Event Details                  \n"
              "==================================================\n"
-             "\n🎉 Event Name   : %s\n"
-             "   📍 Venue      : %s\n"
-             "   📅 Date       : %s | 🕒 Time: %s\n"
-             "   💰 Balance    : PHP %s\n"
-             "   📦 Package ID : %d\n"
-             "   📋 Type ID    : %d\n"
-             "   🛠 Status     : %s\n"
-             "   📆 Deadline   : %s\n"
+             "\n🎉 Event Name    : %s\n"
+             "   📍 Venue        : %s\n"
+             "   📅 Date         : %s | 🕒 Time: %s\n"
+             "   💰 Balance      : PHP %s\n"
+             "   📦 Package ID   : %d\n"
+             "   📋 Type ID      : %d\n"
+             "   🛠 Status        : %s\n"
+             "   📆 Payment Deadline   : %s\n"
              "   🕒 Booked On  : %s\n\n"
              "==================================================\n",
              event_name, venue, event_date, start_time,
@@ -205,6 +207,7 @@ char *prev_events(int client_id)
         char status[50] = "Unknown Status";
         char event_date[50] = "Unknown Date";
         char venue[100] = "Unknown Venue";
+        char start_time[10], end_time[10];
 
         while (fscanf(info_file, "%49[^:]:%999[^\n]\n", key_buffer, value_buffer) == 2)
         {
@@ -229,18 +232,23 @@ char *prev_events(int client_id)
                 strncpy(event_date, value_buffer, sizeof(event_date));
             else if (strcmp(key_buffer, "venue") == 0)
                 strncpy(venue, value_buffer, sizeof(venue));
+            else if (strcmp(key_buffer, "start_time") == 0)
+                strncpy(start_time, value_buffer, sizeof(start_time));
+            else if (strcmp(key_buffer, "end_time") == 0)
+                strncpy(end_time, value_buffer, sizeof(end_time));
         }
         fclose(info_file);
 
         char formatted_event[512];
         snprintf(formatted_event, sizeof(formatted_event),
                  "\n📌 %s\n"
-                 "   📅 Date       : %s\n"
-                 "   📍 Venue      : %s\n"
-                 "   🆔 Book ID    : %d\n"
-                 "   🔖 Status     : %s\n",
-                 event_name, event_date, venue, id, status);
-        strcat(formatted_event,  "\n==================================================\n");
+                    "   📅 Date       : %s\n"
+                    "   ⏳ Duration   : %s - %s\n"
+                    "   📍 Venue      : %s\n"
+                    "   🆔 Book ID    : %d\n"
+                    "   🔖 Status     : %s\n",
+                 event_name, event_date, start_time, end_time, venue, id, status);
+        // strcat(formatted_event,  "\n==================================================");
         strcat(result, formatted_event);
         events_found++;
     }
@@ -692,23 +700,23 @@ int cancel_event(int client_id, int event_id)
         return -1;
     }
 
-    // Path to the event directory
-    char booked_event_dir[256];
-    sprintf(booked_event_dir, "data/users/%d/events/%d/", client_id, event_id);
+    // // Path to the event directory
+    // char booked_event_dir[256];
+    // sprintf(booked_event_dir, "data/users/%d/events/%d/", client_id, event_id);
 
-    // Path to the cancelled events folder
-    char cancelled_event_dir[256];
-    sprintf(cancelled_event_dir, "data/events/cancelled_events/%d/", event_id);
+    // // Path to the cancelled events folder
+    // char cancelled_event_dir[256];
+    // sprintf(cancelled_event_dir, "data/events/cancelled_events/%d/", event_id);
 
-    _mkdir(cancelled_event_dir);
-    struct stat st = {0};
+    // _mkdir(cancelled_event_dir);
+    // struct stat st = {0};
 
-    // Rename the event directory to move it
-    if (rename(booked_event_dir, cancelled_event_dir) != 0) 
-    {  
-        perror("[ERROR] Failed to move event directory to cancelled_events folder");
-        return -1;
-    }
+    // // Rename the event directory to move it
+    // if (rename(booked_event_dir, cancelled_event_dir) != 0) 
+    // {  
+    //     perror("[ERROR] Failed to move event directory to cancelled_events folder");
+    //     return -1;
+    // }
     
     return 1;
 }

@@ -47,7 +47,12 @@ int main()
 
     SetConsoleOutputCP(CP_UTF8); // for emojis. 
     // add_notification(3156, "Last christmas", "Unread");
-    auth_menu();
+     auth_menu();
+
+    add_notification(2968, "Test Notifcation", "Unread");
+
+    // char *venues = read_typevent(1, "venues");
+    // printf("%s", venues);
     // printf("%d", valid_event_id(3156, 209));
     // int id = reveal_organizer_id();
     // printf("%d", id);

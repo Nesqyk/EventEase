@@ -150,7 +150,7 @@ int register_user(User user)
     sprintf(dir_name, "%s%d", USERS_DIR, user.id);
     sprintf(info_filename, "%s/%s", dir_name, USER_INFO_FILE);
 
-    if (_mkdir(dir_name) != 0) 
+    if (_mkdir(dir_name) != 0 ) 
     {
         perror("[ERROR] Failed to create user directory");
         return -1;
@@ -186,7 +186,7 @@ int register_user(User user)
     FILE *book_list_file = fopen(book_list_path, "w");
     
     char notification_path[50], reminder_path[50], ticket_path[50], payment_history[50];
-    sprintf(notification_path, "%s/notifiations.txt", dir_name);
+    sprintf(notification_path, "%s/notifications.txt", dir_name);
     sprintf(reminder_path, "%s/reminders.txt", dir_name);
     sprintf(ticket_path, "%s/support_tickets.txt", dir_name);
     sprintf(payment_history, "%s/payment_history.txt", dir_name);
@@ -208,7 +208,7 @@ int register_user(User user)
 //
 int delete_user(int id) 
 {
-    if (valid_user_id(id) != 1) 
+    if (valid_user_id(id) == 0) 
     {
         perror("[ERROR] Invalid ID");
         return -1;
@@ -274,13 +274,6 @@ int delete_user(int id)
 
 int update_user(int id, char *key, char *value) 
 {
-
-    if (valid_user_id(id) != 1) 
-    {
-        perror("[ERROR] Invalid ID");
-        return 0;
-    }
-
     char info_filename[256];   
     // data/users/id/user_info.txt
     sprintf(info_filename, "%s%d/%s", USERS_DIR, id, USER_INFO_FILE);
@@ -1029,6 +1022,38 @@ int reveal_organizer_id()
     return organizer_id;
 }
 
+int count_unread_notifications(int user_id) 
+{
+    char path[100];
+    snprintf(path, sizeof(path), "data/users/%d/notifications.txt", user_id);
+
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        perror("[ERROR] Unable to open notifications file");
+        return -1; // Return -1 to indicate an error
+    }
+
+    int unread_count = 0;
+    char line[256];
+
+    // Read each notification
+    while (fgets(line, sizeof(line), file)) {
+        int id;
+        char message[200], status[10], date_added[30];
+
+        // Parse the notification details
+        if (sscanf(line, "%d,\"%199[^\"]\",\"%9[^\"]\",\"%29[^\"]\"", &id, message, status, date_added) == 4) {
+            if (strcmp(status, "Unread") == 0) {
+                unread_count++;
+            }
+        }
+    }
+
+    fclose(file);
+    return unread_count;
+}
+
+
 char *view_notification(int user_id) 
 {
     char path[100];
@@ -1041,7 +1066,7 @@ char *view_notification(int user_id)
             "                 🔔 Notifications                \n"
             "==================================================\n\n"
             "🎉 You’re all caught up! No notifications for you today.\n"
-            "                 Enjoy your day!                 \n"
+            "                 Enjoy your day!                 "
         );
     }
 
@@ -1081,15 +1106,11 @@ char *view_notification(int user_id)
     }
     fclose(file);
 
-    // Sort notifications from latest to oldest
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = 0; j < count - i - 1; j++) {
-            if (strcmp(notifications[j + 1], notifications[j]) > 0) {
-                char *temp = notifications[j];
-                notifications[j] = notifications[j + 1];
-                notifications[j + 1] = temp;
-            }
-        }
+    // Reverse the notifications array to show the newest first
+    for (int i = 0; i < count / 2; i++) {
+        char *temp = notifications[i];
+        notifications[i] = notifications[count - i - 1];
+        notifications[count - i - 1] = temp;
     }
 
     // Format notifications for display
@@ -1311,7 +1332,7 @@ char *view_reminders(int user_id)
     {
         strcat(result, "🎉 You’re all caught up! No reminders for you today. \n\t\tEnjoy your day!\n");
     }
-    strcat(result,"\n==================================================");
+    // strcat(result,"\n==================================================");
     fclose(reminder_file);
 
     return result; // Returns the formatted reminders
@@ -1330,7 +1351,7 @@ void reveal_all_users_except_organizers()
     }
 
     printf("==================================================\n");
-    printf("           📋 User Information Reports          \n\n");
+    printf("           📋 User Information Reports          \n");
     int user_id;
     int user_found = 0;
 
@@ -1350,7 +1371,7 @@ void reveal_all_users_except_organizers()
         char value_buffer[256];
 
         printf("==================================================\n");
-        printf("🆔 User ID: %d\n\n", user_id);
+        printf("%-20s: %d\n","🆔 User ID", user_id);
 
         Field user_field[] = {
             {"username", "👤 Username"},      
@@ -1358,6 +1379,7 @@ void reveal_all_users_except_organizers()
             {"email", "📧 Email"},         
             {"phone", "📞 Phone Number"}   
         };
+        
         
         while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
         {
@@ -1373,6 +1395,7 @@ void reveal_all_users_except_organizers()
             {
                 if(strcmp(key_buffer, user_field[i].key) == 0)
                 {
+
                     printf("%-20s: %s\n", user_field[i].display_name, value_buffer);
                 } else {
                     continue;
@@ -1392,7 +1415,7 @@ void reveal_all_users_except_organizers()
         printf("\n🚫 No users found or accessible.\n");
     }
 
-    printf("\n==================================================\n");
+    printf("==================================================\n");
     printf("\n👉 Please enter the User ID to continue  (-1 to go back): ");
 }
 

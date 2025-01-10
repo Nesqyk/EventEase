@@ -1,2 +1,0 @@
-41,"Custom Request: I need hel with something","PENDING"
-41,"There's something wrong with my balance","PENDING"

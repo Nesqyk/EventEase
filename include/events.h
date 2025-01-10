@@ -11,6 +11,7 @@ typedef struct {
     int event_type_id; // generated
     char venue[50]; // input
     char name[50]; // input
+    char end_time[50]; // 
     char event_date[50]; // input
     int balance; // package balance or down payment
     char start_time[50]; // input

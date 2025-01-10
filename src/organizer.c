@@ -266,7 +266,8 @@ int create_typeevent(TypeEvent typeevent)
 
 char *read_typevent(int event_id, char key[50]) 
 {
-    if (valid_typeevent_id(event_id) != 1) {
+    if (valid_typeevent_id(event_id) != 1) 
+    {
         return NULL; // not this
     }
 
@@ -282,12 +283,12 @@ char *read_typevent(int event_id, char key[50])
         return NULL;
     }
 
-    char buffer_value[50];
-    char key_buffer[50];
+    char buffer_value[256];
+    char key_buffer[256];
 
     while (!feof(info_file)) 
     {
-        if (fscanf(info_file, "%49[^:]:%49[^\n]\n", key_buffer, buffer_value) == 2) 
+        if (fscanf(info_file, "%256[^:]:%256[^\n]\n", key_buffer, buffer_value) == 2) 
         {
             if (strcmp(key, key_buffer) == 0) 
             {
@@ -306,136 +307,127 @@ char *read_typevent(int event_id, char key[50])
 }
 
 
-char *preview_event_type()
-{
+#define MAX_LINE_LENGTH 50
+
+
+
+void wrap_text(char *dest, const char *src, int max_width) {
+    int len = strlen(src);
+    int pos = 0;
+
+    while (len > 0) {
+        int segment_length = (len > max_width) ? max_width : len;
+
+        // Find the last space in the current segment
+        int end_pos = segment_length;
+        for (int i = segment_length - 1; i > 0; i--) {
+            if (src[pos + i] == ' ') {
+                end_pos = i + 1;
+                break;
+            }
+        }
+
+        strncat(dest, src + pos, end_pos);
+        strcat(dest,"\t");
+        strcat(dest, "\n");
+        pos += end_pos;
+        len -= end_pos;
+    }
+}
+
+char *preview_event_type() {
     FILE *ids_file = fopen("data/type_event_ids.txt", "r");
-    if (ids_file == NULL) 
-    {
-        perror("[ERROR] Unable to open type_event_id.txt");
-        return NULL;
+    if (ids_file == NULL) {
+        perror("[ERROR] Unable to open type_event_ids.txt");
+        return strdup(
+            "==================================================\n"
+            "              📭 No Event Types Found            \n"
+            "==================================================\n\n"
+            "      No event types are currently recorded.\n"
+            "==================================================\n");
     }
 
-    char *result = malloc(1); 
-    if (result == NULL) 
-    {
+    char *result = malloc(16384); // Adjust size for expected data
+    if (result == NULL) {
         perror("[ERROR] Memory allocation failed");
         fclose(ids_file);
         return NULL;
     }
 
-    result[0] = '\0'; // Initialize as an empty string
-    int id;
+    snprintf(result, 16384,
+             "==================================================\n"
+             "               📅 Available Event Types           \n"
+             "==================================================\n");
 
-    while (fscanf(ids_file, "%d\n", &id) != EOF) 
-    {
+    int id;
+    char line[256];
+    while (fscanf(ids_file, "%d\n", &id) != EOF) {
         char info_filename[256];
         sprintf(info_filename, "data/events/%d/type_info.txt", id);
 
         FILE *info_file = fopen(info_filename, "r");
-        if (info_file == NULL) 
-        {
+        if (info_file == NULL) {
             perror("[ERROR] Unable to open type_info.txt");
-            continue; 
+            continue;
         }
 
         char key_buffer[50];
         char value_buffer[256];
 
-        size_t current_length = strlen(result);
+        char event_name[100] = "Unknown Event";
+        char description[500] = "No description available.";
+        char venues[200] = "Not specified.";
 
-        // Add header for each event
-        char header[256];
-        snprintf(header, sizeof(header),
-                 "🆔 Event ID: %d\n"
-                 "==================================================\n", id);
-
-        char *temp = realloc(result, current_length + strlen(header) + 1);
-        result = temp;
-        strcat(result, header);
-
-        // Process event fields
-        Field event_fields[] = 
-        {
-            {"event_name", "\n🎉 Event Name       "},
-            {"description", "📜 Description      "},
-            {"venues", "🏟️ Venues           "}
-            // {"date_created", "✨ Date Created     "}
-        };
-
-        while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) 
-        {
-            int valid = 0;
-            if(strcmp(key_buffer, "event_id") == 0 || strcmp(key_buffer, "dp_percentage") == 0 || strcmp(key_buffer, "payment_deadline_days") == 0  || strcmp(key_buffer, "date_created") == 0)
-            {
-                continue;
-            }
-
-            for (size_t i = 0; i < sizeof(event_fields) / sizeof(event_fields[0]); i++) 
-            {
-                
-                if (strcmp(key_buffer, event_fields[i].key) == 0) 
-                {
-                    current_length = strlen(result);
-                    size_t additional_length = strlen(value_buffer) + 50;
-
-                    temp = realloc(result, current_length + additional_length);
-                    if (temp == NULL) 
-                    {
-                        perror("[ERROR] Memory reallocation failed");
-                        free(result);
-                        fclose(info_file);
-                        fclose(ids_file);
-                        return NULL;
-                    }
-                    result = temp;
-
-                    sprintf(result + current_length, "%s: %s\n", event_fields[i].display_name, value_buffer);
-                    valid = 1;
-                    break;
-                }
-            }
-
-            if (!valid) 
-            {
-                current_length = strlen(result);
-                size_t additional_length = strlen(value_buffer) + 50;
-
-                temp = realloc(result, current_length + additional_length);
-                if (temp == NULL) 
-                {
-                    perror("[ERROR] Memory reallocation failed");
-                    free(result);
-                    fclose(info_file);
-                    fclose(ids_file);
-                    return NULL;
-                }
-                result = temp;
-
-                sprintf(result + current_length, "✨ Unknown Field    : %s\n", value_buffer);
+        while (fscanf(info_file, "%49[^:]:%255[^\n]\n", key_buffer, value_buffer) == 2) {
+            if (strcmp(key_buffer, "event_name") == 0) {
+                strncpy(event_name, value_buffer, sizeof(event_name) - 1);
+            } else if (strcmp(key_buffer, "description") == 0) {
+                strncpy(description, value_buffer, sizeof(description) - 1);
+            } else if (strcmp(key_buffer, "venues") == 0) {
+                strncpy(venues, value_buffer, sizeof(venues) - 1);
             }
         }
 
         fclose(info_file);
 
-        // Add footer for each event
-        current_length = strlen(result);
-        char footer[] = "\n==================================================\n";
-        temp = realloc(result, current_length + strlen(footer) + 1);
-        if (temp == NULL) 
-        {
-            perror("[ERROR] Memory reallocation failed");
-            fclose(ids_file);
-            return NULL;
+        // Format event details
+        char formatted_event[1024];
+        snprintf(formatted_event, sizeof(formatted_event),
+                 "\n🆔 Event ID        : %d\n"
+                 "🎉 Event Name      : %s\n"
+                 "📜 Description     : %s\n"
+                 "🌆 Venues          : %s\n"
+                 "\n--------------------------------------------------\n",
+                 id, event_name, description, venues);
+
+        // Check for line length and wrap if needed
+        size_t desc_length = strlen(description);
+        if (desc_length > 50) {
+            char wrapped_description[500] = "";
+            size_t pos = 0;
+            while (pos < desc_length) {
+                strncat(wrapped_description, &description[pos], 50);
+                strcat(wrapped_description, "\n                     ");
+                pos += 50;
+            }
+            snprintf(formatted_event, sizeof(formatted_event),
+                     "\n🆔 Event ID        : %d\n"
+                     "🎉 Event Name      : %s\n"
+                     "📜 Description     : %s\n"
+                     "🌆 Venues          : %s\n"
+                     "--------------------------------------------------\n",
+                     id, event_name, wrapped_description, venues);
         }
-        result = temp;
-        strcat(result, footer);
+
+        strcat(result, formatted_event);
     }
 
     fclose(ids_file);
 
-    // If no events found, return a no-events message
-    if (strlen(result) == 0) 
-    {
+    if (strlen(result) == strlen(
+            "==================================================\n"
+            "               📅 Available Event Types           \n"
+            "==================================================\n")) {
         free(result);
         return strdup(
             "==================================================\n"
@@ -447,6 +439,8 @@ char *preview_event_type()
 
     return result;
 }
+
+
 
 int update_typeevent(int event_id, char key[50], char *value) 
 {

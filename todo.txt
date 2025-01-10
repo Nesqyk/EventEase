@@ -14,3 +14,7 @@ specific day for which an event will commence.
 
 For the dashboard: maybe add a section whereby it'll show list
 of upcoming events? -> replace the calendar with it.
+
+
+
+If nana sa deadline then notify user ->
