@@ -1273,69 +1273,92 @@ int set_reminder(int user_id, const char *message, const char *due_date)
     return reminder_id;
 }
 
-char *view_reminders(int user_id) 
-{
+char *view_reminders(int user_id) {
     char file_path[100];
     snprintf(file_path, sizeof(file_path), "data/users/%d/reminders.txt", user_id);
 
     FILE *reminder_file = fopen(file_path, "r");
-    if (reminder_file == NULL) 
-    {
+    if (reminder_file == NULL) {
         perror("No reminders found for this user.");
         return NULL;
     }
 
-    // Allocate memory for formatted output
-    char *result = malloc(2048); 
-    if (!result) 
-    {
+    // Use dynamic allocation with realloc for safety
+    size_t result_size = 2048;
+    char *result = malloc(result_size);
+    if (!result) {
         perror("Memory allocation failed");
         fclose(reminder_file);
         return NULL;
     }
+    result[0] = '\0'; // Initialize as an empty string
 
-    // Initialize the result string with the header
-    snprintf(result, 2048,
-        "==================================================\n"
-        "               ⏰ Your Reminders          \n"
-        "==================================================\n\n");
+    // Append header safely
+    int bytes_written = snprintf(result, result_size,
+                               "==================================================\n"
+                               "             ⏰ Your Reminders             \n"
+                               "==================================================\n\n");
+
+    if (bytes_written < 0 || bytes_written >= result_size) {
+        perror("Error formatting header.");
+        free(result);
+        fclose(reminder_file);
+        return NULL;
+    }
 
     char line[256];
-    int line_num = 1;
     int reminder_found = 0;
 
-    // Read and format each reminder
-    while (fgets(line, sizeof(line), reminder_file)) 
-    {
+    while (fgets(line, sizeof(line), reminder_file)) {
         int id;
-        char message[100], due_date[30], status[10];
+        char message[100], due_date[30], status[20]; // Increased size for status
+        line[strcspn(line, "\n")] = 0; // Remove trailing newline
 
-        // Use a more flexible sscanf format with extra checks
-        if (sscanf(line, "%d,\"%99[^\"]\",\"%29[^\"]\",\"%9[^\"]\"", &id, message, due_date, status) == 4) 
-        {
+        if (sscanf(line, "%d,\"%99[^\"]\",\"%29[^\"]\",\"%19[^\"]\"", &id, message, due_date, status) == 4) {
             char formatted_line[300];
-            snprintf(formatted_line, sizeof(formatted_line), 
-                    "⏰ Reminder ID:%d\n   📌 Info       : \"%s\" \n   📅 Due        : %s [%s]\n", 
-                    id,
-                    message, 
-                    due_date, 
-                    strcmp(status, "PENDING") == 0 ? "🔴 Pending" : "🟢 Done");
+
+            int formatted_bytes = snprintf(formatted_line, sizeof(formatted_line),
+                                           "⏰ Reminder ID:%d\n 📌 Info       : \"%s\" \n 📅 Due        : %s [%s]\n",
+                                           id, message, due_date,
+                                           strcmp(status, "PENDING") == 0 ? "🔴 Pending" : "🟢 Done");
+
+            if (formatted_bytes < 0 || formatted_bytes >= sizeof(formatted_line)) {
+                perror("Error formatting reminder line.");
+                continue; // Skip the problematic line
+            }
+
+            // Dynamically resize result if needed
+            if (strlen(result) + strlen(formatted_line) + 1 > result_size) {
+                result_size *= 2; // Double the size
+                char *temp = realloc(result, result_size);
+                if (!temp) {
+                    perror("Memory reallocation failed");
+                    free(result);
+                    fclose(reminder_file);
+                    return NULL;
+                }
+                result = temp;
+            }
+
             strcat(result, formatted_line);
             reminder_found = 1;
-        } 
-        else 
-        {
+        } else {
             perror("Failed to parse a reminder line. Check the file format.");
         }
     }
-    if(reminder_found == 0)
-    {
-        strcat(result, "🎉 You’re all caught up! No reminders for you today. \n\t\tEnjoy your day!\n");
-    }
-    // strcat(result,"\n==================================================");
-    fclose(reminder_file);
 
-    return result; // Returns the formatted reminders
+    if (!reminder_found) {
+        // Safe string appending
+        size_t available_space = result_size - strlen(result) - 1;
+        int bytes_written = snprintf(result + strlen(result), available_space, "🎉 You’re all caught up! No reminders for you today. \n\t\tEnjoy your day!\n");
+        if (bytes_written < 0 || bytes_written >= available_space)
+        {
+            perror("Error formatting no reminder message.");
+        }
+    }
+
+    fclose(reminder_file);
+    return result;
 }
 
 

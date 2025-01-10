@@ -47,7 +47,9 @@ int main()
 
     SetConsoleOutputCP(CP_UTF8); // for emojis. 
     // add_notification(3156, "Last christmas", "Unread");
-     auth_menu();
+        // char *prev_reminders = view_reminders(2968);
+        // printf("%s\n", prev_reminders);
+    auth_menu();
 
     add_notification(2968, "Test Notifcation", "Unread");
 

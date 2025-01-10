@@ -1,0 +1,7 @@
+event_id:1642
+event_name:Testttttttt
+description:sitaw
+venues: bataw
+dp_percentage:30
+payment_deadline_days:1
+date_created:Sat Jan 11 00:00:22 2025

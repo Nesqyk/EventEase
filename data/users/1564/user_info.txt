@@ -6,5 +6,5 @@ email:admin@test.com
 phone:09123456789
 role:organizer
 signed_in:0
-stay_logged_in:1
+stay_logged_in:0
 date_created:Sun Jan 05 16:21:30 2025

@@ -131,9 +131,9 @@ int auth_menu()
     // Check last login status
     char *stay_logged_in = read_last_login("stay_logged_in");
     char *last_user_role = read_last_login("role");
-    char *last_user_username = read_last_login("username");
     char *last_user_id = read_last_login("id");
     char *read_logged_in = read_user(atoi(last_user_id), "stay_logged_in");
+    char *last_user_username = read_user(atoi(last_user_id), "full_name");
 
     if (strcmp(read_logged_in, "1") == 0) 
     {
@@ -781,6 +781,7 @@ void register_menu()
                     fgets(confirmation, sizeof(confirmation), stdin);
                     confirmation[strcspn(confirmation, "\n")] = 0;
 
+                    add_notification(new_user.id, "Welcome to Event Ease! Do enjoy your stay", "Unread");
                     char str_id[50];
                     sprintf(str_id, "%d", new_user.id);
                     update_last_login("id", str_id);
@@ -924,8 +925,8 @@ int client_menu(int client_id)
         if (count_unread == 0) {
                 sprintf(notification_message, ""); 
         } else {
-            sprintf(notification_message, "\n         🔔 You have %d unread notification%s.         \n", 
-                    count_unread, count_unread > 1 ? "s" : ""); 
+            sprintf(notification_message, "\n         🔔 You have %s%d%s unread notification%s.         \n", 
+                    GREEN, count_unread, RESET, count_unread > 1 ? "s" : ""); 
         }
         char *name = read_user(client_id, "full_name");
         char p_name[30];
@@ -954,9 +955,9 @@ int client_menu(int client_id)
 
         display_options(NULL, dashboard_paragraph, client_options, NULL);
         
-        if(scanf("%d", &client_choice) != 1 || client_choice < 1 || client_choice > 12)
+        if(scanf("%d", &client_choice) != 1 || client_choice < 1 || client_choice > 7)
         {
-            printf("\nInvalid choice. Please enter a number between 1 and 12.\n");
+            printf("\nInvalid choice. Please enter a number between 1 to 7.\n");
             Sleep(2000);
             clear_input_buffer();
             continue;
@@ -1741,11 +1742,12 @@ int client_menu(int client_id)
                                 strcpy(bk_event.venue, book_input[3]);
                                 strcpy(bk_event.event_date, book_input[4]);
 
-                                char event_type[50], venue_choice[50], date_time[50], selected_package[50], display_cost[50], display_percentage[50], amount_due[50];
+                                char event_type[50], venue_choice[50], date_time[50], selected_package[50], display_cost[50], display_percentage[50], amount_due[50], duration [50];
 
                                 sprintf(event_type, "📅 Event Type         : %s", read_typevent(bk_event.event_type_id, "event_name"));
                                 sprintf(venue_choice, "📍 Venue of Choice    : %s", bk_event.venue);
-                                sprintf(date_time,"🕒 Date & Time        : %s\n⏳Event Duration        : %s - %s\n", bk_event.event_date, bk_event.start_time, bk_event.end_time);
+                                sprintf(date_time,"🕒 Date & Time        : %s", bk_event.event_date);
+                                sprintf(duration, "⏳Event Duration      : %s - %s",bk_event.start_time, bk_event.end_time);
                                 sprintf(selected_package, "🎁 Selected Package   : %s", read_pkg(bk_event.event_type_id, bk_event.package_id, "package_name"));
 
                                 int total_cost = atoi(read_pkg(bk_event.event_type_id, bk_event.package_id, "price"));
@@ -1774,6 +1776,7 @@ int client_menu(int client_id)
                                     event_type,
                                     venue_choice,
                                     date_time,
+                                    duration,
                                     selected_package,
                                     "",
                                     display_cost,
@@ -1831,7 +1834,7 @@ int client_menu(int client_id)
                                     char reminder_message[50], reminder_msg_organizer[100];
                                     char notification_msg[50];
                                     // sprintf(reminder_message, "Payment for Event ID: %d", bk_event.id);
-                                    sprintf(reminder_msg_organizer, "Review Event ID %d for booking. Process within 1-3 days.", bk_event.id);
+                                    sprintf(reminder_msg_organizer, "Review Event %d (1-3 days). Client: %s", bk_event.id, read_user(client_id, "full_name"));
                                     sprintf(notification_msg, "Event ID %d is under review. Confirmation in 1-3 days.", bk_event.id);
                                     add_notification(client_id, notification_msg, "Unread");
 
@@ -2301,7 +2304,7 @@ int client_menu(int client_id)
 
                             int field_choice;
                             if (scanf("%d", &field_choice) != 1 || field_choice < 1 || field_choice > 4) {
-                                printf("\nInvalid choice. Please enter a number between 1 to 5.\n");
+                                printf("\nInvalid choice. Please enter a number between 1 to 4.\n");
                                 Sleep(2000);
                                 clear_input_buffer();
                                 continue;
@@ -3133,16 +3136,34 @@ int organizer_menu(int organizer_id)
                                         break;
                                     }
 
+                                    char status_msg[50];
+
                                     int status = status_choice - 1;
+
+                                    switch(status) 
+                                    {
+                                        case 0: sprintf(status_msg, "Pending ⏳"); break;
+                                        case 1: sprintf(status_msg, "Confirmed ✅"); break;
+                                        case 2: sprintf(status_msg, "In Progress ⚙️"); break;
+                                        case 3: sprintf(status_msg, "Incomplete Payment 💳❌"); break;
+                                        case 4: sprintf(status_msg, "Ongoing 🚀"); break;
+                                        case 5: sprintf(status_msg, "Done 🎉"); break;
+                                    }
+
+                                    char notif_msg[50];
+
+                                    sprintf(notif_msg, "Event ID: %d Updated to: %s", booked_event_id, status_msg);
 
                                     char status_str[5];
                                     sprintf(status_str, "%d", status);
+                                    add_notification(user_id, notif_msg,"Unread");
+
                                     update_event(user_id, booked_event_id, "status", status_str);
 
                                     printf("\n==================================================\n");
                                     printf("              ✅ Event Status Updated             \n");
                                     printf("==================================================\n");
-                                    printf("🎉 The event status has been successfully updated.\n");
+                                    printf("🎉 The event status has been successfully updated to %s.\n", status_msg);
                                     printf("==================================================\n");
                                     printf("\nPress [ANY KEY] to return to the previous menu.");
                                     getch(); // Pause to allow the user to read the message
@@ -3150,7 +3171,25 @@ int organizer_menu(int organizer_id)
                                 }
                             } else if(menu_choice == 2) // update balance
                             {
-                                
+                                int balance;
+                                printf("\nEnter new balance (-1 to cancel): ");
+                                if(scanf("%d", &balance) != 1 || balance < 0 && balance != -1)
+                                {
+                                    clear_input_buffer();
+                                    printf("\nPlease enter a valid balance.\n");
+                                }
+                                clear_input_buffer();
+
+                                if(balance == -1)
+                                {
+                                    continue;
+                                }
+
+                                char balance_str[20];
+                                sprintf(balance_str, "%d", balance);
+                                update_event(user_id, booked_event_id, "balance", balance_str);
+                                // preview user
+                                // 
                             } else if(menu_choice == 3) // view details
                             {
                                 while(1)
@@ -3583,6 +3622,7 @@ int organizer_menu(int organizer_id)
                             };
 
                             type_event.id = generate_typeevent_id();
+                            printf("%d", type_event.id);
                             strcpy(type_event.name, event_input[0]);
                             strcpy(type_event.description, event_input[1]);
                             strcpy(type_event.venues, event_input[2]);
@@ -3872,7 +3912,8 @@ int organizer_menu(int organizer_id)
 
                             if (confirmation == 'Y' || confirmation == 'y') 
                             {
-                                // put here
+                                // put here :D
+                                delete_typeevent(organizer_choice);
                                 break;
                             } else if(confirmation == 'N' || confirmation == 'n')
                             {
@@ -4325,7 +4366,6 @@ int organizer_menu(int organizer_id)
                             char *existing_max_guest = read_pkg(event_type_id, package_id, "max_guest");
                             char *existing_ = read_pkg(event_type_id, package_id, "max_guest");
 
-
                             // Validate read pointers
                             if (!existing_package_name || !existing_description || !existing_inclusions || !existing_price || !existing_max_guest)
                             {
@@ -4379,7 +4419,7 @@ int organizer_menu(int organizer_id)
                                     NULL
                                 };
 
-                                display_options(NULL, update_package_menu, package_options, "Enter the corresponding number for the field to update:");
+                                // display_options(NULL, update_package_menu, package_options, "Enter the corresponding number for the field to update:");
 
                                 int menu_choice;
                                 if (scanf("%d", &menu_choice) != 1 || menu_choice < 1 || menu_choice > 8) 
@@ -5076,7 +5116,6 @@ int organizer_menu(int organizer_id)
             {
                 "Add User               ➕ - Create a new user account.",
                 "Edit User              ✏️ - Modify existing user details.",
-                "Manage Booked Event    ",
                 "View User Details      🔍 - Review specific user information.",
                 "Back to Dashboard      🔙 - Return to the main dashboard.",
                 NULL
@@ -5377,15 +5416,14 @@ int organizer_menu(int organizer_id)
                     {
                         int user_id;
                         system("cls");
+                        printf("==================================================\n");
+                        printf("              👥 Edit Users                     \n");
+                        printf("==================================================\n");
+                        printf("📋 In this section, you can view, edit, or manage\n");
+                        printf("==================================================\n");
                         reveal_all_users_except_organizers();
-                        scanf("%d", &user_id);
 
-                        if(user_id == -1)
-                        {
-                            break;
-                        }
-
-                        if(valid_user_id(user_id) != 1)
+                        if(scanf("%d", &user_id) != 1 || valid_user_id(user_id) != 1 && user_id != -1)
                         {
                             printf("\n Please enter a valid user id\n");
                             Sleep(2000);
@@ -5394,29 +5432,29 @@ int organizer_menu(int organizer_id)
                         }
                         clear_input_buffer();
 
+                        if(user_id == -1)
+                        {
+                            break;
+                        }
+
                         const char *fields[] = {"Username", "Password", "Full Name", "Phone Number", "Email", "Role"};
                         char input[6][MAX_INPUT_SIZE] = {""}; // Array to store user inputs
                         User current_user = {0}; // This should be filled with the user's current details before editing
+                   
+                            current_user.id = user_id;
+                            // if(current_user.id == -1)
+                            // {
+                            //     break;
+                            // }
 
-                        while(1)
-                        {                    
-                            system("cls");
-                            reveal_all_users_except_organizers();
-                            scanf("%d", &current_user.id);
-
-                            if(current_user.id == -1)
-                            {
-                                break;
-                            }
-
-                            if(valid_user_id(current_user.id) != 1)
-                            {
-                                printf("\n Please enter a valid user id (-1 to cancel/go back)\n");
-                                Sleep(2000);
-                                clear_input_buffer();
-                                continue;
-                            }
-                            clear_input_buffer();
+                            // if(valid_user_id(current_user.id) != 1)
+                            // {
+                            //     printf("\n Please enter a valid user id (-1 to cancel/go back)\n");
+                            //     Sleep(2000);
+                            //     clear_input_buffer();
+                            //     continue;
+                            // }
+                            // clear_input_buffer();
 
                             // Pre-fill input array with current user data
                             strcpy(input[0], current_user.username);
@@ -5634,25 +5672,24 @@ int organizer_menu(int organizer_id)
                                     break;
                                 }
                             }
-
-                        }
                     }
-                } else if (option == 3) // Book Event Manage Book Event
+                
+                    // preview all users
+                    // preview booked events of users
+                        // if booked events == nul lthen return
+                    // options are ->  Update Booked Event, Preview.
+                    /* code */
+                } else if (option == 3) // view all user details
                 {
+                    int user_id;
 
                     while(1)
                     {
                         int user_id;
                         system("cls");
                         reveal_all_users_except_organizers();
-                        scanf("%d", &user_id);
 
-                        if(user_id == -1)
-                        {
-                            break;
-                        }
-
-                        if(valid_user_id(user_id) != 1)
+                        if(scanf("%d", &user_id) != 1 ||  valid_user_id(user_id) != 1 && user_id != -1)
                         {
                             printf("\n Please enter a valid user id\n");
                             Sleep(2000);
@@ -5661,193 +5698,56 @@ int organizer_menu(int organizer_id)
                         }
                         clear_input_buffer();
 
-                        int book_event_id;
-
-                        char *events = prev_events(user_id);
-                        if(prev_events == NULL)
+                        if(user_id == -1)
                         {
-                            system("cls");
-                            printf("==================================================\n");
-                            printf("                 📅 BookedEvents               \n");
-                            printf("==================================================\n\n");
-                            printf("It seems there are no events currently managed. 🛠️\n");
-                            printf("Why not get started by creating or updating event types?\n");
-                            printf("✨ Build a lineup of amazing events to offer clients.\n");
-                            printf("Manage packages, bookings, and more to grow your event catalog! 🎉\n");
-                            printf("\n==================================================\n\n");
-                            printf("Press [ANY KEY] to return to Dashboard");
-
-                            if (getch() == '\r')
-                            {
-                                organizer_menu(organizer_id);
-                                break;
-                            }
-                        }
-                        
-                        char *booked_events_menu[] = {
-                            "==================================================",
-                            "                  📅 Booked Events",
-                            "==================================================",
-                            "",
-                            "📍 Home > Dashboard > My Events > View Booked Events",
-                            "",
-                            "🔧 Select an event to manage its details:",
-                            "",
-                            events,
-                            NULL // NULL-terminated to mark the end of the array
-                        };
-                        
-                        display_options(NULL, booked_events_menu, NULL, "Enter event id to manage (-1 to cancel):");
-                        scanf("%d", &book_event_id);
-
-                        if(book_event_id == -1)
-                        {
-                            printf("Exiting Managing Booked Events...");
-                            Sleep(2000);
                             break;
                         }
-                        if(valid_event_id(user_id, book_event_id) != 1)
-                        {
-                            printf("\nPlease enter a valid choice/id\n");
-                            Sleep(2000);
-                            clear_input_buffer();
-                            continue;
-                        }
-
-                        clear_input_buffer();
-
-                        // preview booked events of user 
 
                         while(1)
                         {
-                            log_event(user_id, 0, "User selected to update an event.");
-                            const char *updatable_keys[] = {"name", "event_date", "venue", "status"};
-                            const char *updatable_labels[] = {"Event Name", "Event Date", "Venue", "Status"};
-                            size_t key_count = sizeof(updatable_keys) / sizeof(updatable_keys[0]);
+                            UserField fields[] = 
+                            {
+                                {"id", "ID"},
+                                {"full_name", "Full Name"},
+                                {"email", "Email"},
+                                {"phone", "Phone"},
+                                {"role", "Role"},
+                                {"date_created", "Date Created"}
+                            };
 
-                            char *update_event_menu[] = {
+                            char *view_profile[] = {
                                 "==================================================",
-                                "               📝 Update Booked Event             ",
+                                "                👤 User Profile                   ",
                                 "==================================================",
-                                "📍 Home > Dashboard > My Events > Update Event",
                                 "",
                                 "==================================================",
                                 NULL
                             };
 
-                            char *update_field[] = {
-                                "Event Name       \U0001F4C3 - Update the name of your event.",
-                                "Event Date       \U0001F4C5 - Change the date and time of your event.",
-                                "Status"
-                                "Venue            \U0001F3E2 - Update the venue of the event.",
-                                "Cancel           \U0001F519 - Return to My Events Menu.", NULL
-                            };
 
-                            display_options(NULL, update_event_menu, update_field, "Enter the number of the field you'd like to update:");
-
-                            int field_choice;
-                            if (scanf("%d", &field_choice) != 1 || field_choice < 1 || field_choice > 4) {
-                                printf("\nInvalid choice. Please enter a number between 1 to 5.\n");
-                                Sleep(2000);
-                                clear_input_buffer();
-                                continue;
-                            }
-                            clear_input_buffer();
-
-                            if (field_choice < 1 || field_choice > (int)key_count + 1) {
-                                log_event(user_id, 1, "Invalid event update choice. Returning to events menu.");
-                                printf("Invalid choice. Returning to events menu.\n");
-                                Sleep(500);
-                                continue;
-                            }
-
-                            if (field_choice == (int)key_count + 1) {
-                                log_event(user_id, 1, "Event update canceled. Returning to events menu.");
-                                printf("Update canceled. Returning to events menu.\n");
-                                Sleep(500);
-                                break;
-                            }
-
-                            const char *selected_key = updatable_keys[field_choice - 1];
-                            const char *selected_label = updatable_labels[field_choice - 1];
-                            char new_value[100];
-
-                            if(field_choice == 2)
+                            size_t field_count = sizeof(fields) / sizeof(fields[0]);
+                            char *buffer_view[field_count + 1];
+                            for (size_t i = 0; i < 6; i++) 
                             {
-                                printf("\n==================================================\n");
-                                printf("               \U0001F4C5 Set Event Date\n");
-                                printf("==================================================\n");
-                                printf("\n📝 Instructions:\n");
-                                printf("- Please enter the date and time in the format 'DD Mon YYYY HH:MM:SS'.\n");
-                                printf("- Example: 29 Dec 2024 21:42:36\n");
-                                printf("- To cancel, type '-1'.\n");
-                                printf("\n==================================================\n");
-                            }
-
-                            printf("\nEnter new %s (type 'cancel' to cancel): ", selected_label);
-                            fgets(new_value, sizeof(new_value), stdin);
-                            new_value[strcspn(new_value, "\n")] = 0;
-
-                            if (strcmp(new_value, "cancel") == 0) {
-                                log_event(user_id, 1, "Event update canceled by the user.");
-                                printf("Update canceled. Returning to events menu.\n");
-                                memset(new_value, 0, sizeof(new_value));
-                                continue;
-                            }
-
-                            // Validate input for specific fields
-                            if (strcmp(selected_key, "event_date") == 0) 
-                            {
-
-                                char formatted_date[20];
-                                char formatted_time[10];
-
-                                if(parse_date_manual(new_value, formatted_date, formatted_time) == 1)
+                                buffer_view[i] = malloc(100);
+                                const char *value = read_user(user_id, fields[i].key);
+                                if (value) 
                                 {
-                                    if(update_event(user_id, book_event_id, selected_key, new_value) == 1)
-                                    {
-                                        printf("\n %s updated successfully! \n", selected_label);
-                                        Sleep(3000);
-                                        break;
-                                    }
+                                    sprintf(buffer_view[i], "✨ %-15s: \t%s", fields[i].display_name, value);
                                 } else 
                                 {
-                                    printf("\n❌ Invalid date format. Please try again.\n");
-                                    Sleep(2000);
-                                    continue;
+                                    sprintf(buffer_view[i], "✨ %-15s: \t%s", fields[i].display_name, "N/A");
                                 }
                             }
-
-                            if (update_event(user_id, book_event_id, selected_key, new_value) == 1) 
-                            {
-                                log_event(user_id, 0, "Event updated successfully.");
-                                printf("%s updated successfully!\n", selected_label);
-                            } else {
-                                log_event(user_id, 2, "Failed to update event.");
-                                printf("Failed to update %s. Please try again.\n", selected_label);
-                            }
-                        }
-                    }
-                    // preview all users
-                    // preview booked events of users
-                        // if booked events == nul lthen return
-                    // options are ->  Update Booked Event, Preview.
-                    /* code */
-                } else if (option == 4) // view all user details
-                {
-                     while(1)
-                    {
-                        int user_id;
-                        system("cls");
-                        reveal_all_users_except_organizers();
-                        
-                        if(getch() == '\r')
-                        {
+                            buffer_view[field_count] = NULL;
+                            display_options(NULL, view_profile, buffer_view,"Press [Any KEY] to stop viewing.");
+                            
+                            getch();
                             break;
                         }
                     }
                     /* code */
-                } else if (option == 5) //back to dashboard
+                } else if (option == 4) //back to dashboard
                 {
                    break;
                 }
@@ -6075,6 +5975,15 @@ int organizer_menu(int organizer_id)
                     {
                         int user_id;
                         system("cls");
+                        printf("==================================================\n");
+                        printf("              🎟️ Manage Tickets                   \n");
+                        printf("==================================================\n");
+                        printf("\n📋 In this section, you can manage client support tickets effectively:\n");
+                        printf("- 📂 View ticket details, including the issue reported.\n");
+                        printf("- ✏️ Update the status of a ticket (e.g., resolved, pending).\n");
+                        printf("- 📧 Communicate resolutions or updates to clients.\n");
+                        printf("\n💡 Use this tool to ensure smooth and transparent support processes.\n");
+                        printf("\n==================================================\n");
                         reveal_all_users_except_organizers();
                         scanf("%d", &user_id);
 

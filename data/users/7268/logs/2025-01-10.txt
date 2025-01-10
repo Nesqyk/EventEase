@@ -1,0 +1,2 @@
+2025-01-10 22:16:31 [INFO]: User selected option 4 from the main menu.
+2025-01-10 22:25:12 [INFO]: User selected option 7 from the main menu.

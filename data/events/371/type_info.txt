@@ -1,7 +1,0 @@
-event_id:371
-event_name:Hello World!
-description:Test Event
-venues: School,Jabee
-dp_percentage:50
-payment_deadline_days:10
-date_created:Thu Jan 02 20:57:20 2025

@@ -1,0 +1,13 @@
+id:893
+package_id:1
+event_type_id:1
+venue: Grand Ballroom - Elite Hote
+name:Test
+event_date:Jan 2024-12-12
+end_time:12:00:00
+start_time:8:00:00
+balance:5000
+status:0
+payment_deadline:17 Jan 2025 00:31:05
+booking_date:Sat Jan 11 00:31:05 2025
+

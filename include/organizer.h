@@ -69,6 +69,8 @@ int generate_typeevent_id();
 
 char *preview_event_type();
 
+int delete_typeevent(int event_id);
+
 
 // packages prototype
 int add_pkg(int event_id, Package pkg);
