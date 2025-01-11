@@ -1,0 +1,13 @@
+id:608
+package_id:1
+event_type_id:1
+venue:Grand Ballroom
+name:Wedding Hello
+event_date:Jan 2025-1-15
+end_time:12:00:00
+start_time:8:00:00
+balance:7500
+status:0
+payment_deadline:17 Jan 2025 07:20:40
+booking_date:Sat Jan 11 07:20:40 2025
+

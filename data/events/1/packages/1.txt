@@ -1,10 +1,10 @@
 package_id:1
-package_name:Test^2
-price:10000.00
+package_name:Deluxe Celebration
+price:15000.00
 event_type:1
-description:Test Package
+description: Test
 availability:1
-created_date:nah
+created_date:Jan 2024
 max_guest:100
 duration:0
-inclusions: 100 guest, food and venue, use of venue for 5 ho
+inclusions:Balloons,Cake,Party Hats,Catering Service,Sound System,Host/Emcee,Venues,Grand Ballroom,Poolside Venue,Garden Hall,Rooftop Terrace

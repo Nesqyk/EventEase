@@ -1,0 +1,36 @@
+2025-01-11 01:11:12 [INFO]: User selected option 7 from the main menu.
+2025-01-11 06:06:16 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:08:06 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:10:20 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:11:24 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:11:57 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:13:51 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:16:16 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:16:34 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:16:45 [INFO]: User selected option 1 from the main menu.
+2025-01-11 06:16:45 [INFO]: User selected 'Book Event' option.
+2025-01-11 06:16:50 [INFO]: User selected option 2 from the main menu.
+2025-01-11 07:16:07 [INFO]: User selected option 4 from the main menu.
+2025-01-11 07:18:47 [INFO]: User selected option 1 from the main menu.
+2025-01-11 07:18:47 [INFO]: User selected 'Book Event' option.
+2025-01-11 07:21:28 [INFO]: User selected option 4 from the main menu.
+2025-01-11 07:22:09 [INFO]: User selected option 6 from the main menu.
+2025-01-11 07:22:39 [INFO]: User selected option 7 from the main menu.
+2025-01-11 07:24:54 [INFO]: User selected option 6 from the main menu.
+2025-01-11 07:25:28 [INFO]: User selected option 7 from the main menu.
+2025-01-11 07:25:57 [INFO]: User selected option 7 from the main menu.
+2025-01-11 07:31:55 [INFO]: User selected option 7 from the main menu.
+2025-01-11 07:35:30 [INFO]: User selected option 4 from the main menu.
+2025-01-11 07:36:53 [INFO]: User selected option 3 from the main menu.
+2025-01-11 07:37:34 [INFO]: User selected option 3 from the main menu.
+2025-01-11 08:31:43 [INFO]: User selected option 7 from the main menu.
+2025-01-11 09:06:19 [INFO]: User selected option 4 from the main menu.
+2025-01-11 09:06:54 [INFO]: User selected option 4 from the main menu.
+2025-01-11 09:07:18 [INFO]: User selected option 1 from the main menu.
+2025-01-11 09:07:18 [INFO]: User selected 'Book Event' option.
+2025-01-11 09:08:51 [INFO]: User selected option 7 from the main menu.
+2025-01-11 09:14:10 [INFO]: User selected option 1 from the main menu.
+2025-01-11 09:14:10 [INFO]: User selected 'Book Event' option.
+2025-01-11 09:16:03 [INFO]: User selected option 1 from the main menu.
+2025-01-11 09:16:03 [INFO]: User selected 'Book Event' option.
+2025-01-11 09:17:18 [INFO]: User selected option 7 from the main menu.

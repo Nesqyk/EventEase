@@ -1,7 +1,7 @@
 event_id:1642
-event_name:Testttttttt
-description:sitaw
-venues: bataw
+event_name:Birthday Celebration
+description:Celebrate life’s special milestones with our thoughtfully curated birthday celebration packages. Whether it’s a grand party or an intimate gathering, we’ve got you covered. 
+venues:Party Hall, Garden Area, Rooftop Venue, Private Room
 dp_percentage:30
 payment_deadline_days:1
 date_created:Sat Jan 11 00:00:22 2025

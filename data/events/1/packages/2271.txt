@@ -1,0 +1,11 @@
+package_id:2271
+package_name:akjndjanwd
+price:123.00
+event_type:1
+description:fjnjnfjnef
+availability:1
+max_guest:50
+duration:5
+inclusions:hello,hello,hello
+created_date:Sat Jan 11 09:40:40 2025
+

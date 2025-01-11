@@ -584,6 +584,11 @@ int add_pkg(int event_id, Package pkg)
         return -1; // Indicate failure
     }
 
+    time_t g_t;
+    time(&g_t);
+
+    char *generated_date = ctime(&g_t);
+
     fprintf(pkg_file,
         "package_id:%d\n"
         "package_name:%s\n"
@@ -591,20 +596,20 @@ int add_pkg(int event_id, Package pkg)
         "event_type:%d\n"
         "description:%s\n"
         "availability:%d\n"
-        "created_date:%s\n"
         "max_guest:%d\n"
         "duration:%d\n"
-        "inclusions:%s\n",
+        "inclusions:%s\n"
+        "created_date:%s\n",
         pkg.id,
         pkg.package_name,
         pkg.price,
         pkg.event_type,
         pkg.description,
         pkg.availability, // Ensure this is properly initialized
-        pkg.created_date,
         pkg.max_guest,
         pkg.duration,
-        pkg.inclusions
+        pkg.inclusions,
+        generated_date
     );
     fclose(pkg_file);
 
@@ -616,7 +621,6 @@ int add_pkg(int event_id, Package pkg)
         perror("[ERROR] Failed to open ID file");
         return -1; // Indicate failure
     }
-    fprintf(id_file, "%d\n", pkg.id);
     fclose(id_file);
 
     return 1; // Indicate success
@@ -718,8 +722,6 @@ char *preview_single_pkg(int event_id, int pkg_id) {
 
     return result;
 }
-
-
 char *preview_pkgs(int event_id) {
     char event_dir[50];
     sprintf(event_dir, "data/events/%d/", event_id);
@@ -877,8 +879,6 @@ char *preview_pkgs(int event_id) {
 
     return result;
 }
-
-
 
 char *read_all_pkg(int event_id, char key[50])
 {
@@ -1146,27 +1146,33 @@ int generate_pkg_id(int event_id)
     sprintf(path, "data/events/%d/%s", event_id, TYPE_PKG_ID_FILE);
 
     FILE *file = fopen(path, "r+"); 
-    int last_event_id = 0;
+    int id;
+    int unique = 0;
+    srand(time(NULL)); 
 
-    if (file == NULL) 
+    while (!unique) 
     {
-        file = fopen(path, "w");
-        if (file == NULL) 
+        
+        id = rand() % 9000 + 1000; 
+
+        rewind(file); 
+        int existing_id;
+        unique = 1; 
+
+        while (fscanf(file, "%d\n", &existing_id) == 1) 
         {
-            perror("Error creating EVENT_ID file");
-            return -1;
+            if (existing_id == id) 
+            {
+                unique = 0; // ID is not unique
+                break;
+            }
         }
-        last_event_id = 1;
-    } else 
-    {
-        fscanf(file, "%d\n", &last_event_id);
-        last_event_id++;
-        rewind(file);
     }
 
-    fclose(file);
+    fprintf(file, "%d\n", id);
+    fclose(file); 
 
-    return last_event_id;
+    return id;
 }
 
 int valid_pkg_id(int event_id, int pkg_id) 

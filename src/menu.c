@@ -332,7 +332,7 @@ int login_menu()
                                 if (strcasecmp(confirmation, "Y") == 0) 
                                 {
                                     update_user(user_id, "stay_logged_in", "1");
-                                    update_last_login("stay_logged_in", "1");
+                                    
                                     printf("\nYou will now stay logged in.\n");
                                     Sleep(1000);
                                     break;
@@ -4199,7 +4199,7 @@ int organizer_menu(int organizer_id)
                                 
                             } else if (menu_choice == 7) 
                             { // Create Package
-                                if (package_input[0] != NULL && package_input[1] != NULL && package_input[2] != NULL && package_input[3] != NULL && package_input[4] != NULL && package_input[5] && NULL) 
+                                if (package_input[0] != NULL && package_input[1] != NULL && package_input[2] != NULL && package_input[3] != NULL && package_input[4] != NULL && package_input[5] &&  NULL) 
                                 {
                                     printf("\n❌ All fields must be filled before creating the package.\n");
                                     Sleep(2000);
@@ -4419,7 +4419,7 @@ int organizer_menu(int organizer_id)
                                     NULL
                                 };
 
-                                // display_options(NULL, update_package_menu, package_options, "Enter the corresponding number for the field to update:");
+                                display_options(NULL, update_package_menu, package_options, "Enter the corresponding number for the field to update:");
 
                                 int menu_choice;
                                 if (scanf("%d", &menu_choice) != 1 || menu_choice < 1 || menu_choice > 8) 
@@ -5879,9 +5879,13 @@ int organizer_menu(int organizer_id)
                         }
                         clear_input_buffer();
                         
-                        printf("\nPlease enter the message for the nofication (-1 to go back) ");
-                        scanf("%s", message);
-                    
+                        printf("Enter your message: ");
+                        fgets(message, sizeof(message), stdin);
+
+                        // Remove the trailing newline if present
+                        message[strcspn(message, "\n")] = 0;
+
+                        // Clear the input buffer in case of leftover characters
 
                         if(strcmp(message, "-1") == 0)
                         {
@@ -5890,11 +5894,10 @@ int organizer_menu(int organizer_id)
                             Sleep(2000);
                             continue;
                         }
-
-                        
+                        clear_input_buffer();
+                        add_notification(user_id, message, "Unread");
                         printf("\nAdded notifcation for User ID: %d\n", user_id);
                         printf("Return now ...");
-                        add_notification(user_id, message, "Unread");
                         Sleep(4000);
                         break;
                     }

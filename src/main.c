@@ -50,8 +50,8 @@ int main()
         // char *prev_reminders = view_reminders(2968);
         // printf("%s\n", prev_reminders);
     auth_menu();
-
-    add_notification(2968, "Test Notifcation", "Unread");
+    // printf("%s", preview_pkgs(1));
+    // add_notification(2968, "Test Notifcation", "Unread");
 
     // char *venues = read_typevent(1, "venues");
     // printf("%s", venues);

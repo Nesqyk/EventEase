@@ -1,7 +1,7 @@
 event_id:1
 event_name:Wedding Celebration
 description:Celebrate love and unity with an unforgettable wedding experience tailored to your dreams.
-venues: Grand Ballroom - Elite Hote, Rose Garden - Central Park
+venues:Grand Ballroom, Poolside Venue, Garden Hall, Rooftop Terrace
 dp_percentage:50
 date_created:Thu Dec 26 10:15:53 2024
 payment_deadline_days:6

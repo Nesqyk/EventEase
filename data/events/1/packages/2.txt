@@ -1,0 +1,10 @@
+package_id:2
+package_name:akmdw
+price:123.00
+event_type:1
+description:kammd
+availability:1
+created_date: Jan 2024 
+max_guest:10
+duration:6
+inclusions:Hello,Hello

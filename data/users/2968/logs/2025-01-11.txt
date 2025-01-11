@@ -1,1 +1,6 @@
 2025-01-11 00:24:26 [INFO]: User selected option 7 from the main menu.
+2025-01-11 01:06:14 [INFO]: User selected option 7 from the main menu.
+2025-01-11 05:58:24 [INFO]: User selected option 3 from the main menu.
+2025-01-11 06:01:38 [INFO]: User selected option 1 from the main menu.
+2025-01-11 06:01:38 [INFO]: User selected 'Book Event' option.
+2025-01-11 06:04:51 [INFO]: User selected option 3 from the main menu.
