@@ -21,7 +21,7 @@ Before running EventEase, ensure you have the following installed:
 1.  Clone the repository
 
     ```sh
-    git clone [https://github.com/yourusername/EventEase.git](https://github.com/yourusername/EventEase.git)
+    git clone https://github.com/yourusername/EventEase.git
     cd EventEase
     ```
 
@@ -99,4 +99,4 @@ For details, check the commit history.
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the `LICENSE.md` file for details.
+This project is licensed under the MIT License. See the [LICENSE.md](https://github.com/Nesqyk/EventEase?tab=MIT-1-ov-file) file for details.
