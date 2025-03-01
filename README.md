@@ -91,10 +91,6 @@ For additional troubleshooting, refer to the documentation.
 *   ✅ **Text-based Insights & Reports** – Generate statistics on bookings and event popularity.
 *   ✅ **Lightweight & Fast** – Optimized for terminal-based execution.
 
-## 📌 Version History
-
-*   🔹 **no proper*
-
 For details, check the commit history.
 
 ## 📜 License
